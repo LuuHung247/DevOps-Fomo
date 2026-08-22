@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { RepoItem } from '@/lib/types';
 
 interface RepoCardProps {
@@ -8,23 +8,11 @@ interface RepoCardProps {
 }
 
 export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
-  const [copied, setCopied] = useState(false);
-
   const formatNumber = (num: number) => {
     if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
     if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
     return num.toString();
   };
-
-  const handleCopyMarkdown = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const md = `[${repo.fullName}](${repo.url}) - ${repo.description}`;
-    navigator.clipboard.writeText(md);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const starHistoryUrl = `https://star-history.com/#${repo.fullName}&Date`;
 
   return (
     <div className="p-5 sm:p-6 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 transition-all duration-200 shadow-lg shadow-black/40 flex flex-col justify-between font-sans">
@@ -86,7 +74,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
       </div>
 
       {/* Bottom Metrics & Actions Row */}
-      <div className="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 font-mono text-xs">
+      <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-3 font-mono text-xs">
         
         {/* Metrics Counter */}
         <div className="flex items-center space-x-3.5 text-slate-400">
@@ -94,33 +82,15 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
           <span className="text-slate-400">Forks: {formatNumber(repo.forks)}</span>
         </div>
 
-        {/* Action Links */}
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={handleCopyMarkdown}
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors text-xs font-semibold"
-          >
-            {copied ? 'Copied MD' : 'Copy MD'}
-          </button>
-
-          <a
-            href={starHistoryUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-amber-300 border border-slate-700 transition-colors text-xs font-semibold"
-          >
-            Star History
-          </a>
-
-          <a
-            href={repo.url}
-            target="_blank"
-            rel="noreferrer"
-            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold border border-emerald-400 transition-colors text-xs"
-          >
-            GitHub
-          </a>
-        </div>
+        {/* Action Link to GitHub */}
+        <a
+          href={repo.url}
+          target="_blank"
+          rel="noreferrer"
+          className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold border border-emerald-400 transition-colors text-xs inline-flex items-center"
+        >
+          View on GitHub
+        </a>
 
       </div>
 
