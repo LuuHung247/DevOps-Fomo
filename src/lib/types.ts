@@ -35,8 +35,11 @@ export interface RepoItem {
   categories: CategoryId[];
   isVerified?: boolean;
   velocityScore?: number;
-  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'CLASSIC' | 'TOP RATED' | 'COMMUNITY PICK';
+  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'COMMUNITY PICK' | 'CLASSIC' | 'BIG UPDATE' | 'TOP RATED';
   socialSignals?: SocialSignals;
+  isMajorUpdate?: boolean;
+  growthDeltaText?: string;
+  daysSinceUpdate?: number;
 }
 
 export interface DiscoveredRepo {
@@ -66,7 +69,8 @@ export interface FilterOptions {
   search: string;
   category: CategoryId;
   minStars: number;
-  sortBy: 'stars' | 'velocity' | 'updated';
+  timeRange?: 'today' | 'week' | 'month' | 'all';
+  sortBy: 'velocity' | 'stars' | 'updated';
 }
 
 export interface ReposApiResponse {

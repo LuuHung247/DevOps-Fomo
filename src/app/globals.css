@@ -22,54 +22,101 @@
   }
 }
 
-/* Glassmorphism & Cyber HUD styling */
-.hud-panel {
-  background: rgba(11, 17, 32, 0.85);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* Flame / Fiery FOMO Glow Animations */
+@keyframes flameAura {
+  0% {
+    box-shadow: 0 0 15px -2px rgba(239, 68, 68, 0.45), 0 0 30px -5px rgba(249, 115, 22, 0.25), inset 0 0 15px -5px rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 25px 2px rgba(249, 115, 22, 0.65), 0 0 45px -2px rgba(234, 179, 8, 0.35), inset 0 0 20px -2px rgba(249, 115, 22, 0.3);
+    border-color: rgba(249, 115, 22, 0.9);
+  }
+  100% {
+    box-shadow: 0 0 15px -2px rgba(239, 68, 68, 0.45), 0 0 30px -5px rgba(249, 115, 22, 0.25), inset 0 0 15px -5px rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.7);
+  }
 }
 
-.hud-card {
-  background: linear-gradient(145deg, rgba(15, 23, 42, 0.75) 0%, rgba(2, 6, 23, 0.9) 100%);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+@keyframes flameTagShine {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.6));
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: drop-shadow(0 0 14px rgba(249, 115, 22, 0.9));
+  }
 }
 
-.hud-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(16, 185, 129, 0.4);
-  box-shadow: 
-    0 12px 30px -10px rgba(0, 0, 0, 0.6),
-    0 0 20px -5px rgba(16, 185, 129, 0.2);
+@keyframes pulseUpdate {
+  0%, 100% {
+    border-color: rgba(16, 185, 129, 0.5);
+    box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.2);
+  }
+  50% {
+    border-color: rgba(16, 185, 129, 0.9);
+    box-shadow: 0 0 25px -1px rgba(16, 185, 129, 0.45);
+  }
 }
 
-.hud-card-active {
-  border-color: rgba(245, 158, 11, 0.5) !important;
-  box-shadow: 0 0 25px -5px rgba(245, 158, 11, 0.25) !important;
+/* Custom Status Frames */
+.fomo-flame-card {
+  position: relative;
+  background: linear-gradient(160deg, rgba(30, 10, 10, 0.95) 0%, rgba(15, 8, 12, 0.9) 100%);
+  animation: flameAura 3s ease-in-out infinite;
 }
 
-/* Glow effects */
-.glow-amber {
-  box-shadow: 0 0 15px -3px rgba(245, 158, 11, 0.3);
+.fomo-flame-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px 4px rgba(239, 68, 68, 0.7), 0 0 60px 0px rgba(249, 115, 22, 0.4) !important;
 }
 
-.glow-emerald {
-  box-shadow: 0 0 15px -3px rgba(16, 185, 129, 0.3);
+.fomo-flame-tag {
+  background: linear-gradient(90deg, #dc2626, #ea580c, #f59e0b, #ef4444);
+  background-size: 300% 300%;
+  animation: flameTagShine 3s ease infinite;
+  color: #ffffff;
+  font-weight: 800;
+  border: 1px solid rgba(254, 202, 202, 0.5);
 }
 
-.glow-cyan {
-  box-shadow: 0 0 15px -3px rgba(6, 182, 212, 0.3);
+.fomo-classic-card {
+  background: linear-gradient(160deg, rgba(8, 20, 35, 0.95) 0%, rgba(2, 6, 23, 0.95) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  box-shadow: 0 4px 20px -5px rgba(6, 182, 212, 0.15);
 }
 
-/* Text glow */
-.text-glow-amber {
-  text-shadow: 0 0 12px rgba(245, 158, 11, 0.5);
+.fomo-classic-card:hover {
+  border-color: rgba(6, 182, 212, 0.7);
+  box-shadow: 0 8px 25px -3px rgba(6, 182, 212, 0.3);
 }
 
-.text-glow-emerald {
-  text-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+.fomo-community-card {
+  background: linear-gradient(160deg, rgba(20, 10, 35, 0.95) 0%, rgba(2, 6, 23, 0.95) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  box-shadow: 0 4px 20px -5px rgba(168, 85, 247, 0.15);
+}
+
+.fomo-community-card:hover {
+  border-color: rgba(168, 85, 247, 0.7);
+  box-shadow: 0 8px 25px -3px rgba(168, 85, 247, 0.3);
+}
+
+.fomo-rising-card {
+  background: linear-gradient(160deg, rgba(25, 18, 10, 0.95) 0%, rgba(2, 6, 23, 0.95) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  box-shadow: 0 4px 20px -5px rgba(245, 158, 11, 0.15);
+}
+
+.fomo-rising-card:hover {
+  border-color: rgba(245, 158, 11, 0.7);
+  box-shadow: 0 8px 25px -3px rgba(245, 158, 11, 0.3);
+}
+
+.fomo-update-card {
+  background: linear-gradient(160deg, rgba(6, 25, 18, 0.95) 0%, rgba(2, 6, 23, 0.95) 100%);
+  animation: pulseUpdate 4s ease-in-out infinite;
 }
 
 /* Custom Scrollbar */

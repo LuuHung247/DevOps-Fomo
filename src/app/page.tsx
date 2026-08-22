@@ -25,11 +25,11 @@ export default function Home() {
     },
   });
 
-  // Filter & Search states
-  const [activeCategory, setActiveCategory] = useState<CategoryId | 'all'>('all');
+  // Default to TRENDING & RISING with VELOCITY sort for instant FOMO experience!
+  const [activeCategory, setActiveCategory] = useState<CategoryId | 'all'>('trending');
   const [searchQuery, setSearchQuery] = useState('');
   const [minStars, setMinStars] = useState(0);
-  const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('stars');
+  const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('velocity');
 
   // Fetch repositories from API
   const fetchRepos = useCallback(async () => {
@@ -73,7 +73,7 @@ export default function Home() {
       />
 
       <main className="flex-1 pb-16">
-        {/* Hero Section */}
+        {/* Compact Hero Section */}
         <HeroSection
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -143,11 +143,12 @@ export default function Home() {
                 onClick={() => {
                   setSearchQuery('');
                   setMinStars(0);
-                  setActiveCategory('all');
+                  setActiveCategory('trending');
+                  setSortBy('velocity');
                 }}
                 className="px-4 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-all"
               >
-                Reset Filters
+                Reset to Trending
               </button>
             </div>
           )}
@@ -160,10 +161,10 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-slate-200">DevOps-FOMO</span>
-            <span> • Verified AI & DevOps Hub</span>
+            <span> • Verified AI & DevOps Radar</span>
           </div>
           <p className="text-slate-400">
-            Powered by Next.js and GitHub Open Data.
+            Powered by Next.js and Multi-Source Intelligence.
           </p>
         </div>
       </footer>

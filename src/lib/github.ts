@@ -36,6 +36,8 @@ const SEARCH_QUERIES = [
   'topic:opentelemetry stars:>1000',
   'topic:monitoring stars:>3000',
   'topic:devsecops stars:>500',
+  'topic:ai-security OR topic:red-teaming stars:>300',
+  'AI-Infra-Guard OR "AI Red Teaming" in:readme stars:>200',
 
   // --- AI Agent & LLM Ecosystem ---
   'topic:agentic-ai stars:>500',
