@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { fetchLiveRepositories } from '@/lib/github';
+import { fetchAllSources } from '@/lib/discovery';
 import { getCachedRepos, setCachedRepos } from '@/lib/cache';
 import { RepoItem, CategoryId, ReposApiResponse } from '@/lib/types';
 import { SEED_REPOSITORIES } from '@/lib/seeds';
@@ -13,25 +13,24 @@ export async function GET(request: NextRequest) {
     const search = (searchParams.get('search') || '').trim().toLowerCase();
     const minStars = parseInt(searchParams.get('minStars') || '0', 10);
     const sortBy = searchParams.get('sortBy') || 'stars';
-    const forceRefresh = searchParams.get('refresh') === 'true';
 
     let repos: RepoItem[] | null = null;
     let isCached = false;
 
-    if (!forceRefresh) {
-      repos = getCachedRepos('all');
-      if (repos && repos.length > 0) {
-        isCached = true;
-      }
+    // Try cache first
+    repos = getCachedRepos('all');
+    if (repos && repos.length > 0) {
+      isCached = true;
     }
 
     if (!repos || repos.length === 0) {
       try {
-        repos = await fetchLiveRepositories();
+        // Use the new multi-source discovery engine
+        repos = await fetchAllSources();
         setCachedRepos('all', repos);
         isCached = false;
       } catch (err) {
-        console.error('Failed to fetch live repos, falling back to seeds:', err);
+        console.error('Failed to fetch from discovery engine, falling back to seeds:', err);
         repos = SEED_REPOSITORIES;
       }
     }
@@ -41,7 +40,7 @@ export async function GET(request: NextRequest) {
     const totalStars = repos.reduce((acc, r) => acc + r.stars, 0);
     
     const categoryCounts: Record<CategoryId, number> = {
-      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING').length,
+      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'COMMUNITY PICK').length,
       'agentic-ai': repos.filter(r => r.categories.includes('agentic-ai')).length,
       'devops-infra': repos.filter(r => r.categories.includes('devops-infra')).length,
       'mlops': repos.filter(r => r.categories.includes('mlops')).length,
@@ -53,7 +52,7 @@ export async function GET(request: NextRequest) {
     let filtered = repos;
     if (category !== 'all') {
       if (category === 'trending') {
-        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING');
+        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'COMMUNITY PICK');
       } else if (category === 'hall-of-fame') {
         filtered = filtered.filter(r => r.categories.includes('hall-of-fame') || r.stars >= 30000);
       } else {

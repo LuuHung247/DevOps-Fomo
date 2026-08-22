@@ -23,10 +23,36 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     setTimeout(() => setCopied(false), 1800);
   };
 
+  // Build social signal hints
+  const socialHints: string[] = [];
+  if (repo.socialSignals?.githubTrending === 'daily') {
+    socialHints.push('Trending on GitHub today');
+  } else if (repo.socialSignals?.githubTrending === 'weekly') {
+    socialHints.push('Trending on GitHub this week');
+  }
+  if (repo.socialSignals?.hnTopScore && repo.socialSignals.hnTopScore > 30) {
+    socialHints.push(`${repo.socialSignals.hnTopScore} pts on Hacker News`);
+  }
+  if (repo.socialSignals?.devtoMentions && repo.socialSignals.devtoMentions > 0) {
+    socialHints.push(`Featured on Dev.to`);
+  }
+  if (repo.socialSignals?.awesomeLists && repo.socialSignals.awesomeLists.length > 0) {
+    socialHints.push(`In ${repo.socialSignals.awesomeLists.length} curated list${repo.socialSignals.awesomeLists.length > 1 ? 's' : ''}`);
+  }
+
+  // Velocity label color mapping
+  const labelColors: Record<string, string> = {
+    'EXPLOSIVE': 'bg-red-500/15 text-red-400 border-red-500/30',
+    'HOT RISING': 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+    'COMMUNITY PICK': 'bg-violet-500/15 text-violet-400 border-violet-500/30',
+    'CLASSIC': 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
+    'TOP RATED': 'bg-slate-700/40 text-amber-300 border-amber-500/30',
+  };
+
   return (
     <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 transition-all duration-200 shadow-md shadow-black/40 font-sans">
       
-      {/* Header Row: Title, Badges, Metrics & Copy Link */}
+      {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2.5">
         
         {/* Left: Name, Owner & Status Badges */}
@@ -49,7 +75,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
               </span>
             )}
             {repo.velocityLabel && (
-              <span className="px-1.5 py-0.2 rounded text-[10px] bg-slate-950 text-amber-300 border border-amber-500/30 font-bold">
+              <span className={`px-1.5 py-0.2 rounded text-[10px] border font-bold ${labelColors[repo.velocityLabel] || labelColors['TOP RATED']}`}>
                 [{repo.velocityLabel}]
               </span>
             )}
@@ -83,6 +109,17 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
       <p className="text-xs sm:text-sm text-slate-300 mb-3 leading-relaxed font-normal">
         {repo.description}
       </p>
+
+      {/* Social Signal Hints (subtle) */}
+      {socialHints.length > 0 && (
+        <div className="mb-3 font-mono text-[10px] text-slate-500 flex flex-wrap gap-x-3 gap-y-1">
+          {socialHints.map((hint, i) => (
+            <span key={i} className="text-slate-400">
+              {hint}
+            </span>
+          ))}
+        </div>
+      )}
 
       {/* Topics Pills */}
       <div className="flex flex-wrap gap-1.5 font-mono text-[11px]">

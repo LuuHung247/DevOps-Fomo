@@ -6,6 +6,16 @@ export type CategoryId =
   | 'architecture'
   | 'hall-of-fame';
 
+export interface SocialSignals {
+  hnMentions?: number;
+  hnTopScore?: number;
+  devtoMentions?: number;
+  devtoTopReactions?: number;
+  awesomeLists?: string[];
+  githubTrending?: 'daily' | 'weekly' | null;
+  trendingStarsToday?: number;
+}
+
 export interface RepoItem {
   id: string;
   fullName: string;
@@ -25,7 +35,24 @@ export interface RepoItem {
   categories: CategoryId[];
   isVerified?: boolean;
   velocityScore?: number;
-  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'CLASSIC' | 'TOP RATED';
+  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'CLASSIC' | 'TOP RATED' | 'COMMUNITY PICK';
+  socialSignals?: SocialSignals;
+}
+
+export interface DiscoveredRepo {
+  fullName: string;
+  url: string;
+  description?: string;
+  stars?: number;
+  language?: string;
+  source: 'github-trending' | 'github-search' | 'hackernews' | 'devto' | 'awesome-list' | 'seed';
+  socialScore?: number;
+  trendingPeriod?: 'daily' | 'weekly';
+  trendingStarsToday?: number;
+  hnPoints?: number;
+  hnComments?: number;
+  devtoReactions?: number;
+  awesomeListName?: string;
 }
 
 export interface CategoryMeta {
