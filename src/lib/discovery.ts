@@ -120,7 +120,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
       devtoReactions: signals.devtoTopReactions,
     });
 
-    if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.label === 'BIG UPDATE') {
+    if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.hasBigUpdate) {
       if (!categories.includes('trending')) categories.push('trending');
     }
 
@@ -258,7 +258,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         repo.isVerified = true;
       }
 
-      if ((signals.githubTrending || velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.label === 'BIG UPDATE') && !repo.categories.includes('trending')) {
+      if ((signals.githubTrending || velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.hasBigUpdate) && !repo.categories.includes('trending')) {
         repo.categories.push('trending');
       }
     }

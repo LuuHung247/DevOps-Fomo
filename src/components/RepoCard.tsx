@@ -40,22 +40,27 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     socialHints.push('Featured on Dev.to');
   }
 
-  // Frame card class based on velocity
-  const getCardFrameClass = (label?: RepoItem['velocityLabel']) => {
-    switch (label) {
-      case 'EXPLOSIVE':
-        return 'fomo-flame-card border border-red-500/70';
-      case 'HOT RISING':
-        return 'fomo-rising-card';
-      case 'COMMUNITY PICK':
-        return 'fomo-community-card';
-      case 'CLASSIC':
-        return 'fomo-classic-card';
-      case 'BIG UPDATE':
-        return 'fomo-update-card border border-emerald-500/60';
-      default:
-        return 'bg-slate-900/90 border border-slate-800 hover:border-slate-700';
+  // Frame card class based on velocity and big updates
+  const getCardFrameClass = () => {
+    if (repo.velocityLabel === 'EXPLOSIVE') {
+      return 'fomo-flame-card border border-red-500/70';
     }
+    if (repo.velocityLabel === 'CLASSIC') {
+      if (repo.hasBigUpdate) {
+        return 'fomo-classic-card border border-emerald-500/50 shadow-emerald-950/40';
+      }
+      return 'fomo-classic-card';
+    }
+    if (repo.hasBigUpdate) {
+      return 'fomo-update-card border border-emerald-500/60';
+    }
+    if (repo.velocityLabel === 'HOT RISING') {
+      return 'fomo-rising-card';
+    }
+    if (repo.velocityLabel === 'COMMUNITY PICK') {
+      return 'fomo-community-card';
+    }
+    return 'bg-slate-900/90 border border-slate-800 hover:border-slate-700';
   };
 
   // Tag styling based on velocity
@@ -69,8 +74,6 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
         return 'bg-violet-500/20 text-violet-300 border border-violet-500/50 px-1.5 py-0.2 text-[10px] font-bold';
       case 'CLASSIC':
         return 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 px-1.5 py-0.2 text-[10px] font-bold';
-      case 'BIG UPDATE':
-        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/60 px-1.5 py-0.2 text-[10px] font-bold';
       default:
         return 'bg-slate-800 text-slate-300 border border-slate-700 px-1.5 py-0.2 text-[10px] font-bold';
     }
@@ -79,7 +82,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
   const isExplosive = repo.velocityLabel === 'EXPLOSIVE';
 
   return (
-    <div className={`p-4 sm:p-5 rounded-2xl transition-all duration-300 shadow-md font-sans ${getCardFrameClass(repo.velocityLabel)}`}>
+    <div className={`p-4 sm:p-5 rounded-2xl transition-all duration-300 shadow-md font-sans ${getCardFrameClass()}`}>
       
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2.5">
@@ -112,6 +115,12 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
             {repo.velocityLabel && (
               <span className={`rounded ${getTagClass(repo.velocityLabel)}`}>
                 [{repo.velocityLabel === 'EXPLOSIVE' ? 'EXPLOSIVE FOMO' : repo.velocityLabel}]
+              </span>
+            )}
+
+            {repo.hasBigUpdate && (
+              <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/60 font-bold animate-pulse">
+                [⚡ BIG UPDATE]
               </span>
             )}
           </div>
@@ -156,6 +165,8 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
               className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
                 isExplosive
                   ? 'bg-red-950/40 text-amber-300 border-red-500/30'
+                  : repo.hasBigUpdate
+                  ? 'bg-emerald-950/30 text-emerald-300 border-emerald-500/30'
                   : 'bg-slate-950 text-slate-300 border-slate-800'
               }`}
             >

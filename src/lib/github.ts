@@ -141,7 +141,7 @@ export function calculateVelocity(
     hnTopScore?: number;
     devtoReactions?: number;
   }
-): { score: number; label: RepoItem['velocityLabel']; growthText?: string } {
+): { score: number; label: RepoItem['velocityLabel']; hasBigUpdate?: boolean; growthText?: string } {
   const now = Date.now();
   const created = createdAt ? new Date(createdAt).getTime() : 0;
   const updated = updatedAt ? new Date(updatedAt).getTime() : now;
@@ -157,18 +157,13 @@ export function calculateVelocity(
   const isClassicStandard = (ageDays >= 730 && stars >= 15000) || (ageDays >= 1095 && stars >= 10000) || (stars >= 30000 && ageDays >= 500);
 
   if (isClassicStandard) {
-    // If a classic repo released an active update in the last 48h
-    if (daysSinceUpdate <= 2 && (extraSignals?.hnTopScore || 0) > 30) {
-      return {
-        score: 95,
-        label: 'BIG UPDATE',
-        growthText: 'Active Major Update',
-      };
-    }
+    // If a classic repo released an active update in the last 48h or has update signal
+    const hasBigUpdate = daysSinceUpdate <= 3 && ((extraSignals?.hnTopScore || 0) > 20 || (extraSignals?.devtoReactions || 0) > 10);
     return {
-      score: Math.min(95, 75 + Math.round(stars / 10000)),
+      score: hasBigUpdate ? 96 : Math.min(95, 75 + Math.round(stars / 10000)),
       label: 'CLASSIC',
-      growthText: 'Proven Standard',
+      hasBigUpdate,
+      growthText: hasBigUpdate ? 'Active Major Release' : 'Proven Standard',
     };
   }
 

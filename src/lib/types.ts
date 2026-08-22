@@ -35,9 +35,9 @@ export interface RepoItem {
   categories: CategoryId[];
   isVerified?: boolean;
   velocityScore?: number;
-  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'COMMUNITY PICK' | 'CLASSIC' | 'BIG UPDATE' | 'TOP RATED';
+  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'COMMUNITY PICK' | 'CLASSIC' | 'TOP RATED';
+  hasBigUpdate?: boolean;
   socialSignals?: SocialSignals;
-  isMajorUpdate?: boolean;
   growthDeltaText?: string;
   daysSinceUpdate?: number;
 }
@@ -61,6 +61,7 @@ export interface DiscoveredRepo {
   hnComments?: number;
   devtoReactions?: number;
   awesomeListName?: string;
+  hasBigUpdate?: boolean;
 }
 
 export interface CategoryMeta {

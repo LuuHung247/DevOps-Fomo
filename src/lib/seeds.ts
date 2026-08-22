@@ -142,7 +142,8 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'mlops', 'hall-of-fame', 'trending'],
     isVerified: true,
     velocityScore: 98,
-    velocityLabel: 'BIG UPDATE',
+    velocityLabel: 'CLASSIC',
+    hasBigUpdate: true,
     growthDeltaText: 'DeepSeek-R1 Live Support',
     socialSignals: { hnTopScore: 420 },
   },
@@ -188,6 +189,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     isVerified: true,
     velocityScore: 97,
     velocityLabel: 'HOT RISING',
+    hasBigUpdate: true,
     growthDeltaText: 'Major v0.15 Update',
   },
   {
@@ -209,7 +211,8 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 95,
-    velocityLabel: 'BIG UPDATE',
+    velocityLabel: 'CLASSIC',
+    hasBigUpdate: true,
     growthDeltaText: 'v1.9 State Encryption Released',
   },
   {
