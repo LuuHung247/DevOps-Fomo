@@ -167,20 +167,21 @@ export function calculateVelocity(
     };
   }
 
-  // 2. EXPLOSIVE: Maximum FOMO / Breakout Stars
-  // On GitHub Trending Daily OR (< 1 year old with > 15 stars/day) OR (< 90 days with > 800 stars)
-  if (
-    extraSignals?.isTrendingToday ||
-    (ageDays <= 365 && starsPerDay >= 15) ||
-    (ageDays <= 90 && stars >= 800) ||
-    (extraSignals?.hnTopScore && extraSignals.hnTopScore >= 120)
-  ) {
+  // 2. EXPLOSIVE: Strictly calibrated for True Viral Phenomena / Breakouts
+  // Must be #1 Daily Trending OR (< 180 days with >= 45 stars/day and >= 2500 stars) OR (> 200 pts on Hacker News)
+  const isPhenomenon = 
+    (extraSignals?.isTrendingToday && stars >= 1500) ||
+    (ageDays <= 180 && starsPerDay >= 45 && stars >= 2500) ||
+    (ageDays <= 90 && starsPerDay >= 35 && stars >= 1500) ||
+    ((extraSignals?.hnTopScore || 0) >= 200 && ageDays <= 180);
+
+  if (isPhenomenon) {
     return {
       score: 99,
       label: 'EXPLOSIVE',
       growthText: extraSignals?.isTrendingToday
         ? 'Trending #1 Today'
-        : `+${Math.max(15, Math.round(starsPerDay))} stars/day • Breakout`,
+        : `+${Math.round(starsPerDay)} stars/day • Breakout`,
     };
   }
 
@@ -198,10 +199,10 @@ export function calculateVelocity(
     };
   }
 
-  // 4. HOT RISING: Young projects (1-2 years) with strong momentum
-  if (ageDays <= 730 && starsPerDay >= 4) {
+  // 4. HOT RISING: Young projects with solid sustained upward growth
+  if (ageDays <= 730 && starsPerDay >= 8 && stars >= 1000) {
     return {
-      score: Math.min(94, 82 + Math.round(starsPerDay * 2)),
+      score: Math.min(94, 82 + Math.round(starsPerDay * 1.5)),
       label: 'HOT RISING',
       growthText: `+${Math.round(starsPerDay)} stars/day`,
     };

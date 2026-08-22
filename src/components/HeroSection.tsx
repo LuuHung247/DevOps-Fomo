@@ -32,50 +32,22 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onSearchChange]);
 
-  const quickPills = [
-    { label: '🔥 Trending Today', query: 'superpowers' },
-    { label: '🛡️ AI Guard & Red Team', query: 'Guard' },
-    { label: '🤖 AI Agents & MCP', query: 'agent' },
-    { label: '⚡ DeepSeek & Local AI', query: 'deepseek' },
-    { label: '⚙️ Cloud-Native', query: 'kubernetes' },
-  ];
-
   return (
-    <section className="relative pt-4 pb-3 sm:pt-6 sm:pb-4 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
+    <section className="relative pt-4 pb-2 sm:pt-6 sm:pb-3 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
       
       {/* Small Radar Status */}
-      <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 border border-emerald-500/30 text-emerald-400 mb-3">
-        <span>AI & DEVOPS RADAR • LIVE COMMUNITY SIGNALS</span>
+      <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 border border-emerald-500/30 text-emerald-400 mb-2.5">
+        <span>AI & DEVOPS RADAR • COMMUNITY PHENOMENA</span>
       </div>
 
       {/* Headline */}
       <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 font-sans leading-tight">
-        What's Trending in <span className="text-emerald-400">AI & DevOps</span> Today?
+        Discover Breakout <span className="text-emerald-400">AI & DevOps</span> Repositories
       </h1>
 
       <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto mb-4 leading-relaxed">
-        Real-time intelligence tracking explosive GitHub breakout repos, viral community picks, and major AI/DevOps releases.
+        Real-time intelligence tracking verified viral breakout repos, community-validated tools, and major ecosystem updates.
       </p>
-
-      {/* Quick Search Tags */}
-      <div className="flex flex-wrap items-center justify-center gap-1.5 mb-4 text-xs font-mono">
-        {quickPills.map((pill) => {
-          const isActive = searchQuery.toLowerCase() === pill.query.toLowerCase();
-          return (
-            <button
-              key={pill.label}
-              onClick={() => onSearchChange(isActive ? '' : pill.query)}
-              className={`px-2.5 py-1 rounded-lg font-mono text-[11px] transition-all ${
-                isActive
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 font-bold'
-                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800'
-              }`}
-            >
-              {pill.label}
-            </button>
-          );
-        })}
-      </div>
 
       {/* Search Input Box */}
       <div className="relative max-w-xl mx-auto font-sans">
