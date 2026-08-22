@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
     const category = (searchParams.get('category') || 'all') as CategoryId | 'all';
     const search = (searchParams.get('search') || '').trim().toLowerCase();
     const minStars = parseInt(searchParams.get('minStars') || '0', 10);
-    const language = (searchParams.get('language') || '').trim().toLowerCase();
     const sortBy = searchParams.get('sortBy') || 'stars';
     const forceRefresh = searchParams.get('refresh') === 'true';
 
@@ -48,12 +47,11 @@ export async function GET(request: NextRequest) {
       'mlops': repos.filter(r => r.categories.includes('mlops')).length,
       'architecture': repos.filter(r => r.categories.includes('architecture')).length,
       'hall-of-fame': repos.filter(r => r.categories.includes('hall-of-fame') || r.stars >= 30000).length,
-      'favorites': 0, // Client manages favorites
     };
 
     // Filter by category
     let filtered = repos;
-    if (category !== 'all' && category !== 'favorites') {
+    if (category !== 'all') {
       if (category === 'trending') {
         filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING');
       } else if (category === 'hall-of-fame') {
@@ -68,18 +66,12 @@ export async function GET(request: NextRequest) {
       filtered = filtered.filter(r => r.stars >= minStars);
     }
 
-    // Filter by language
-    if (language && language !== 'all') {
-      filtered = filtered.filter(r => (r.language || '').toLowerCase() === language);
-    }
-
     // Filter by search query
     if (search) {
       filtered = filtered.filter(r => 
         r.fullName.toLowerCase().includes(search) ||
         r.description.toLowerCase().includes(search) ||
-        r.topics.some(t => t.toLowerCase().includes(search)) ||
-        (r.language && r.language.toLowerCase().includes(search))
+        r.topics.some(t => t.toLowerCase().includes(search))
       );
     }
 

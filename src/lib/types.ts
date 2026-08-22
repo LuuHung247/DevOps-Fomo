@@ -4,8 +4,7 @@ export type CategoryId =
   | 'devops-infra'
   | 'mlops'
   | 'architecture'
-  | 'hall-of-fame'
-  | 'favorites';
+  | 'hall-of-fame';
 
 export interface RepoItem {
   id: string;
@@ -40,7 +39,6 @@ export interface FilterOptions {
   search: string;
   category: CategoryId;
   minStars: number;
-  language: string;
   sortBy: 'stars' | 'velocity' | 'updated';
 }
 
