@@ -1,21 +1,5 @@
 import { DiscoveredRepo } from '../types';
 
-const RELEVANT_KEYWORDS = [
-  'ai', 'agent', 'llm', 'devops', 'kubernetes', 'docker', 'terraform',
-  'mlops', 'cloud', 'infrastructure', 'deploy', 'container', 'helm',
-  'gitops', 'cicd', 'pipeline', 'monitor', 'observ', 'security',
-  'automat', 'orchestrat', 'serverless', 'microservice', 'platform',
-  'model', 'inference', 'vector', 'embedding', 'rag', 'prompt',
-  'copilot', 'coding', 'developer', 'tool', 'framework', 'cli',
-  'rust', 'go', 'python', 'typescript', 'system', 'design',
-  'awesome', 'roadmap', 'cheatsheet', 'guide', 'learn',
-];
-
-function isRelevantRepo(name: string, description: string): boolean {
-  const text = `${name} ${description}`.toLowerCase();
-  return RELEVANT_KEYWORDS.some(kw => text.includes(kw));
-}
-
 function extractRepoFromUrl(url: string): string | null {
   const match = url.match(/github\.com\/([^\/]+\/[^\/]+)/);
   if (!match) return null;
@@ -24,95 +8,89 @@ function extractRepoFromUrl(url: string): string | null {
 
 export async function fetchGitHubTrending(): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
-  const periods: Array<{ param: string; period: 'daily' | 'weekly' }> = [
-    { param: 'since=daily', period: 'daily' },
-    { param: 'since=weekly', period: 'weekly' },
+  
+  // Trending endpoints to scrape
+  const urls = [
+    { url: 'https://github.com/trending?since=daily', period: 'daily' as const },
+    { url: 'https://github.com/trending/python?since=daily', period: 'daily' as const },
+    { url: 'https://github.com/trending/go?since=daily', period: 'daily' as const },
+    { url: 'https://github.com/trending/typescript?since=daily', period: 'daily' as const },
+    { url: 'https://github.com/trending/rust?since=daily', period: 'daily' as const },
+    { url: 'https://github.com/trending?since=weekly', period: 'weekly' as const },
   ];
 
-  for (const { param, period } of periods) {
+  for (const { url, period } of urls) {
     try {
-      const url = `https://github.com/trending?${param}`;
       const res = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; DevOps-FOMO/1.0)',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Accept': 'text/html',
         },
-        next: { revalidate: 3600 },
+        next: { revalidate: 1800 },
       });
 
       if (!res.ok) {
-        console.warn(`GitHub Trending fetch failed (${period}): ${res.status}`);
+        console.warn(`GitHub Trending fetch failed (${url}): ${res.status}`);
         continue;
       }
 
       const html = await res.text();
 
-      // Parse repo entries from the trending page HTML
-      // Each repo is in an <article> with class "Box-row"
-      // The repo link is in an <h2> with <a href="/owner/repo">
-      const repoPattern = /<h2[^>]*class="[^"]*h3[^"]*"[^>]*>\s*<a[^>]*href="\/([^"]+)"[^>]*>/g;
-      const descPattern = /<p[^>]*class="[^"]*col-9[^"]*"[^>]*>([\s\S]*?)<\/p>/g;
-      const starsPattern = /(\d[\d,]*)\s*stars\s*today/gi;
+      // Extract repo blocks: href="/owner/repo" in article.Box-row
+      const repoPattern = /href="\/([a-zA-Z0-9\-_.]+\/[a-zA-Z0-9\-_.]+)"[^>]*class="[^"]*Link/g;
+      const starsTodayPattern = /([0-9,]+)\s*stars\s*(?:today|this week)/gi;
       
-      let repoMatch;
-      const repoNames: string[] = [];
-      
-      while ((repoMatch = repoPattern.exec(html)) !== null) {
-        const fullName = repoMatch[1].trim();
-        if (fullName.includes('/') && !fullName.includes('/blob/') && !fullName.includes('/tree/')) {
-          repoNames.push(fullName);
+      const seenOnPage = new Set<string>();
+      let match;
+
+      while ((match = repoPattern.exec(html)) !== null) {
+        const fullName = match[1].trim();
+        if (
+          fullName.includes('/') &&
+          !fullName.startsWith('features/') &&
+          !fullName.startsWith('site/') &&
+          !fullName.startsWith('login') &&
+          !fullName.startsWith('signup') &&
+          !fullName.includes('/blob/') &&
+          !fullName.includes('/tree/') &&
+          !seenOnPage.has(fullName.toLowerCase())
+        ) {
+          seenOnPage.add(fullName.toLowerCase());
+          
+          results.push({
+            fullName,
+            url: `https://github.com/${fullName}`,
+            source: 'github-trending',
+            trendingPeriod: period,
+            description: '',
+            createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+            updatedAt: new Date().toISOString(),
+          });
         }
       }
 
-      // Fallback: also try the simpler href pattern for trending repos
-      if (repoNames.length === 0) {
-        const hrefPattern = /href="\/([^\/]+\/[^\/\s"]+)"[^>]*class="[^"]*Link[^"]*"/g;
-        let hrefMatch;
-        while ((hrefMatch = hrefPattern.exec(html)) !== null) {
-          const name = hrefMatch[1].trim();
-          if (name.includes('/') && !name.startsWith('features/') && 
-              !name.startsWith('login') && !name.startsWith('signup') &&
-              !name.includes('/blob/') && !name.includes('/tree/') &&
-              !name.includes('/issues') && !name.includes('/pull')) {
-            repoNames.push(name);
-          }
-        }
-      }
-
-      // Even more aggressive fallback: look for any /owner/repo pattern in trending context
-      if (repoNames.length === 0) {
-        const broadPattern = /\/([a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_.]+)/g;
-        const seen = new Set<string>();
+      // Fallback regex if Link class changed
+      if (seenOnPage.size === 0) {
+        const broadPattern = /<h2[^>]*>\s*<a[^>]*href="\/([^"]+)"/g;
         let broadMatch;
         while ((broadMatch = broadPattern.exec(html)) !== null) {
-          const name = broadMatch[1];
-          if (name.includes('/') && !seen.has(name) && 
-              !name.startsWith('features/') && !name.startsWith('site/') &&
-              !name.startsWith('login') && !name.startsWith('signup') &&
-              !name.includes('.css') && !name.includes('.js') &&
-              name.split('/').length === 2) {
-            seen.add(name);
-            if (seen.size <= 25) {
-              repoNames.push(name);
-            }
+          const raw = broadMatch[1].trim().replace(/^\//, '');
+          if (raw.split('/').length === 2 && !seenOnPage.has(raw.toLowerCase())) {
+            seenOnPage.add(raw.toLowerCase());
+            results.push({
+              fullName: raw,
+              url: `https://github.com/${raw}`,
+              source: 'github-trending',
+              trendingPeriod: period,
+              description: '',
+              createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
           }
         }
       }
-
-      // Deduplicate
-      const uniqueRepos = Array.from(new Set(repoNames)).slice(0, 25);
-
-      for (const fullName of uniqueRepos) {
-        results.push({
-          fullName,
-          url: `https://github.com/${fullName}`,
-          source: 'github-trending',
-          trendingPeriod: period,
-          description: '',
-        });
-      }
     } catch (err) {
-      console.error(`Error fetching GitHub trending (${period}):`, err);
+      console.error(`Error fetching GitHub trending (${url}):`, err);
     }
   }
 

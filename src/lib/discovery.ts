@@ -48,57 +48,6 @@ function buildSocialSignals(
   return signals;
 }
 
-function calculateCommunityScore(
-  stars: number,
-  velocityScore: number,
-  signals: SocialSignals
-): number {
-  let score = 0;
-
-  // Stars weight (0-30)
-  if (stars >= 100000) score += 30;
-  else if (stars >= 50000) score += 25;
-  else if (stars >= 10000) score += 20;
-  else if (stars >= 5000) score += 15;
-  else if (stars >= 1000) score += 10;
-  else score += 5;
-
-  // Velocity weight (0-30)
-  score += Math.min(30, Math.round(velocityScore * 0.3));
-
-  // Social signal weight (0-25)
-  if (signals.githubTrending === 'daily') score += 15;
-  else if (signals.githubTrending === 'weekly') score += 10;
-  if (signals.hnTopScore && signals.hnTopScore > 100) score += 10;
-  else if (signals.hnTopScore && signals.hnTopScore > 50) score += 5;
-  if (signals.devtoMentions && signals.devtoMentions > 2) score += 5;
-  else if (signals.devtoMentions && signals.devtoMentions > 0) score += 3;
-
-  // Awesome list presence (0-15)
-  if (signals.awesomeLists && signals.awesomeLists.length >= 3) score += 15;
-  else if (signals.awesomeLists && signals.awesomeLists.length >= 2) score += 10;
-  else if (signals.awesomeLists && signals.awesomeLists.length >= 1) score += 5;
-
-  return Math.min(99, score);
-}
-
-function enhanceVelocityLabel(
-  baseLabel: RepoItem['velocityLabel'],
-  signals: SocialSignals,
-  stars: number,
-  communityScore: number
-): RepoItem['velocityLabel'] {
-  // If trending on GitHub daily → EXPLOSIVE
-  if (signals.githubTrending === 'daily') return 'EXPLOSIVE';
-
-  // If highly mentioned on HN + Dev.to but lower stars → COMMUNITY PICK
-  const socialMentions = (signals.hnMentions || 0) + (signals.devtoMentions || 0);
-  if (socialMentions >= 2 && stars < 15000 && communityScore > 40) return 'COMMUNITY PICK';
-  if ((signals.hnTopScore || 0) > 100 && stars < 20000) return 'COMMUNITY PICK';
-
-  return baseLabel;
-}
-
 export async function fetchAllSources(): Promise<RepoItem[]> {
   const token = process.env.GITHUB_TOKEN;
   const headers: Record<string, string> = {
@@ -152,7 +101,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     finalMap.set(key, { ...seed, socialSignals: signals });
   }
 
-  // 2. Direct mapping: Add all search repos immediately (they already have stars & desc!)
+  // 2. Direct mapping for all search repos with REAL created_at and updated_at
   for (const disc of search) {
     const key = disc.fullName.toLowerCase();
     const signals = socialSignalsMap.get(key) || {};
@@ -160,16 +109,20 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     const owner = parts[0] || 'github';
     const name = parts[1] || disc.fullName;
     const stars = disc.stars || 1000;
+    const createdAt = disc.createdAt || '2023-01-01T00:00:00Z';
+    const updatedAt = disc.updatedAt || new Date().toISOString();
     
-    const categories = determineCategories([], disc.description || '', stars);
-    const velocity = calculateVelocity(stars, '2023-01-01T00:00:00Z', new Date().toISOString());
+    const categories = determineCategories(disc.topics || [], disc.description || '', stars);
+    const velocity = calculateVelocity(stars, createdAt, updatedAt, {
+      isTrendingToday: signals.githubTrending === 'daily',
+      isTrendingWeekly: signals.githubTrending === 'weekly',
+      hnTopScore: signals.hnTopScore,
+      devtoReactions: signals.devtoTopReactions,
+    });
 
-    if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING') {
+    if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.label === 'BIG UPDATE') {
       if (!categories.includes('trending')) categories.push('trending');
     }
-
-    const communityScore = calculateCommunityScore(stars, velocity.score, signals);
-    const finalLabel = enhanceVelocityLabel(velocity.label, signals, stars, communityScore);
 
     if (!finalMap.has(key)) {
       finalMap.set(key, {
@@ -181,17 +134,18 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         description: disc.description || 'Verified open-source repository.',
         url: disc.url,
         stars,
-        forks: Math.round(stars * 0.12),
-        openIssues: Math.round(stars * 0.01),
+        forks: disc.forks || Math.round(stars * 0.12),
+        openIssues: disc.openIssues || Math.round(stars * 0.01),
         language: disc.language || 'Code',
-        topics: categories,
-        updatedAt: new Date().toISOString(),
-        createdAt: '2023-01-01T00:00:00Z',
+        topics: (disc.topics && disc.topics.length > 0) ? disc.topics.slice(0, 7) : categories,
+        updatedAt,
+        createdAt,
         category: categories[0] || 'devops-infra',
         categories,
         isVerified: stars > 5000,
-        velocityScore: Math.max(velocity.score, communityScore),
-        velocityLabel: finalLabel,
+        velocityScore: velocity.score,
+        velocityLabel: velocity.label,
+        growthDeltaText: velocity.growthText,
         socialSignals: signals,
       });
     } else {
@@ -200,7 +154,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     }
   }
 
-  // 3. Direct mapping for Trending repos (if not already in map)
+  // 3. Direct mapping for Trending repos
   for (const disc of trending) {
     const key = disc.fullName.toLowerCase();
     const signals = socialSignalsMap.get(key) || {};
@@ -219,7 +173,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         name,
         owner,
         ownerAvatar: `https://avatars.githubusercontent.com/${owner}`,
-        description: disc.description || `Trending repository on GitHub (${disc.trendingPeriod || 'daily'}).`,
+        description: disc.description || `Trending project on GitHub (${disc.trendingPeriod || 'daily'}).`,
         url: disc.url,
         stars,
         forks: Math.round(stars * 0.1),
@@ -227,12 +181,13 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         language: disc.language || 'Code',
         topics: categories,
         updatedAt: new Date().toISOString(),
-        createdAt: '2024-01-01T00:00:00Z',
+        createdAt: '2024-10-01T00:00:00Z',
         category: categories[0] || 'agentic-ai',
         categories,
         isVerified: true,
-        velocityScore: 98,
+        velocityScore: 99,
         velocityLabel: 'EXPLOSIVE',
+        growthDeltaText: disc.trendingPeriod === 'daily' ? 'Trending #1 Today' : 'Weekly Trending',
         socialSignals: { ...signals, githubTrending: disc.trendingPeriod || 'daily' },
       });
     }
@@ -248,9 +203,8 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     const name = parts[1];
 
     if (!finalMap.has(key)) {
-      const stars = disc.stars || (disc.hnPoints ? disc.hnPoints * 30 : 2500);
+      const stars = disc.stars || (disc.hnPoints ? disc.hnPoints * 35 : 2500);
       const categories = determineCategories([], disc.description || name, stars);
-      const communityScore = calculateCommunityScore(stars, 85, signals);
 
       finalMap.set(key, {
         id: disc.fullName,
@@ -266,18 +220,19 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         language: disc.language || 'Code',
         topics: categories,
         updatedAt: new Date().toISOString(),
-        createdAt: '2023-06-01T00:00:00Z',
+        createdAt: '2024-06-01T00:00:00Z',
         category: categories[0] || 'devops-infra',
         categories,
         isVerified: true,
-        velocityScore: communityScore,
+        velocityScore: 92,
         velocityLabel: 'COMMUNITY PICK',
+        growthDeltaText: disc.hnPoints ? `${disc.hnPoints} pts on Hacker News` : 'Tech Community Pick',
         socialSignals: signals,
       });
     }
   }
 
-  // ====== Phase 5: Post-process all items with social signals ======
+  // ====== Phase 5: Recalculate and normalize all items ======
   for (const entry of Array.from(finalMap.entries())) {
     const key = entry[0];
     const repo = entry[1];
@@ -285,25 +240,32 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     if (signals) {
       repo.socialSignals = { ...repo.socialSignals, ...signals };
 
-      const communityScore = calculateCommunityScore(repo.stars, repo.velocityScore || 0, signals);
-      const enhanced = enhanceVelocityLabel(repo.velocityLabel, signals, repo.stars, communityScore);
-      if (enhanced !== repo.velocityLabel) {
-        repo.velocityLabel = enhanced;
-        repo.velocityScore = Math.max(repo.velocityScore || 0, communityScore);
+      // Re-run calculateVelocity with all signals
+      const velocity = calculateVelocity(repo.stars, repo.createdAt, repo.updatedAt, {
+        isTrendingToday: signals.githubTrending === 'daily',
+        isTrendingWeekly: signals.githubTrending === 'weekly',
+        hnTopScore: signals.hnTopScore,
+        devtoReactions: signals.devtoTopReactions,
+      });
+
+      repo.velocityScore = velocity.score;
+      repo.velocityLabel = velocity.label;
+      if (velocity.growthText && !repo.growthDeltaText) {
+        repo.growthDeltaText = velocity.growthText;
       }
 
       if (signals.awesomeLists && signals.awesomeLists.length > 0) {
         repo.isVerified = true;
       }
 
-      if (signals.githubTrending && !repo.categories.includes('trending')) {
+      if ((signals.githubTrending || velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.label === 'BIG UPDATE') && !repo.categories.includes('trending')) {
         repo.categories.push('trending');
       }
     }
   }
 
   const allRepos = Array.from(finalMap.values());
-  console.log(`[Discovery] Final output: ${allRepos.length} total repos merged across all 5 layers`);
+  console.log(`[Discovery] Final output: ${allRepos.length} total repos correctly classified`);
 
-  return allRepos.sort((a, b) => b.stars - a.stars);
+  return allRepos.sort((a, b) => (b.velocityScore || 0) - (a.velocityScore || 0));
 }

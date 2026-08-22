@@ -47,7 +47,12 @@ export interface DiscoveredRepo {
   url: string;
   description?: string;
   stars?: number;
+  forks?: number;
+  openIssues?: number;
   language?: string;
+  topics?: string[];
+  createdAt?: string;
+  updatedAt?: string;
   source: 'github-trending' | 'github-search' | 'hackernews' | 'devto' | 'awesome-list' | 'seed';
   socialScore?: number;
   trendingPeriod?: 'daily' | 'weekly';

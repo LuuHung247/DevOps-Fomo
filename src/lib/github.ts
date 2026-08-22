@@ -19,58 +19,39 @@ interface GitHubApiItem {
   created_at: string;
 }
 
-// ====== EXPANDED SEARCH QUERIES (30+) ======
+// ====== SEARCH QUERIES (Targeting both established and newly emerging AI/DevOps) ======
 const SEARCH_QUERIES = [
-  // --- Core DevOps & Infrastructure ---
-  'topic:devops stars:>3000',
-  'topic:kubernetes stars:>5000',
-  'topic:docker stars:>5000',
-  'topic:terraform stars:>2000',
-  'topic:iac stars:>2000',
-  'topic:gitops stars:>1000',
-  'topic:helm stars:>2000',
-  'topic:ansible stars:>3000',
+  // --- Emerging Breakout Stars (Created recently with high traction) ---
+  'created:>2025-01-01 stars:>200',
+  'created:>2024-09-01 stars:>1000 topic:ai',
+  'created:>2024-09-01 stars:>500 topic:agent',
+  'created:>2024-09-01 stars:>500 topic:devops',
+  'created:>2024-09-01 stars:>300 topic:security',
 
-  // --- Observability & Security ---
-  'topic:ebpf stars:>1000',
-  'topic:opentelemetry stars:>1000',
-  'topic:monitoring stars:>3000',
-  'topic:devsecops stars:>500',
-  'topic:ai-security OR topic:red-teaming stars:>300',
-  'AI-Infra-Guard OR "AI Red Teaming" in:readme stars:>200',
+  // --- AI Security, Guardrails & Red Teaming ---
+  'topic:ai-security OR topic:red-teaming stars:>150',
+  'AI-Infra-Guard OR "AI Red Teaming" OR "LLM Guard" in:readme stars:>100',
+  'topic:prompt-injection OR topic:jailbreak stars:>200',
 
-  // --- AI Agent & LLM Ecosystem ---
+  // --- AI Agent & MCP Ecosystem ---
   'topic:agentic-ai stars:>500',
   'topic:ai-agent stars:>500',
-  'topic:llm stars:>2000',
+  'topic:mcp OR "model context protocol" in:readme stars:>200',
   'topic:llmops stars:>500',
   'topic:rag stars:>1000',
   'topic:vector-database stars:>500',
   'topic:model-serving stars:>500',
-  'topic:prompt-engineering stars:>1000',
 
-  // --- Emerging: AI Coding & SWE Agents ---
-  '"ai agent" in:readme stars:>500 pushed:>2025-01-01',
-  '"coding agent" OR "swe-agent" OR "code agent" in:readme stars:>300',
-  '"mcp" OR "model context protocol" in:readme stars:>200 pushed:>2025-01-01',
-  'topic:copilot stars:>500',
-
-  // --- MLOps & Data ---
-  'topic:mlops stars:>2000',
-  'topic:experiment-tracking stars:>500',
-
-  // --- Newly Created & Fast Growing ---
-  'created:>2025-01-01 stars:>1000 topic:ai',
-  'created:>2025-01-01 stars:>500 topic:devops',
-  'created:>2024-06-01 stars:>2000 topic:agent',
-
-  // --- Platform Engineering ---
+  // --- Core DevOps, Cloud-Native & Observability ---
+  'topic:kubernetes stars:>5000',
+  'topic:devops stars:>3000',
+  'topic:terraform stars:>2000',
+  'topic:ebpf stars:>1000',
+  'topic:gitops stars:>1000',
+  'topic:monitoring stars:>3000',
+  'topic:opentelemetry stars:>1000',
+  'topic:devsecops stars:>500',
   'topic:platform-engineering stars:>500',
-  'topic:internal-developer-platform stars:>300',
-
-  // --- System Design & Architecture ---
-  'topic:system-design stars:>5000',
-  'topic:roadmap stars:>5000',
 ];
 
 // ====== CATEGORY CLASSIFICATION ======
@@ -79,8 +60,8 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
   const lowerDesc = (desc || '').toLowerCase();
   const lowerTopics = (topics || []).map(t => t.toLowerCase());
 
-  // Hall of Fame
-  if (stars >= 40000) {
+  // Hall of Fame (Super high stars)
+  if (stars >= 30000) {
     categories.push('hall-of-fame');
   }
 
@@ -91,7 +72,8 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
     'copilot', 'cursor', 'claude', 'openai', 'anthropic', 'gemini',
     'mcp', 'model-context', 'swe-agent', 'coding-agent', 'devin',
     'autogen', 'crewai', 'metagpt', 'agentic', 'multi-agent',
-    'prompt', 'chatbot', 'transformer', 'fine-tun', 'lora',
+    'prompt', 'chatbot', 'transformer', 'fine-tun', 'lora', 'red-teaming',
+    'ai-security', 'guardrail', 'jailbreak',
   ];
   const hasAi = lowerTopics.some(t => aiKeywords.some(k => t.includes(k))) ||
                 aiKeywords.some(k => lowerDesc.includes(k));
@@ -105,8 +87,8 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
     'gitops', 'ci-cd', 'ci/cd', 'iac', 'cloud-native', 'ebpf', 'container',
     'crossplane', 'cilium', 'argo', 'flux', 'pulumi', 'harness',
     'backstage', 'platform-engineer', 'internal-developer', 'service-mesh',
-    'envoy', 'istio', 'linkerd', 'kustomize', 'opentofu',
-    'sre', 'reliability', 'incident', 'on-call', 'runbook',
+    'envoy', 'istio', 'linkerd', 'kustomize', 'opentofu', 'kong', 'netdata',
+    'sre', 'reliability', 'incident', 'on-call', 'runbook', 'sysadmin',
   ];
   const hasDevops = lowerTopics.some(t => devopsKeywords.some(k => t.includes(k))) ||
                     devopsKeywords.some(k => lowerDesc.includes(k));
@@ -148,41 +130,102 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
   return categories;
 }
 
-// ====== VELOCITY SCORING ======
-export function calculateVelocity(stars: number, createdAt: string, updatedAt: string): { score: number; label: RepoItem['velocityLabel'] } {
-  const created = new Date(createdAt).getTime();
-  const updated = new Date(updatedAt).getTime();
+// ====== ACCURATE VELOCITY & ATTENTION SCORING ======
+export function calculateVelocity(
+  stars: number,
+  createdAt?: string,
+  updatedAt?: string,
+  extraSignals?: {
+    isTrendingToday?: boolean;
+    isTrendingWeekly?: boolean;
+    hnTopScore?: number;
+    devtoReactions?: number;
+  }
+): { score: number; label: RepoItem['velocityLabel']; growthText?: string } {
   const now = Date.now();
+  const created = createdAt ? new Date(createdAt).getTime() : 0;
+  const updated = updatedAt ? new Date(updatedAt).getTime() : now;
   
-  const ageDays = Math.max(1, (now - created) / (1000 * 60 * 60 * 24));
-  const recentActivityDays = Math.max(0, (now - updated) / (1000 * 60 * 60 * 24));
+  // Calculate exact age in days
+  const ageDays = created > 0 ? Math.max(1, (now - created) / (1000 * 60 * 60 * 24)) : 1000;
+  const daysSinceUpdate = Math.max(0, (now - updated) / (1000 * 60 * 60 * 24));
   
   const starsPerDay = stars / ageDays;
-  
-  let score = Math.min(99, Math.round(starsPerDay * 5));
-  if (stars >= 50000) score = Math.max(score, 92);
-  
-  let label: RepoItem['velocityLabel'] = 'TOP RATED';
-  if (starsPerDay > 15 && ageDays < 365) {
-    label = 'EXPLOSIVE';
-    score = Math.max(score, 96);
-  } else if (starsPerDay > 5 || recentActivityDays < 3) {
-    label = 'HOT RISING';
-    score = Math.max(score, 90);
-  } else if (stars > 25000) {
-    label = 'CLASSIC';
+
+  // 1. CLASSIC FIRST: Proven standards in the industry
+  // Repos >= 2 years old with >= 15k stars OR >= 3 years old with >= 10k stars OR >= 30k stars
+  const isClassicStandard = (ageDays >= 730 && stars >= 15000) || (ageDays >= 1095 && stars >= 10000) || (stars >= 30000 && ageDays >= 500);
+
+  if (isClassicStandard) {
+    // If a classic repo released an active update in the last 48h
+    if (daysSinceUpdate <= 2 && (extraSignals?.hnTopScore || 0) > 30) {
+      return {
+        score: 95,
+        label: 'BIG UPDATE',
+        growthText: 'Active Major Update',
+      };
+    }
+    return {
+      score: Math.min(95, 75 + Math.round(stars / 10000)),
+      label: 'CLASSIC',
+      growthText: 'Proven Standard',
+    };
   }
 
-  return { score, label };
+  // 2. EXPLOSIVE: Maximum FOMO / Breakout Stars
+  // On GitHub Trending Daily OR (< 1 year old with > 15 stars/day) OR (< 90 days with > 800 stars)
+  if (
+    extraSignals?.isTrendingToday ||
+    (ageDays <= 365 && starsPerDay >= 15) ||
+    (ageDays <= 90 && stars >= 800) ||
+    (extraSignals?.hnTopScore && extraSignals.hnTopScore >= 120)
+  ) {
+    return {
+      score: 99,
+      label: 'EXPLOSIVE',
+      growthText: extraSignals?.isTrendingToday
+        ? 'Trending #1 Today'
+        : `+${Math.max(15, Math.round(starsPerDay))} stars/day • Breakout`,
+    };
+  }
+
+  // 3. COMMUNITY PICK: Viral on Hacker News or Dev.to
+  if (
+    (extraSignals?.hnTopScore && extraSignals.hnTopScore >= 40) ||
+    (extraSignals?.devtoReactions && extraSignals.devtoReactions >= 20)
+  ) {
+    return {
+      score: 92,
+      label: 'COMMUNITY PICK',
+      growthText: extraSignals?.hnTopScore
+        ? `${extraSignals.hnTopScore} pts on Hacker News`
+        : 'Featured on Dev.to',
+    };
+  }
+
+  // 4. HOT RISING: Young projects (1-2 years) with strong momentum
+  if (ageDays <= 730 && starsPerDay >= 4) {
+    return {
+      score: Math.min(94, 82 + Math.round(starsPerDay * 2)),
+      label: 'HOT RISING',
+      growthText: `+${Math.round(starsPerDay)} stars/day`,
+    };
+  }
+
+  // 5. TOP RATED: Solid high-quality tools
+  return {
+    score: Math.min(88, 65 + Math.round(stars / 5000)),
+    label: 'TOP RATED',
+    growthText: `${Math.round(stars / 1000)}k stars`,
+  };
 }
 
-// ====== GITHUB SEARCH API FETCHER (Expanded) ======
+// ====== GITHUB SEARCH API FETCHER ======
 export async function fetchGitHubSearchRepos(headers: Record<string, string>): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
   const token = !!headers['Authorization'];
 
-  // Without token: limit queries to avoid rate limits
-  const queries = token ? SEARCH_QUERIES : SEARCH_QUERIES.slice(0, 8);
+  const queries = token ? SEARCH_QUERIES : SEARCH_QUERIES.slice(0, 10);
 
   for (const query of queries) {
     try {
@@ -191,7 +234,6 @@ export async function fetchGitHubSearchRepos(headers: Record<string, string>): P
 
       if (!res.ok) {
         console.warn(`GitHub Search API for "${query}" returned ${res.status}`);
-        // If rate limited, stop making more requests
         if (res.status === 403 || res.status === 429) break;
         continue;
       }
@@ -204,7 +246,12 @@ export async function fetchGitHubSearchRepos(headers: Record<string, string>): P
             url: item.html_url,
             description: item.description || '',
             stars: item.stargazers_count,
+            forks: item.forks_count,
+            openIssues: item.open_issues_count,
             language: item.language || undefined,
+            topics: item.topics || [],
+            createdAt: item.created_at,
+            updatedAt: item.updated_at,
             source: 'github-search',
           });
         }
