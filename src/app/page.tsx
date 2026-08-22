@@ -8,10 +8,14 @@ import { Leaderboard } from '@/components/Leaderboard';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
+import { Pagination } from '@/components/Pagination';
 
 export default function Home() {
   const [repos, setRepos] = useState<RepoItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 15;
+
   const [stats, setStats] = useState<ReposApiResponse['stats']>({
     totalRepos: 0,
     totalStars: 0,
@@ -57,6 +61,11 @@ export default function Home() {
     }
   }, [activeCategory, searchQuery, sortBy]);
 
+  // Reset to page 1 on filter/search changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeCategory, searchQuery, sortBy]);
+
   useEffect(() => {
     fetchRepos();
   }, [fetchRepos]);
@@ -68,6 +77,13 @@ export default function Home() {
     }, 180000);
     return () => clearInterval(interval);
   }, [fetchRepos]);
+
+  // Pagination calculation
+  const totalPages = Math.ceil(repos.length / itemsPerPage) || 1;
+  const paginatedRepos = repos.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="min-h-screen flex flex-col justify-between font-sans">
@@ -105,8 +121,8 @@ export default function Home() {
           onSortByChange={setSortBy}
         />
 
-        {/* Repositories Feed List */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        {/* Repositories Feed List with Target ID for Smooth Scroll */}
+        <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
           
           {/* Loading Skeleton */}
           {loading && (
@@ -128,16 +144,27 @@ export default function Home() {
             </div>
           )}
 
-          {/* Repositories Feed */}
-          {!loading && repos.length > 0 && (
+          {/* Paginated Repositories Feed */}
+          {!loading && paginatedRepos.length > 0 && (
             <div className="space-y-4">
-              {repos.map((repo) => (
+              {paginatedRepos.map((repo) => (
                 <RepoCard
                   key={repo.id}
                   repo={repo}
                 />
               ))}
             </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!loading && repos.length > itemsPerPage && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={repos.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
           )}
 
           {/* Empty State */}
