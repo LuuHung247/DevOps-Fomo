@@ -20,14 +20,14 @@ export const Header: React.FC<HeaderProps> = ({ totalRepos, totalStars }) => {
         
         {/* Brand Logo */}
         <a href="/" className="flex items-center space-x-1.5">
-          <span className="font-extrabold text-lg sm:text-xl tracking-tight text-white font-mono">
+          <span className="font-extrabold text-base sm:text-xl tracking-tight text-white font-mono">
             DevOps<span className="text-amber-400">-FOMO</span>
           </span>
         </a>
 
         {/* Right Info & GitHub Link */}
-        <div className="flex items-center space-x-3 font-mono text-xs">
-          <div className="text-slate-400 hidden sm:block">
+        <div className="flex items-center space-x-2.5 sm:space-x-3 font-mono text-xs">
+          <div className="text-slate-400 text-[11px] sm:text-xs">
             <span className="text-white font-bold">{totalRepos}</span> repos • <span className="text-amber-300 font-bold">{formatStars(totalStars)}</span> stars
           </div>
 
@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ totalRepos, totalStars }) => {
             href="https://github.com/LuuHung247/DevOps-Fomo"
             target="_blank"
             rel="noreferrer"
-            className="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700 transition-colors font-semibold"
+            className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700 transition-colors font-semibold text-xs"
           >
             GitHub
           </a>
