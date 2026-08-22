@@ -33,20 +33,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   }, [onSearchChange]);
 
   return (
-    <section className="relative pt-5 pb-3 sm:pt-7 sm:pb-4 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
+    <section className="relative pt-6 pb-2 sm:pt-8 sm:pb-3 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
       
-      {/* Small Radar Status */}
-      <div className="inline-flex items-center space-x-2 px-3 py-1 rounded text-[10px] sm:text-xs font-mono font-bold bg-slate-900 border border-emerald-500/40 text-emerald-400 mb-3 shadow-sm">
-        <span>⚡ AI & DEVOPS RADAR • LIVE CURATION</span>
-      </div>
-
-      {/* Main Tagline & Headline */}
+      {/* Main Headline */}
       <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-2 font-sans leading-tight">
-        Tôi <span className="text-amber-400">FOMO</span> để bạn không cần phải FOMO
+        We track the hype <span className="text-emerald-400">so you don't have to</span>
       </h1>
 
       <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto mb-4 leading-relaxed font-normal">
-        Sàng lọc hàng triệu tín hiệu từ GitHub Trending, Hacker News và cộng đồng Tech để chỉ giữ lại những hiện tượng bùng nổ thực sự.
+        Real-time intelligence filtering GitHub trending, Hacker News, and developer signals down to what actually matters.
       </p>
 
       {/* Search Input Box */}

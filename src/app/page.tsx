@@ -12,7 +12,6 @@ import { RepoCard } from '@/components/RepoCard';
 export default function Home() {
   const [repos, setRepos] = useState<RepoItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState<ReposApiResponse['stats']>({
     totalRepos: 0,
     totalStars: 0,
@@ -34,7 +33,6 @@ export default function Home() {
   // Fetch repositories from API
   const fetchRepos = useCallback(async (isBackground = false) => {
     if (!isBackground) setLoading(true);
-    else setRefreshing(true);
 
     try {
       const params = new URLSearchParams();
@@ -55,8 +53,7 @@ export default function Home() {
     } catch (error) {
       console.error('Error fetching repositories:', error);
     } finally {
-      setLoading(false);
-      setRefreshing(false);
+      if (!isBackground) setLoading(false);
     }
   }, [activeCategory, searchQuery, sortBy]);
 
@@ -64,7 +61,7 @@ export default function Home() {
     fetchRepos();
   }, [fetchRepos]);
 
-  // Scheduled background sync every 3 minutes for real-time fresh intelligence
+  // Scheduled background sync every 3 minutes silently
   useEffect(() => {
     const interval = setInterval(() => {
       fetchRepos(true);
@@ -89,7 +86,7 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
-        {/* Explosive FOMO Leaderboard */}
+        {/* Explosive Breakout Leaderboard */}
         {!searchQuery && (
           <Leaderboard repos={repos} />
         )}
@@ -106,11 +103,9 @@ export default function Home() {
         <FilterBar
           sortBy={sortBy}
           onSortByChange={setSortBy}
-          onRefresh={() => fetchRepos(true)}
-          isRefreshing={refreshing}
         />
 
-        {/* Repositories Single Clean Feed List */}
+        {/* Repositories Feed List */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           
           {/* Loading Skeleton */}
@@ -173,7 +168,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-slate-200">DevOps-FOMO</span>
-            <span> • "Tôi FOMO để bạn không cần phải FOMO"</span>
+            <span> • We track the hype so you don't have to</span>
           </div>
           <p className="text-slate-400">
             Powered by Next.js and Multi-Source Intelligence.
