@@ -4,6 +4,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { RepoItem, CategoryId, ReposApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/HeroSection';
+import { Leaderboard } from '@/components/Leaderboard';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
@@ -11,6 +12,7 @@ import { RepoCard } from '@/components/RepoCard';
 export default function Home() {
   const [repos, setRepos] = useState<RepoItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState<ReposApiResponse['stats']>({
     totalRepos: 0,
     totalStars: 0,
@@ -21,19 +23,19 @@ export default function Home() {
       'devops-infra': 0,
       mlops: 0,
       architecture: 0,
-      'hall-of-fame': 0,
     },
   });
 
-  // Default to TRENDING & RISING with VELOCITY sort for instant FOMO experience!
+  // Default to TRENDING & RISING with VELOCITY sort
   const [activeCategory, setActiveCategory] = useState<CategoryId | 'all'>('trending');
   const [searchQuery, setSearchQuery] = useState('');
-  const [minStars, setMinStars] = useState(0);
   const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('velocity');
 
   // Fetch repositories from API
-  const fetchRepos = useCallback(async () => {
-    setLoading(true);
+  const fetchRepos = useCallback(async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
+    else setRefreshing(true);
+
     try {
       const params = new URLSearchParams();
       if (activeCategory !== 'all') {
@@ -41,9 +43,6 @@ export default function Home() {
       }
       if (searchQuery.trim()) {
         params.append('search', searchQuery.trim());
-      }
-      if (minStars > 0) {
-        params.append('minStars', minStars.toString());
       }
       params.append('sortBy', sortBy);
 
@@ -57,11 +56,20 @@ export default function Home() {
       console.error('Error fetching repositories:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  }, [activeCategory, searchQuery, minStars, sortBy]);
+  }, [activeCategory, searchQuery, sortBy]);
 
   useEffect(() => {
     fetchRepos();
+  }, [fetchRepos]);
+
+  // Scheduled background sync every 3 minutes for real-time fresh intelligence
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchRepos(true);
+    }, 180000);
+    return () => clearInterval(interval);
   }, [fetchRepos]);
 
   return (
@@ -81,6 +89,11 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
+        {/* Explosive FOMO Leaderboard */}
+        {!searchQuery && (
+          <Leaderboard repos={repos} />
+        )}
+
         {/* Category Navigation Tabs */}
         <CategoryNav
           activeCategory={activeCategory}
@@ -91,10 +104,10 @@ export default function Home() {
 
         {/* Filter Controls Bar */}
         <FilterBar
-          minStars={minStars}
-          onMinStarsChange={setMinStars}
           sortBy={sortBy}
           onSortByChange={setSortBy}
+          onRefresh={() => fetchRepos(true)}
+          isRefreshing={refreshing}
         />
 
         {/* Repositories Single Clean Feed List */}
@@ -137,12 +150,11 @@ export default function Home() {
             <div className="rounded-2xl p-12 text-center my-12 bg-slate-900 border border-slate-800 font-mono">
               <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
               <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                No repositories matched your active search or star filter criteria.
+                No repositories matched your active search or category criteria.
               </p>
               <button
                 onClick={() => {
                   setSearchQuery('');
-                  setMinStars(0);
                   setActiveCategory('trending');
                   setSortBy('velocity');
                 }}
@@ -161,7 +173,7 @@ export default function Home() {
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-slate-200">DevOps-FOMO</span>
-            <span> • Verified AI & DevOps Radar</span>
+            <span> • "Tôi FOMO để bạn không cần phải FOMO"</span>
           </div>
           <p className="text-slate-400">
             Powered by Next.js and Multi-Source Intelligence.

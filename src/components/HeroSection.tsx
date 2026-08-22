@@ -33,20 +33,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   }, [onSearchChange]);
 
   return (
-    <section className="relative pt-4 pb-2 sm:pt-6 sm:pb-3 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
+    <section className="relative pt-5 pb-3 sm:pt-7 sm:pb-4 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
       
       {/* Small Radar Status */}
-      <div className="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900 border border-emerald-500/30 text-emerald-400 mb-2.5">
-        <span>AI & DEVOPS RADAR • COMMUNITY PHENOMENA</span>
+      <div className="inline-flex items-center space-x-2 px-3 py-1 rounded text-[10px] sm:text-xs font-mono font-bold bg-slate-900 border border-emerald-500/40 text-emerald-400 mb-3 shadow-sm">
+        <span>⚡ AI & DEVOPS RADAR • LIVE CURATION</span>
       </div>
 
-      {/* Headline */}
-      <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-2 font-sans leading-tight">
-        Discover Breakout <span className="text-emerald-400">AI & DevOps</span> Repositories
+      {/* Main Tagline & Headline */}
+      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-2 font-sans leading-tight">
+        Tôi <span className="text-amber-400">FOMO</span> để bạn không cần phải FOMO
       </h1>
 
-      <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto mb-4 leading-relaxed">
-        Real-time intelligence tracking verified viral breakout repos, community-validated tools, and major ecosystem updates.
+      <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto mb-4 leading-relaxed font-normal">
+        Sàng lọc hàng triệu tín hiệu từ GitHub Trending, Hacker News và cộng đồng Tech để chỉ giữ lại những hiện tượng bùng nổ thực sự.
       </p>
 
       {/* Search Input Box */}
@@ -78,7 +78,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         {/* Counter Info */}
         <div className="flex justify-between items-center px-2 mt-2 text-[11px] text-slate-400 font-mono">
           <span>
-            FEED: <strong className="text-emerald-300">{filteredCount}</strong> OF <strong className="text-slate-300">{totalCount}</strong> REPOSITORIES
+            SHOWING: <strong className="text-emerald-300">{filteredCount}</strong> OF <strong className="text-slate-300">{totalCount}</strong> REPOSITORIES
           </span>
           {searchQuery && (
             <span>

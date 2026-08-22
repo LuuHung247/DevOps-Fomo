@@ -3,8 +3,7 @@ export type CategoryId =
   | 'agentic-ai'
   | 'devops-infra'
   | 'mlops'
-  | 'architecture'
-  | 'hall-of-fame';
+  | 'architecture';
 
 export interface SocialSignals {
   hnMentions?: number;
@@ -74,8 +73,6 @@ export interface CategoryMeta {
 export interface FilterOptions {
   search: string;
   category: CategoryId;
-  minStars: number;
-  timeRange?: 'today' | 'week' | 'month' | 'all';
   sortBy: 'velocity' | 'stars' | 'updated';
 }
 

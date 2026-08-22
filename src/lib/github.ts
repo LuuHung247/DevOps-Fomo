@@ -60,11 +60,6 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
   const lowerDesc = (desc || '').toLowerCase();
   const lowerTopics = (topics || []).map(t => t.toLowerCase());
 
-  // Hall of Fame (Super high stars)
-  if (stars >= 30000) {
-    categories.push('hall-of-fame');
-  }
-
   // Agentic AI & AI
   const aiKeywords = [
     'ai', 'agent', 'llm', 'autonomous', 'gpt', 'rag', 'langchain', 'langgraph',

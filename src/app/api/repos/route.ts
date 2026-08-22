@@ -45,7 +45,6 @@ export async function GET(request: NextRequest) {
       'devops-infra': repos.filter(r => r.categories.includes('devops-infra')).length,
       'mlops': repos.filter(r => r.categories.includes('mlops')).length,
       'architecture': repos.filter(r => r.categories.includes('architecture')).length,
-      'hall-of-fame': repos.filter(r => r.categories.includes('hall-of-fame') || r.stars >= 30000).length,
     };
 
     // Filter by category
@@ -53,8 +52,6 @@ export async function GET(request: NextRequest) {
     if (category !== 'all') {
       if (category === 'trending') {
         filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK');
-      } else if (category === 'hall-of-fame') {
-        filtered = filtered.filter(r => r.categories.includes('hall-of-fame') || r.stars >= 30000);
       } else {
         filtered = filtered.filter(r => r.categories.includes(category));
       }

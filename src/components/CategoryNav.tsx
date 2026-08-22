@@ -22,13 +22,12 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
   totalCount,
 }) => {
   const tabs: TabDef[] = [
+    { id: 'trending', name: '🔥 Trending & Rising' },
     { id: 'all', name: 'All Ecosystem' },
-    { id: 'trending', name: 'Trending & Rising' },
     { id: 'agentic-ai', name: 'Agentic AI & LLMs' },
     { id: 'devops-infra', name: 'DevOps & Cloud-Native' },
     { id: 'mlops', name: 'MLOps & LLMOps' },
     { id: 'architecture', name: 'Architecture & Design' },
-    { id: 'hall-of-fame', name: 'Hall of Fame (30k+ Stars)' },
   ];
 
   const getCount = (id: CategoryId | 'all') => {
