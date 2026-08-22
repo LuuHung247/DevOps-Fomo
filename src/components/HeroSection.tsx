@@ -36,13 +36,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     <section className="relative pt-6 pb-2 sm:pt-8 sm:pb-3 px-4 sm:px-6 max-w-4xl mx-auto text-center font-sans">
       
       {/* Main Headline */}
-      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-2 font-sans leading-tight">
+      <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white mb-4 font-sans leading-tight">
         We track the hype <span className="text-emerald-400">so you don't have to</span>
       </h1>
-
-      <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto mb-4 leading-relaxed font-normal">
-        Real-time intelligence filtering GitHub trending, Hacker News, and developer signals down to what actually matters.
-      </p>
 
       {/* Search Input Box */}
       <div className="relative max-w-xl mx-auto font-sans">
@@ -52,7 +48,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Search repository, author, or keyword... (Press '/' to focus)"
+            placeholder="Search repository, owner, or topic... (Press '/' to focus)"
             className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 text-white placeholder-slate-400 text-xs sm:text-sm border border-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-mono"
           />
           {searchQuery && (

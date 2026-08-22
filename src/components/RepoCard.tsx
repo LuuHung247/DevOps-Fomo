@@ -114,7 +114,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
             
             {repo.velocityLabel && (
               <span className={`rounded ${getTagClass(repo.velocityLabel)}`}>
-                [{repo.velocityLabel === 'EXPLOSIVE' ? 'EXPLOSIVE FOMO' : repo.velocityLabel}]
+                [{repo.velocityLabel === 'EXPLOSIVE' ? 'VIRAL BREAKOUT' : repo.velocityLabel}]
               </span>
             )}
 

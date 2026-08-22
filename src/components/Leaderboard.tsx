@@ -40,11 +40,11 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ repos }) => {
             <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
           </span>
           <h2 className="font-mono text-xs sm:text-sm font-extrabold tracking-wider text-white uppercase">
-            🔥 FOMO Leaderboard • Breakout Phenomena
+            🔥 BREAKOUT LEADERBOARD
           </h2>
         </div>
         <span className="text-[11px] font-mono text-amber-400 font-semibold hidden sm:inline">
-          Top Verified Viral Trends
+          Today's Top Viral Tools
         </span>
       </div>
 
@@ -91,8 +91,8 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ repos }) => {
                       >
                         {repo.fullName}
                       </a>
-                      <span className="fomo-flame-tag px-1.5 py-0.2 rounded text-[9px] font-mono uppercase">
-                        FOMO
+                      <span className="fomo-flame-tag px-1.5 py-0.2 rounded text-[9px] font-mono uppercase font-bold">
+                        BREAKOUT
                       </span>
                     </div>
 
