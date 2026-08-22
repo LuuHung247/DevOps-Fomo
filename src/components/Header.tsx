@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { Flame, Sparkles, RefreshCw, Star, Github, Bookmark, Download, Radio } from 'lucide-react';
 
 interface HeaderProps {
   totalRepos: number;
@@ -33,92 +32,60 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full hud-panel border-b border-slate-800/80 transition-all">
+    <header className="sticky top-0 z-40 w-full bg-slate-950/90 backdrop-blur-md border-b border-slate-800 transition-all font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Brand Logo */}
-        <div className="flex items-center space-x-3.5">
-          <div className="relative group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 via-teal-500 to-amber-500 p-0.5 shadow-lg shadow-emerald-500/20">
-              <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Flame className="w-5 h-5 text-amber-400 animate-pulse" />
-              </div>
-            </div>
-            <span className="absolute -top-1 -right-1 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+        {/* Brand Logo & Status */}
+        <div className="flex items-center space-x-3">
+          <a href="/" className="flex items-center space-x-2">
+            <span className="font-extrabold text-lg tracking-tight text-white font-mono">
+              DevOps<span className="text-amber-400">-FOMO</span>
             </span>
-          </div>
-
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent font-sans">
-                DevOps<span className="text-amber-400 font-mono">-FOMO</span>
-              </span>
-              <span className="hidden sm:inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-mono">
-                <Radio className="w-2.5 h-2.5 text-emerald-400 animate-pulse" />
-                <span>RADAR ONLINE</span>
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 hidden sm:block">
-              AI & DevOps Verified Tech Intelligence
-            </p>
-          </div>
+          </a>
+          <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            RADAR ONLINE
+          </span>
         </div>
 
         {/* Live Counters */}
-        <div className="hidden lg:flex items-center space-x-4 text-xs">
-          <div className="flex items-center space-x-2 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-800">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="text-slate-300">Tracked: <strong className="text-white font-mono">{totalRepos}</strong> repos</span>
+        <div className="hidden lg:flex items-center space-x-3 text-xs font-mono">
+          <div className="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
+            TRACKED: <strong className="text-white font-bold">{totalRepos}</strong>
           </div>
-          <div className="flex items-center space-x-2 bg-slate-900/80 px-3 py-1.5 rounded-xl border border-slate-800">
-            <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-            <span className="text-slate-300">Aggregated: <strong className="text-amber-300 font-mono">{formatStars(totalStars)}</strong> stars</span>
+          <div className="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
+            TOTAL STARS: <strong className="text-amber-300 font-bold">{formatStars(totalStars)}</strong>
           </div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
-          
-          {/* Export Catalog Button */}
+        <div className="flex items-center space-x-2">
+          {/* Export Button */}
           <button
             onClick={onOpenExport}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors shadow-sm"
-            title="Export repository catalog"
+            className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 transition-colors"
           >
-            <Download className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="hidden md:inline">Export</span>
+            Export
           </button>
 
-          {/* Favorites Filter Button */}
+          {/* Bookmarks Toggle */}
           <button
             onClick={onToggleFavorites}
-            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all ${
               showFavoritesOnly
-                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-md shadow-amber-500/20'
-                : 'bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/50 shadow-sm'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700'
             }`}
-            title="View bookmarked repos"
           >
-            <Bookmark className={`w-3.5 h-3.5 ${showFavoritesOnly ? 'fill-amber-400 text-amber-400' : 'text-slate-400'}`} />
-            <span className="hidden sm:inline">Bookmarks</span>
-            {favoritesCount > 0 && (
-              <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500/30 text-amber-300 font-mono font-bold">
-                {favoritesCount}
-              </span>
-            )}
+            Bookmarks {favoritesCount > 0 && `(${favoritesCount})`}
           </button>
 
-          {/* Sync / Refresh Button */}
+          {/* Sync Button */}
           <button
             onClick={onRefresh}
             disabled={isRefreshing}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 hover:text-white transition-all disabled:opacity-50"
-            title="Live refresh repository data"
+            className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all disabled:opacity-50"
           >
-            <RefreshCw className={`w-3.5 h-3.5 text-emerald-400 ${isRefreshing ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">{isRefreshing ? 'Syncing...' : 'Sync'}</span>
+            {isRefreshing ? 'Syncing...' : 'Sync'}
           </button>
 
           {/* GitHub Link */}
@@ -126,10 +93,9 @@ export const Header: React.FC<HeaderProps> = ({
             href="https://github.com/LuuHung247/DevOps-Fomo"
             target="_blank"
             rel="noreferrer"
-            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-            title="View on GitHub"
+            className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-colors hidden sm:inline-block"
           >
-            <Github className="w-4 h-4" />
+            GitHub
           </a>
         </div>
       </div>

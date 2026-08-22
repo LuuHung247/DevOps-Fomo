@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     const totalStars = repos.reduce((acc, r) => acc + r.stars, 0);
     
     const categoryCounts: Record<CategoryId, number> = {
-      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === '⚡ Explosive' || r.velocityLabel === '🔥 Hot Rising').length,
+      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING').length,
       'agentic-ai': repos.filter(r => r.categories.includes('agentic-ai')).length,
       'devops-infra': repos.filter(r => r.categories.includes('devops-infra')).length,
       'mlops': repos.filter(r => r.categories.includes('mlops')).length,
@@ -55,7 +55,7 @@ export async function GET(request: NextRequest) {
     let filtered = repos;
     if (category !== 'all' && category !== 'favorites') {
       if (category === 'trending') {
-        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === '⚡ Explosive' || r.velocityLabel === '🔥 Hot Rising');
+        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING');
       } else if (category === 'hall-of-fame') {
         filtered = filtered.filter(r => r.categories.includes('hall-of-fame') || r.stars >= 30000);
       } else {
@@ -79,8 +79,7 @@ export async function GET(request: NextRequest) {
         r.fullName.toLowerCase().includes(search) ||
         r.description.toLowerCase().includes(search) ||
         r.topics.some(t => t.toLowerCase().includes(search)) ||
-        (r.language && r.language.toLowerCase().includes(search)) ||
-        (r.aiSummary?.tagline && r.aiSummary.tagline.toLowerCase().includes(search))
+        (r.language && r.language.toLowerCase().includes(search))
       );
     }
 

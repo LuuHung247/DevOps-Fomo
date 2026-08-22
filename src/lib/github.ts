@@ -96,15 +96,15 @@ export function calculateVelocity(stars: number, createdAt: string, updatedAt: s
   let score = Math.min(99, Math.round(starsPerDay * 5));
   if (stars >= 50000) score = Math.max(score, 92);
   
-  let label: RepoItem['velocityLabel'] = '⭐ Top Rated';
+  let label: RepoItem['velocityLabel'] = 'TOP RATED';
   if (starsPerDay > 15 && ageDays < 365) {
-    label = '⚡ Explosive';
+    label = 'EXPLOSIVE';
     score = Math.max(score, 96);
   } else if (starsPerDay > 5 || recentActivityDays < 3) {
-    label = '🔥 Hot Rising';
+    label = 'HOT RISING';
     score = Math.max(score, 90);
   } else if (stars > 25000) {
-    label = '💎 Battle-Tested';
+    label = 'BATTLE-TESTED';
   }
 
   return { score, label };
@@ -147,7 +147,7 @@ export async function fetchLiveRepositories(): Promise<RepoItem[]> {
           const categories = determineCategories(item.topics || [], item.description || '', item.stargazers_count);
           const velocity = calculateVelocity(item.stargazers_count, item.created_at, item.updated_at);
           
-          if (velocity.label === '⚡ Explosive' || velocity.label === '🔥 Hot Rising') {
+          if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING') {
             if (!categories.includes('trending')) {
               categories.push('trending');
             }
@@ -175,12 +175,6 @@ export async function fetchLiveRepositories(): Promise<RepoItem[]> {
             isVerified: existing?.isVerified || item.stargazers_count > 5000,
             velocityScore: velocity.score,
             velocityLabel: velocity.label,
-            aiSummary: existing?.aiSummary || {
-              tagline: `Community-driven ${item.language || 'software'} project for modern developers.`,
-              whyUseful: `Widely adopted with ${item.stargazers_count.toLocaleString()} stars across the developer and DevOps ecosystem.`,
-              targetAudience: ['DevOps Engineers', 'Developers', 'Architects'],
-              topFeatures: item.topics.slice(0, 3).map(t => t.replace(/-/g, ' '))
-            }
           };
 
           fetchedMap.set(key, repoItem);
@@ -192,6 +186,5 @@ export async function fetchLiveRepositories(): Promise<RepoItem[]> {
   }
 
   const allRepos = Array.from(fetchedMap.values());
-  // Sort primarily by stars descending
   return allRepos.sort((a, b) => b.stars - a.stars);
 }

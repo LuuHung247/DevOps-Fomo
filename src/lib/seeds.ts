@@ -21,13 +21,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 98,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The #1 definitive guide to large-scale distributed system design.',
-      whyUseful: 'Provides battle-tested architecture patterns, scaling blueprints (CDN, load balancers, caching, microservices), and real-world system designs (Twitter, Pastebin, Uber).',
-      targetAudience: ['DevOps Engineers', 'Solutions Architects', 'Staff Engineers'],
-      topFeatures: ['Anki Flashcard decks', 'Step-by-step design exercises', 'Scalability trade-off comparisons']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'kamranahmedse/developer-roadmap',
@@ -48,13 +42,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 95,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'Community-standard visual roadmaps for DevOps, AI Engineers, and Cloud practitioners.',
-      whyUseful: 'Maps out modern skills, tooling prerequisites, and best practice pathways for engineers navigating rapid tech shifts.',
-      targetAudience: ['DevOps Learners', 'AI Engineers', 'Tech Leads'],
-      topFeatures: ['DevOps Roadmap', 'AI Engineer Path', 'Interactive skill assessments']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'bregman-arie/devops-exercises',
@@ -75,13 +63,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'Comprehensive question bank and practical scenarios for DevOps & SRE.',
-      whyUseful: 'Deep dive into practical troubleshooting, cloud infrastructure setups, and core DevOps domain mastery.',
-      targetAudience: ['SREs', 'Cloud Engineers', 'Interview Candidates'],
-      topFeatures: ['2,500+ technical exercises', 'Multi-tool coverage', 'Architecture Q&As']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'kelseyhightower/kubernetes-the-hard-way',
@@ -102,13 +84,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra'],
     isVerified: true,
     velocityScore: 88,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The gold standard for understanding Kubernetes control plane internals from scratch.',
-      whyUseful: 'Teaches TLS certificate management, etcd clustering, network overlays, and kubelet configuration without abstract magic.',
-      targetAudience: ['Kubernetes Admins', 'Platform Engineers', 'DevOps Architects'],
-      topFeatures: ['Manual control-plane setup', 'CA & TLS provisioning', 'Zero black-box tooling']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'trimstray/the-book-of-secret-knowledge',
@@ -129,13 +105,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The ultimate survival guide and CLI toolbox for DevOps and Security professionals.',
-      whyUseful: 'Aggregates obscure one-liners, network debugging tricks, kernel tuning cheatsheets, and DevSecOps tools.',
-      targetAudience: ['Sysadmins', 'DevSecOps', 'SREs'],
-      topFeatures: ['CLI one-liners', 'Networking debugging guides', 'Security auditing tools']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
 
   // --- Agentic AI & AI Engineers ---
@@ -158,13 +128,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'mlops', 'hall-of-fame', 'trending'],
     isVerified: true,
     velocityScore: 99,
-    velocityLabel: '⚡ Explosive',
-    aiSummary: {
-      tagline: 'The standard runtime for running local LLMs with one command and OpenAI-compatible API.',
-      whyUseful: 'Allows DevOps and developers to deploy, package, and orchestrate private local models with minimal resource footprint.',
-      targetAudience: ['AI Engineers', 'DevOps Engineers', 'Local AI enthusiasts'],
-      topFeatures: ['Modelfile configuration', 'OpenAI API compatible', 'GPU acceleration (NVIDIA/Metal/ROCm)']
-    }
+    velocityLabel: 'EXPLOSIVE',
   },
   {
     id: 'vllm-project/vllm',
@@ -185,13 +149,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'mlops', 'trending'],
     isVerified: true,
     velocityScore: 96,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'Industry-standard production LLM serving engine powered by PagedAttention.',
-      whyUseful: 'Dramatically cuts GPU VRAM usage and skyrockets serving throughput (2x-4x vs naive servers) for enterprise AI pipelines.',
-      targetAudience: ['MLOps Engineers', 'Cloud Infrastructure Leads', 'AI Platform Teams'],
-      topFeatures: ['PagedAttention memory management', 'Continuous batching', 'Multi-GPU Tensor Parallelism']
-    }
+    velocityLabel: 'HOT RISING',
   },
   {
     id: 'crewAIInc/crewAI',
@@ -212,13 +170,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'trending'],
     isVerified: true,
     velocityScore: 94,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'Role-based multi-agent orchestration framework for autonomous task execution.',
-      whyUseful: 'Enables teams of AI agents (e.g. Researcher + Coder + Reviewer) to collaborate sequentially or hierarchically.',
-      targetAudience: ['AI Engineers', 'Automation Developers', 'Product Builders'],
-      topFeatures: ['Role-playing agent crews', 'Delegation & hierarchical workflows', 'Tool integration']
-    }
+    velocityLabel: 'HOT RISING',
   },
   {
     id: 'microsoft/autogen',
@@ -239,13 +191,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 91,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'Microsoft\'s customizable multi-agent framework with code execution sandboxes.',
-      whyUseful: 'Builds self-correcting agent loops with automated code generation, sandboxed execution, and human-in-the-loop controls.',
-      targetAudience: ['AI Researchers', 'Enterprise Developers', 'Platform Builders'],
-      topFeatures: ['Multi-agent conversations', 'Docker sandboxed code runner', 'Human-in-the-loop']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'langchain-ai/langchain',
@@ -253,7 +199,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     name: 'langchain',
     owner: 'langchain-ai',
     ownerAvatar: 'https://avatars.githubusercontent.com/u/126733545?v=4',
-    description: '🦜🔗 Build context-aware reasoning applications with LCEL, LangGraph, and broad ecosystem connectors.',
+    description: 'Build context-aware reasoning applications with LCEL, LangGraph, and broad ecosystem connectors.',
     url: 'https://github.com/langchain-ai/langchain',
     stars: 98000,
     forks: 16000,
@@ -266,13 +212,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'mlops', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The most comprehensive application framework for building LLM and RAG pipelines.',
-      whyUseful: 'Connects hundreds of LLM providers, vector databases, memory stores, and document loaders in a standardized interface.',
-      targetAudience: ['AI Application Developers', 'Full-Stack Engineers'],
-      topFeatures: ['LangGraph stateful agents', 'Rich document splitters/loaders', 'Hundreds of ecosystem integrations']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'All-Hands-AI/OpenHands',
@@ -280,7 +220,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     name: 'OpenHands',
     owner: 'All-Hands-AI',
     ownerAvatar: 'https://avatars.githubusercontent.com/u/166662489?v=4',
-    description: 'OpenHands: Code Less, Make More. An open-source autonomous AI software developer agent.',
+    description: 'OpenHands: Code Less, Make More. An open-source autonomous software developer agent.',
     url: 'https://github.com/All-Hands-AI/OpenHands',
     stars: 44000,
     forks: 5200,
@@ -293,13 +233,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'trending'],
     isVerified: true,
     velocityScore: 97,
-    velocityLabel: '⚡ Explosive',
-    aiSummary: {
-      tagline: 'Open-source autonomous AI software engineer capable of modifying codebases and running tests.',
-      whyUseful: 'Interacts with shells, browsers, and code editors inside a secure container to debug, build, and deploy software autonomously.',
-      targetAudience: ['Developers', 'DevOps Automators', 'AI Researchers'],
-      topFeatures: ['Browser & terminal interaction', 'Secure Docker sandbox', 'SWE-bench validated']
-    }
+    velocityLabel: 'EXPLOSIVE',
   },
 
   // --- DevOps & Cloud-Native Infrastructure ---
@@ -322,13 +256,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 94,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The de facto global standard for container orchestration and cloud-native infrastructure.',
-      whyUseful: 'Powers automated deployment, scaling, rolling updates, self-healing, and service discovery across multi-cloud environments.',
-      targetAudience: ['Platform Engineers', 'DevOps Leads', 'SREs'],
-      topFeatures: ['Declarative API', 'Extensible CRDs & Operators', 'Massive ecosystem']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'argoproj/argo-cd',
@@ -349,13 +277,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 93,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'The leading declarative GitOps continuous delivery tool for Kubernetes.',
-      whyUseful: 'Maintains single source of truth in Git, automated drift detection, rollbacks, and multi-cluster sync with a rich web UI.',
-      targetAudience: ['DevOps Engineers', 'GitOps Practitioners', 'Release Engineers'],
-      topFeatures: ['Automated drift correction', 'SSO & RBAC integration', 'Multi-cluster support']
-    }
+    velocityLabel: 'HOT RISING',
   },
   {
     id: 'hashicorp/terraform',
@@ -376,13 +298,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 89,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The pioneer declarative Infrastructure as Code (IaC) tool for multi-cloud provisioning.',
-      whyUseful: 'Manages complete cloud lifecycles across AWS, GCP, Azure, and Kubernetes via declarative HCL configurations.',
-      targetAudience: ['Cloud Engineers', 'DevOps Architects'],
-      topFeatures: ['State management & locking', 'Execution plan previews', 'Thousands of cloud providers']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'opentofu/opentofu',
@@ -390,7 +306,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     name: 'opentofu',
     owner: 'opentofu',
     ownerAvatar: 'https://avatars.githubusercontent.com/u/144186526?v=4',
-    description: 'OpenTofu is a truly open-source successor to Terraform managed by the Linux Foundation.',
+    description: 'OpenTofu is an open-source successor to Terraform managed by the Linux Foundation.',
     url: 'https://github.com/opentofu/opentofu',
     stars: 24000,
     forks: 1100,
@@ -403,13 +319,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 95,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'Community-driven, open-source Linux Foundation alternative to Terraform.',
-      whyUseful: 'Provides 100% drop-in compatibility with Terraform while adding state encryption, provider mocking, and open governance.',
-      targetAudience: ['DevOps Teams', 'IaC Architects', 'Open-Source Purists'],
-      topFeatures: ['State client-side encryption', 'Drop-in HCL compatibility', 'MPL-2.0 open-source license']
-    }
+    velocityLabel: 'HOT RISING',
   },
   {
     id: 'cilium/cilium',
@@ -430,13 +340,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 94,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'Next-gen eBPF-powered networking, service mesh, and security for Kubernetes.',
-      whyUseful: 'Replaces slow iptables with lightning-fast kernel-level eBPF routing, transparent TLS, L7 network security, and Hubble observability.',
-      targetAudience: ['Platform Engineers', 'DevSecOps', 'Network SREs'],
-      topFeatures: ['Kernel eBPF data path', 'Sidecarless service mesh', 'Hubble visual network map']
-    }
+    velocityLabel: 'HOT RISING',
   },
   {
     id: 'crossplane/crossplane',
@@ -457,13 +361,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: '⭐ Top Rated',
-    aiSummary: {
-      tagline: 'Build internal developer platforms (IDP) with Kubernetes-native custom APIs.',
-      whyUseful: 'Enables platform teams to compose high-level custom cloud resources (e.g. `MyCompanyDatabase`) mapped to AWS/GCP/Azure.',
-      targetAudience: ['Internal Platform Teams', 'DevOps Architects'],
-      topFeatures: ['Declarative compositions', 'CRD-based cloud provisioning', 'Continuous reconciliation']
-    }
+    velocityLabel: 'TOP RATED',
   },
 
   // --- MLOps & LLMOps ---
@@ -486,13 +384,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 91,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'Standard enterprise platform for ML & GenAI experiment tracking and model governance.',
-      whyUseful: 'Tracks prompt engineering runs, fine-tuning hyperparameters, model artifacts, and deploys model endpoints seamlessly.',
-      targetAudience: ['ML Engineers', 'Data Scientists', 'MLOps Architects'],
-      topFeatures: ['GenAI prompt & trace evaluation', 'Model Registry', 'One-click deployment packaging']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'qdrant/qdrant',
@@ -500,7 +392,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     name: 'qdrant',
     owner: 'qdrant',
     ownerAvatar: 'https://avatars.githubusercontent.com/u/74640498?v=4',
-    description: 'Qdrant - High-performance, massive-scale Vector Database and Vector Search Engine for the next generation of AI.',
+    description: 'Qdrant - High-performance, massive-scale Vector Database and Vector Search Engine for AI.',
     url: 'https://github.com/qdrant/qdrant',
     stars: 22000,
     forks: 1700,
@@ -513,13 +405,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops', 'trending'],
     isVerified: true,
     velocityScore: 96,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'Ultra-fast, Rust-powered vector database engineered for production RAG and semantic search.',
-      whyUseful: 'Features payload filtering during search, quantization for 95% memory savings, and distributed replication.',
-      targetAudience: ['MLOps Engineers', 'AI Backend Developers', 'Search Architects'],
-      topFeatures: ['Rust high-performance core', 'Scalar & Product Quantization', 'Rich JSON payload filtering']
-    }
+    velocityLabel: 'HOT RISING',
   },
   {
     id: 'chroma-core/chroma',
@@ -527,7 +413,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     name: 'chroma',
     owner: 'chroma-core',
     ownerAvatar: 'https://avatars.githubusercontent.com/u/104118928?v=4',
-    description: 'the AI-native open-source embedding database.',
+    description: 'The open-source AI embedding database.',
     url: 'https://github.com/chroma-core/chroma',
     stars: 17200,
     forks: 1600,
@@ -540,13 +426,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops'],
     isVerified: true,
     velocityScore: 89,
-    velocityLabel: '⭐ Top Rated',
-    aiSummary: {
-      tagline: 'Developer-friendly embedded vector store for rapid prototyping and local RAG.',
-      whyUseful: 'Zero-config setup in Python or JS, built-in embedding functions, and effortless LangChain/LlamaIndex pluggability.',
-      targetAudience: ['AI Engineers', 'Fullstack Developers'],
-      topFeatures: ['In-memory or disk persistence', 'Built-in embedding models', 'Single pip/npm install']
-    }
+    velocityLabel: 'TOP RATED',
   },
   {
     id: 'bentoml/BentoML',
@@ -567,13 +447,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops'],
     isVerified: true,
     velocityScore: 87,
-    velocityLabel: '⭐ Top Rated',
-    aiSummary: {
-      tagline: 'Production-ready model serving framework with auto-scaling and hardware optimization.',
-      whyUseful: 'Standardizes packaging AI models into OCI container images with adaptive batching and multi-worker orchestration.',
-      targetAudience: ['MLOps Engineers', 'AI Deployment Leads'],
-      topFeatures: ['Adaptive batching engine', 'OpenLLM integration', 'BentoCloud serverless deployment']
-    }
+    velocityLabel: 'TOP RATED',
   },
   {
     id: 'Arize-ai/phoenix',
@@ -594,13 +468,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops', 'trending'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'OpenTelemetry-native observability and automated evaluation for LLM applications.',
-      whyUseful: 'Traces multi-step agent chains, diagnoses hallucination rates, inspects RAG retrieval quality, and benchmarks prompt variants.',
-      targetAudience: ['AI Engineers', 'LLMOps Teams', 'SREs'],
-      topFeatures: ['OpenTelemetry tracing', 'Evals for RAG accuracy', 'Latency and token cost breakdown']
-    }
+    velocityLabel: 'HOT RISING',
   },
 
   // --- Observability & DevSecOps ---
@@ -623,13 +491,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The industry-standard metric collection and alerting engine with PromQL.',
-      whyUseful: 'Pulls metrics from thousands of targets via multidimensional data model, offering powerful PromQL querying and alert management.',
-      targetAudience: ['SREs', 'DevOps Engineers', 'Platform Architects'],
-      topFeatures: ['Multi-dimensional metrics', 'PromQL querying language', 'Service discovery integrations']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'grafana/grafana',
@@ -650,13 +512,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: '💎 Battle-Tested',
-    aiSummary: {
-      tagline: 'The world\'s most popular visualization dashboard for logs, metrics, and traces.',
-      whyUseful: 'Unifies data from Prometheus, Loki, Jaeger, Elasticsearch, and CloudWatch into rich, actionable real-time dashboards.',
-      targetAudience: ['DevOps Engineers', 'SREs', 'Engineering Managers'],
-      topFeatures: ['Composable dashboard panels', 'Unified alerting', '100+ datasource connectors']
-    }
+    velocityLabel: 'BATTLE-TESTED',
   },
   {
     id: 'aquasecurity/trivy',
@@ -677,12 +533,6 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 93,
-    velocityLabel: '🔥 Hot Rising',
-    aiSummary: {
-      tagline: 'All-in-one DevSecOps scanner for container images, Git repos, IaC, and Kubernetes.',
-      whyUseful: 'Integrates easily into CI/CD pipelines to block vulnerable dependencies, misconfigured Terraform files, and leaked credentials.',
-      targetAudience: ['DevSecOps Engineers', 'Security Analysts', 'CI/CD Pipeline Builders'],
-      topFeatures: ['Container & OS package scanning', 'IaC misconfiguration checks', 'SBOM generation']
-    }
+    velocityLabel: 'HOT RISING',
   }
 ];

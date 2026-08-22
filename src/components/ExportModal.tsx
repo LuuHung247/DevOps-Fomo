@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { RepoItem } from '@/lib/types';
-import { X, Download, Copy, Check, FileText, Code2, FileSpreadsheet } from 'lucide-react';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -49,7 +48,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, repos
 
     // Markdown default
     const lines = [
-      `# 🚀 DevOps-FOMO Curated Tech Radar (${repos.length} Repositories)`,
+      `# DevOps-FOMO Curated Tech Radar (${repos.length} Repositories)`,
       '',
       `Generated on: ${new Date().toLocaleDateString()}`,
       '',
@@ -57,7 +56,7 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, repos
       '| :--- | :---: | :---: | :--- |',
       ...repos.map(
         (r) =>
-          `| [**${r.name}**](${r.url}) | ⭐ \`${r.stars.toLocaleString()}\` | \`${r.language || 'Unknown'}\` | ${r.description.slice(0, 100)}... |`
+          `| [**${r.name}**](${r.url}) | \`${r.stars.toLocaleString()}\` | \`${r.language || 'Unknown'}\` | ${r.description.slice(0, 100)}... |`
       ),
       '',
       '---',
@@ -85,99 +84,89 @@ export const ExportModal: React.FC<ExportModalProps> = ({ isOpen, onClose, repos
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200 font-sans">
       <div 
-        className="relative w-full max-w-2xl bg-slate-900 border border-slate-700/80 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-              <Download className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div>
-              <h3 className="font-bold text-white text-base">Export Curated Repositories</h3>
-              <p className="text-xs text-slate-400">Export {repos.length} filtered repositories to Markdown, JSON, or CSV</p>
-            </div>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-950">
+          <div>
+            <h3 className="font-bold text-white text-base font-mono">EXPORT REPOSITORY CATALOG</h3>
+            <p className="text-xs text-slate-400 font-mono">Export {repos.length} items to Markdown, JSON, or CSV</p>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="px-2 py-1 rounded text-xs font-mono text-slate-400 hover:text-white bg-slate-800 border border-slate-700 transition-colors"
           >
-            <X className="w-5 h-5" />
+            [Close]
           </button>
         </div>
 
         {/* Format Selector */}
-        <div className="p-6 pb-2 space-y-4">
+        <div className="p-6 pb-2 space-y-4 font-mono text-xs">
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setFormat('markdown')}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
                 format === 'markdown'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/20'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50'
+                  : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
               }`}
             >
-              <FileText className="w-4 h-4" />
-              <span>Markdown (.md)</span>
+              Markdown (.md)
             </button>
 
             <button
               onClick={() => setFormat('json')}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
                 format === 'json'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/20'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50'
+                  : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
               }`}
             >
-              <Code2 className="w-4 h-4" />
-              <span>JSON (.json)</span>
+              JSON (.json)
             </button>
 
             <button
               onClick={() => setFormat('csv')}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
                 format === 'csv'
-                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/20'
-                  : 'bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-slate-700'
+                  ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50'
+                  : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
               }`}
             >
-              <FileSpreadsheet className="w-4 h-4" />
-              <span>CSV (.csv)</span>
+              CSV (.csv)
             </button>
           </div>
 
           {/* Preview Box */}
           <div className="relative">
-            <pre className="w-full h-64 p-4 rounded-xl bg-slate-950/90 border border-slate-800 text-xs font-mono text-slate-300 overflow-auto scrollbar-thin">
+            <pre className="w-full h-64 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-300 overflow-auto scrollbar-thin">
               {content}
             </pre>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/90 flex items-center justify-between">
-          <span className="text-xs text-slate-400 font-mono">
-            {repos.length} items ready to export
+        <div className="px-6 py-4 border-t border-slate-800 bg-slate-950 flex items-center justify-between font-mono">
+          <span className="text-xs text-slate-400">
+            {repos.length} items ready
           </span>
 
           <div className="flex items-center space-x-3">
             <button
               onClick={handleCopy}
-              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center space-x-1.5 border border-slate-700 transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-colors"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-              <span>{copied ? 'Copied!' : 'Copy to Clipboard'}</span>
+              {copied ? 'Copied!' : 'Copy'}
             </button>
 
             <button
               onClick={handleDownload}
-              className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold flex items-center space-x-1.5 shadow-lg shadow-emerald-500/20 transition-all"
+              className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 text-xs font-bold transition-all"
             >
-              <Download className="w-4 h-4" />
-              <span>Download File</span>
+              Download
             </button>
           </div>
         </div>

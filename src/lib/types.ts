@@ -25,21 +25,14 @@ export interface RepoItem {
   category: CategoryId;
   categories: CategoryId[];
   isVerified?: boolean;
-  velocityScore?: number; // Estimated star growth indicator
-  velocityLabel?: '⚡ Explosive' | '🔥 Hot Rising' | '💎 Battle-Tested' | '⭐ Top Rated';
-  aiSummary?: {
-    tagline: string;
-    whyUseful: string;
-    targetAudience: string[];
-    topFeatures: string[];
-  };
+  velocityScore?: number;
+  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'BATTLE-TESTED' | 'TOP RATED';
 }
 
 export interface CategoryMeta {
   id: CategoryId;
   name: string;
   description: string;
-  icon: string;
   badgeCount?: number;
 }
 

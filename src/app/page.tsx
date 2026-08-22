@@ -7,9 +7,7 @@ import { HeroSection } from '@/components/HeroSection';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
-import { AiInsightModal } from '@/components/AiInsightModal';
 import { ExportModal } from '@/components/ExportModal';
-import { Flame, Sparkles, Server, Brain, Bot, Compass, Trophy, AlertCircle, BookmarkCheck, Download, Layers } from 'lucide-react';
 
 export default function Home() {
   const [repos, setRepos] = useState<RepoItem[]>([]);
@@ -41,7 +39,6 @@ export default function Home() {
 
   // Modals & Bookmarks
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [selectedRepoForAi, setSelectedRepoForAi] = useState<RepoItem | null>(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Load favorites from localStorage on mount
@@ -120,7 +117,7 @@ export default function Home() {
     : repos;
 
   return (
-    <div className="min-h-screen flex flex-col justify-between">
+    <div className="min-h-screen flex flex-col justify-between font-sans">
       {/* Top Navbar */}
       <Header
         totalRepos={stats.totalRepos}
@@ -173,16 +170,15 @@ export default function Home() {
           
           {/* Favorites Alert Banner if viewing saved */}
           {showFavoritesOnly && (
-            <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between shadow-lg shadow-amber-500/5">
-              <div className="flex items-center space-x-2 text-amber-300 text-sm font-semibold">
-                <BookmarkCheck className="w-5 h-5 text-amber-400" />
-                <span>Viewing Saved Bookmarks ({favorites.length} items)</span>
+            <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-between font-mono">
+              <div className="text-amber-300 text-sm font-semibold">
+                [SAVED BOOKMARKS] ({favorites.length} items)
               </div>
               <button
                 onClick={() => setShowFavoritesOnly(false)}
-                className="text-xs text-slate-400 hover:text-white underline font-mono"
+                className="text-xs text-slate-400 hover:text-white underline"
               >
-                Show All Ecosystem
+                Show All
               </button>
             </div>
           )}
@@ -191,19 +187,16 @@ export default function Home() {
           {loading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="hud-card rounded-2xl p-6 h-64 animate-pulse">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-11 h-11 rounded-xl bg-slate-800/80" />
-                    <div className="space-y-2 flex-1">
-                      <div className="h-4 bg-slate-800 rounded w-3/4" />
-                      <div className="h-3 bg-slate-800 rounded w-1/2" />
-                    </div>
+                <div key={i} className="rounded-2xl p-6 h-56 bg-slate-900 border border-slate-800 animate-pulse">
+                  <div className="space-y-2 mb-4">
+                    <div className="h-4 bg-slate-800 rounded w-1/2" />
+                    <div className="h-3 bg-slate-800 rounded w-1/3" />
                   </div>
                   <div className="space-y-2 mb-6">
                     <div className="h-3 bg-slate-800 rounded w-full" />
-                    <div className="h-3 bg-slate-800 rounded w-5/6" />
+                    <div className="h-3 bg-slate-800 rounded w-4/5" />
                   </div>
-                  <div className="h-9 bg-slate-800 rounded-xl w-full mt-auto" />
+                  <div className="h-8 bg-slate-800 rounded w-full mt-auto" />
                 </div>
               ))}
             </div>
@@ -224,7 +217,6 @@ export default function Home() {
                   repo={repo}
                   isFavorite={favorites.includes(repo.id)}
                   onToggleFavorite={handleToggleFavorite}
-                  onOpenAiInsight={setSelectedRepoForAi}
                   viewMode={viewMode}
                 />
               ))}
@@ -233,15 +225,12 @@ export default function Home() {
 
           {/* Empty State */}
           {!loading && displayedRepos.length === 0 && (
-            <div className="hud-panel rounded-2xl p-12 text-center max-w-lg mx-auto my-12 border border-slate-800 shadow-2xl">
-              <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 flex items-center justify-center mx-auto mb-4 text-slate-400">
-                <AlertCircle className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">No Repositories Found</h3>
-              <p className="text-sm text-slate-400 mb-6 leading-relaxed">
+            <div className="rounded-2xl p-12 text-center max-w-lg mx-auto my-12 bg-slate-900 border border-slate-800 font-mono">
+              <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
+              <p className="text-xs text-slate-400 mb-6 leading-relaxed">
                 {showFavoritesOnly
-                  ? "You haven't bookmarked any repositories yet. Click the bookmark icon on any card to save it!"
-                  : "No repositories matched your active search or filters. Try adjusting your query or star threshold."}
+                  ? "No repositories in your saved bookmarks list."
+                  : "No repositories matched your active search or filter criteria."}
               </p>
               <button
                 onClick={() => {
@@ -251,7 +240,7 @@ export default function Home() {
                   setActiveCategory('all');
                   setShowFavoritesOnly(false);
                 }}
-                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all"
+                className="px-4 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-all"
               >
                 Reset All Filters
               </button>
@@ -262,23 +251,17 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/80 bg-slate-950/90 py-8 text-center text-xs text-slate-400">
+      <footer className="border-t border-slate-800 bg-slate-950 py-8 text-center text-xs text-slate-400 font-mono">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2 font-mono">
+          <div>
             <span className="font-bold text-slate-200">DevOps-FOMO</span>
-            <span>• Verified AI & DevOps Intelligence Radar</span>
+            <span> • Verified AI & DevOps Hub</span>
           </div>
           <p className="text-slate-400">
-            Powered by Next.js, GitHub Open Data, and Generative AI Insights.
+            Powered by Next.js and GitHub Open Data.
           </p>
         </div>
       </footer>
-
-      {/* AI Deep Dive Modal */}
-      <AiInsightModal
-        repo={selectedRepoForAi}
-        onClose={() => setSelectedRepoForAi(null)}
-      />
 
       {/* Export Catalog Modal */}
       <ExportModal
