@@ -7,12 +7,10 @@ import { HeroSection } from '@/components/HeroSection';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
-import { ExportModal } from '@/components/ExportModal';
 
 export default function Home() {
   const [repos, setRepos] = useState<RepoItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState<ReposApiResponse['stats']>({
     totalRepos: 0,
     totalStars: 0,
@@ -32,16 +30,10 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [minStars, setMinStars] = useState(0);
   const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('stars');
-  const [isExportOpen, setIsExportOpen] = useState(false);
 
   // Fetch repositories from API
-  const fetchRepos = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-
+  const fetchRepos = useCallback(async () => {
+    setLoading(true);
     try {
       const params = new URLSearchParams();
       if (activeCategory !== 'all') {
@@ -54,9 +46,6 @@ export default function Home() {
         params.append('minStars', minStars.toString());
       }
       params.append('sortBy', sortBy);
-      if (isRefresh) {
-        params.append('refresh', 'true');
-      }
 
       const res = await fetch(`/api/repos?${params.toString()}`);
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
@@ -68,7 +57,6 @@ export default function Home() {
       console.error('Error fetching repositories:', error);
     } finally {
       setLoading(false);
-      setRefreshing(false);
     }
   }, [activeCategory, searchQuery, minStars, sortBy]);
 
@@ -82,10 +70,6 @@ export default function Home() {
       <Header
         totalRepos={stats.totalRepos}
         totalStars={stats.totalStars}
-        trendingCount={stats.trendingCount}
-        isRefreshing={refreshing}
-        onRefresh={() => fetchRepos(true)}
-        onOpenExport={() => setIsExportOpen(true)}
       />
 
       <main className="flex-1 pb-16">
@@ -120,17 +104,17 @@ export default function Home() {
           {loading && (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="p-6 rounded-2xl bg-slate-900 border border-slate-800 animate-pulse">
+                <div key={i} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 animate-pulse">
                   <div className="flex justify-between items-center mb-3">
                     <div className="h-5 bg-slate-800 rounded w-1/3" />
-                    <div className="h-4 bg-slate-800 rounded w-16" />
+                    <div className="h-4 bg-slate-800 rounded w-24" />
                   </div>
-                  <div className="h-3 bg-slate-800 rounded w-1/4 mb-4" />
-                  <div className="space-y-2 mb-6">
+                  <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
+                  <div className="space-y-2 mb-4">
                     <div className="h-3.5 bg-slate-800 rounded w-full" />
                     <div className="h-3.5 bg-slate-800 rounded w-4/5" />
                   </div>
-                  <div className="h-8 bg-slate-800 rounded w-full mt-auto" />
+                  <div className="h-5 bg-slate-800 rounded w-1/2" />
                 </div>
               ))}
             </div>
@@ -183,13 +167,6 @@ export default function Home() {
           </p>
         </div>
       </footer>
-
-      {/* Export Catalog Modal */}
-      <ExportModal
-        isOpen={isExportOpen}
-        onClose={() => setIsExportOpen(false)}
-        repos={repos}
-      />
     </div>
   );
 }
