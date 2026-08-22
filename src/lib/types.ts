@@ -25,7 +25,7 @@ export interface RepoItem {
   categories: CategoryId[];
   isVerified?: boolean;
   velocityScore?: number;
-  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'BATTLE-TESTED' | 'TOP RATED';
+  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'CLASSIC' | 'TOP RATED';
 }
 
 export interface CategoryMeta {

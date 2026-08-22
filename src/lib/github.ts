@@ -104,7 +104,7 @@ export function calculateVelocity(stars: number, createdAt: string, updatedAt: s
     label = 'HOT RISING';
     score = Math.max(score, 90);
   } else if (stars > 25000) {
-    label = 'BATTLE-TESTED';
+    label = 'CLASSIC';
   }
 
   return { score, label };

@@ -21,7 +21,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 98,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'kamranahmedse/developer-roadmap',
@@ -42,7 +42,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 95,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'bregman-arie/devops-exercises',
@@ -63,7 +63,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'kelseyhightower/kubernetes-the-hard-way',
@@ -84,7 +84,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra'],
     isVerified: true,
     velocityScore: 88,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'trimstray/the-book-of-secret-knowledge',
@@ -105,7 +105,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
 
   // --- Agentic AI & AI Engineers ---
@@ -191,7 +191,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 91,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'langchain-ai/langchain',
@@ -212,7 +212,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'mlops', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'All-Hands-AI/OpenHands',
@@ -256,7 +256,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 94,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'argoproj/argo-cd',
@@ -298,7 +298,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 89,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'opentofu/opentofu',
@@ -384,7 +384,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 91,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'qdrant/qdrant',
@@ -491,7 +491,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'grafana/grafana',
@@ -512,7 +512,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'hall-of-fame'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: 'BATTLE-TESTED',
+    velocityLabel: 'CLASSIC',
   },
   {
     id: 'aquasecurity/trivy',
