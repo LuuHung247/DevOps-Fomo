@@ -12,85 +12,97 @@ interface GitHubApiItem {
   html_url: string;
   stargazers_count: number;
   forks_count: number;
-  open_issues_count: number;
+  openIssues_count?: number;
+  open_issues_count?: number;
   language: string | null;
   topics: string[];
   updated_at: string;
   created_at: string;
 }
 
-// ====== SEARCH QUERIES (Targeting both established and newly emerging AI/DevOps) ======
-const SEARCH_QUERIES = [
-  // --- Emerging Breakout Stars (Created recently with high traction) ---
-  'created:>2025-01-01 stars:>200',
-  'created:>2024-09-01 stars:>1000 topic:ai',
-  'created:>2024-09-01 stars:>500 topic:agent',
-  'created:>2024-09-01 stars:>500 topic:devops',
-  'created:>2024-09-01 stars:>300 topic:security',
+// ====== ZERO-KEYWORD DYNAMIC SEARCH ENGINE ======
+// Generates rolling time-window queries to capture brand new breakout projects
+// regardless of how they are named or tagged (TikTok/Trend style)
+export function getDynamicSearchQueries(): string[] {
+  const now = new Date();
+  
+  const formatDate = (d: Date) => d.toISOString().split('T')[0];
 
-  // --- AI Security, Penetration Testing, Guardrails & Red Teaming ---
-  'topic:ai-security OR topic:red-teaming OR topic:devsecops stars:>150',
-  'topic:penetration-testing OR topic:pentesting OR topic:vulnerability-scanner stars:>300',
-  'strix OR AI-Infra-Guard OR "AI Red Teaming" OR "AI penetration testing" in:readme stars:>100',
-  'topic:prompt-injection OR topic:jailbreak stars:>200',
+  const daysAgo = (days: number) => {
+    const d = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+    return formatDate(d);
+  };
 
-  // --- AI Agent Skills, Harnesses & MCP Ecosystem ---
-  'topic:agent-skills OR topic:claude-skills OR topic:skills stars:>100',
-  'topic:agentic-ai stars:>500',
-  'topic:ai-agent stars:>500',
-  'topic:mcp OR "model context protocol" in:readme stars:>200',
-  '"agent skills" OR "claude skills" OR "awesome-agent-skills" in:readme stars:>100',
-  '"deepseek-harness" OR "browser-harness" OR "agent harness" in:readme stars:>100',
-  '"reverse-skill" OR "reverse engineering agent" in:readme stars:>50',
-  'topic:reverse-engineering stars:>200',
+  const d7 = daysAgo(7);
+  const d14 = daysAgo(14);
+  const d30 = daysAgo(30);
+  const d60 = daysAgo(60);
+  const d90 = daysAgo(90);
+  const d3 = daysAgo(3);
 
-  // --- Local-first AI & Privacy ---
-  'topic:local-ai OR topic:local-llm OR topic:privacy-ai stars:>500',
-  'topic:ollama OR "local ai" in:readme stars:>1000',
+  return [
+    // 1. Zero-Keyword Accelerators: Fastest rising newborn repos globally
+    `created:>${d7} stars:>30`,
+    `created:>${d14} stars:>60`,
+    `created:>${d30} stars:>120`,
+    `created:>${d60} stars:>250`,
+    `created:>${d90} stars:>500`,
 
-  // --- Self-improving / RLM Agents ---
-  'topic:rlm OR topic:self-improving-agent stars:>100',
-  '"prime-agent" OR "recursive language model" in:readme stars:>100',
+    // 2. Fresh pushes on high-traction projects (Active velocity)
+    `pushed:>${d3} stars:>3000 topic:ai`,
+    `pushed:>${d3} stars:>3000 topic:agent`,
+    `pushed:>${d3} stars:>2000 topic:devops`,
 
-  // --- Supply Chain Security & SBOM ---
-  'topic:supply-chain OR topic:sbom OR topic:appsec stars:>200',
-  '"bumblebee" OR "supply chain" AI in:readme stars:>500',
+    // 3. AI Agent Skills, Harnesses, MCP & Security Routers
+    'topic:agent-skills OR topic:claude-skills OR topic:skills stars:>100',
+    'topic:agentic-ai OR topic:ai-agent OR topic:ai-agents stars:>300',
+    'topic:mcp OR "model context protocol" in:readme stars:>150',
+    '"agent skills" OR "claude skills" OR "awesome-agent-skills" in:readme stars:>100',
+    '"deepseek-harness" OR "browser-harness" OR "agent harness" in:readme stars:>100',
+    '"reverse-skill" OR "reverse engineering" agent in:readme stars:>50',
+    'topic:reverse-engineering stars:>200',
 
-  // --- Voice Agents ---
-  'topic:voice-agent OR topic:speech-ai stars:>300',
+    // 4. AI Security, Penetration Testing & Red Teaming
+    'topic:ai-security OR topic:red-teaming OR topic:devsecops stars:>150',
+    'topic:penetration-testing OR topic:pentesting OR topic:vulnerability-scanner stars:>200',
+    'strix OR "AI Red Teaming" OR "AI penetration testing" in:readme stars:>100',
+    'topic:prompt-injection OR topic:jailbreak OR topic:guardrail stars:>150',
 
-  'topic:llmops stars:>500',
-  'topic:rag stars:>1000',
-  'topic:vector-database stars:>500',
-  'topic:model-serving stars:>500',
+    // 5. Local-first AI, Privacy & RLM
+    'topic:local-ai OR topic:local-llm OR topic:privacy-ai stars:>300',
+    'topic:ollama OR "local ai" in:readme stars:>500',
+    'topic:rlm OR topic:self-improving-agent stars:>100',
+    '"prime-agent" OR "recursive language model" in:readme stars:>100',
 
-  // --- Core DevOps, Cloud-Native & Observability ---
-  'topic:kubernetes stars:>5000',
-  'topic:devops stars:>3000',
-  'topic:terraform stars:>2000',
-  'topic:ebpf stars:>1000',
-  'topic:gitops stars:>1000',
-  'topic:monitoring stars:>3000',
-  'topic:opentelemetry stars:>1000',
-  'topic:devsecops stars:>500',
-  'topic:platform-engineering stars:>500',
-];
+    // 6. Supply Chain Security, Voice Agents & DevOps
+    'topic:supply-chain OR topic:sbom OR topic:appsec stars:>150',
+    'topic:voice-agent OR topic:speech-ai stars:>200',
+    'topic:kubernetes stars:>3000',
+    'topic:devops stars:>2000',
+    'topic:terraform stars:>1500',
+    'topic:ebpf stars:>800',
+    'topic:gitops stars:>800',
+    'topic:opentelemetry stars:>800',
+  ];
+}
 
-// ====== CATEGORY CLASSIFICATION ======
+// ====== CATEGORY CLASSIFICATION (Smart Semantic Matching) ======
 export function determineCategories(topics: string[], desc: string, stars: number): CategoryId[] {
   const categories: CategoryId[] = [];
   const lowerDesc = (desc || '').toLowerCase();
   const lowerTopics = (topics || []).map(t => t.toLowerCase());
 
-  // Agentic AI & AI
+  // Agentic AI & AI Keywords (Modern expanded coverage)
   const aiKeywords = [
-    'ai', 'agent', 'llm', 'autonomous', 'gpt', 'rag', 'langchain', 'langgraph',
-    'llama', 'deepseek', 'ollama', 'vllm', 'inference', 'embedding',
-    'copilot', 'cursor', 'claude', 'openai', 'anthropic', 'gemini',
-    'mcp', 'model-context', 'swe-agent', 'coding-agent', 'devin',
-    'autogen', 'crewai', 'metagpt', 'agentic', 'multi-agent',
+    'ai', 'agent', 'agents', 'llm', 'llms', 'autonomous', 'gpt', 'rag', 'langchain', 'langgraph',
+    'llama', 'deepseek', 'ollama', 'vllm', 'inference', 'embedding', 'vector',
+    'copilot', 'cursor', 'claude', 'openai', 'anthropic', 'gemini', 'qwen', 'mistral',
+    'mcp', 'model-context', 'swe-agent', 'coding-agent', 'devin', 'cline',
+    'autogen', 'crewai', 'metagpt', 'agentic', 'multi-agent', 'harness', 'skill', 'skills',
     'prompt', 'chatbot', 'transformer', 'fine-tun', 'lora', 'red-teaming',
-    'ai-security', 'guardrail', 'jailbreak',
+    'ai-security', 'guardrail', 'jailbreak', 'reverse-engineering', 'reverse-skill',
+    'voice-agent', 'speech', 'transcribe', 'tts', 'stt', 'browser-use', 'automation',
+    'crawler', 'scraper', 'memory', 'context', 'workflow',
   ];
   const hasAi = lowerTopics.some(t => aiKeywords.some(k => t.includes(k))) ||
                 aiKeywords.some(k => lowerDesc.includes(k));
@@ -106,6 +118,7 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
     'backstage', 'platform-engineer', 'internal-developer', 'service-mesh',
     'envoy', 'istio', 'linkerd', 'kustomize', 'opentofu', 'kong', 'netdata',
     'sre', 'reliability', 'incident', 'on-call', 'runbook', 'sysadmin',
+    'supply-chain', 'sbom', 'security', 'pentest', 'vulnerability', 'appsec',
   ];
   const hasDevops = lowerTopics.some(t => devopsKeywords.some(k => t.includes(k))) ||
                     devopsKeywords.some(k => lowerDesc.includes(k));
@@ -119,7 +132,7 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
     'eval', 'experiment-tracking', 'feature-store', 'qdrant', 'chroma',
     'milvus', 'mlflow', 'triton', 'bentoml', 'ray', 'serving',
     'opentelemetry', 'tracing', 'ai-observability', 'phoenix', 'wandb',
-    'label', 'annotation', 'dataset', 'fine-tune', 'distill',
+    'label', 'annotation', 'dataset', 'distill', 'benchmark',
   ];
   const hasMlops = lowerTopics.some(t => mlopsKeywords.some(k => t.includes(k))) ||
                    mlopsKeywords.some(k => lowerDesc.includes(k));
@@ -131,7 +144,7 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
   const archKeywords = [
     'architecture', 'system-design', 'roadmap', 'best-practices', 'cheatsheet',
     'interview-prep', 'guide', 'primer', 'awesome-', 'curated', 'resource',
-    'learning-path', 'tutorial', 'handbook', 'reference', 'pattern',
+    'learning-path', 'tutorial', 'handbook', 'reference', 'pattern', 'diagram',
   ];
   const hasArch = lowerTopics.some(t => archKeywords.some(k => t.includes(k))) ||
                   archKeywords.some(k => lowerDesc.includes(k));
@@ -139,8 +152,9 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
     categories.push('architecture');
   }
 
-  // Default fallback if empty
+  // Default fallback if empty — if it has stars or trending signal, classify into agentic-ai or devops-infra
   if (categories.length === 0) {
+    categories.push('agentic-ai');
     categories.push('devops-infra');
   }
 
@@ -170,11 +184,9 @@ export function calculateVelocity(
   const starsPerDay = stars / ageDays;
 
   // 1. CLASSIC FIRST: Proven standards in the industry
-  // Repos with >= 25k stars OR (>= 2 years old with >= 12k stars) OR (>= 3 years old with >= 8k stars)
   const isClassicStandard = stars >= 25000 || (ageDays >= 730 && stars >= 12000) || (ageDays >= 1095 && stars >= 8000);
 
   if (isClassicStandard) {
-    // If a classic repo released an active update in the last 48h or has update signal
     const hasBigUpdate = daysSinceUpdate <= 3 && ((extraSignals?.hnTopScore || 0) > 20 || (extraSignals?.devtoReactions || 0) > 10);
     return {
       score: hasBigUpdate ? 96 : Math.min(95, 75 + Math.round(stars / 10000)),
@@ -187,8 +199,9 @@ export function calculateVelocity(
   // 2. EXPLOSIVE: Strictly for True Viral Phenomena (< 6 months old with massive traction)
   const isPhenomenon = 
     (extraSignals?.isTrendingToday && ageDays <= 180 && stars >= 1500) ||
-    (ageDays <= 90 && starsPerDay >= 40 && stars >= 1500) ||
-    ((extraSignals?.hnTopScore || 0) >= 250 && ageDays <= 120);
+    (ageDays <= 90 && starsPerDay >= 30 && stars >= 1000) ||
+    (ageDays <= 30 && starsPerDay >= 15 && stars >= 300) ||
+    ((extraSignals?.hnTopScore || 0) >= 200 && ageDays <= 120);
 
   if (isPhenomenon) {
     return {
@@ -202,7 +215,7 @@ export function calculateVelocity(
 
   // 3. COMMUNITY PICK: Viral on Hacker News or Dev.to
   if (
-    (extraSignals?.hnTopScore && extraSignals.hnTopScore >= 40) ||
+    (extraSignals?.hnTopScore && extraSignals.hnTopScore >= 35) ||
     (extraSignals?.devtoReactions && extraSignals.devtoReactions >= 20)
   ) {
     return {
@@ -215,7 +228,7 @@ export function calculateVelocity(
   }
 
   // 4. HOT RISING: Young projects with solid sustained upward growth
-  if (ageDays <= 730 && starsPerDay >= 8 && stars >= 1000) {
+  if (ageDays <= 730 && (starsPerDay >= 6 || (ageDays <= 30 && stars >= 150))) {
     return {
       score: Math.min(94, 82 + Math.round(starsPerDay * 1.5)),
       label: 'HOT RISING',
@@ -235,10 +248,10 @@ export function calculateVelocity(
 export async function fetchGitHubSearchRepos(headers: Record<string, string>): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
   const token = !!headers['Authorization'];
+  const queries = getDynamicSearchQueries();
+  const activeQueries = token ? queries : queries.slice(0, 12);
 
-  const queries = token ? SEARCH_QUERIES : SEARCH_QUERIES.slice(0, 10);
-
-  for (const query of queries) {
+  for (const query of activeQueries) {
     try {
       const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=30`;
       const res = await fetch(url, { headers, next: { revalidate: 3600 } });
@@ -258,7 +271,7 @@ export async function fetchGitHubSearchRepos(headers: Record<string, string>): P
             description: item.description || '',
             stars: item.stargazers_count,
             forks: item.forks_count,
-            openIssues: item.open_issues_count,
+            openIssues: item.open_issues_count || item.openIssues_count || 0,
             language: item.language || undefined,
             topics: item.topics || [],
             createdAt: item.created_at,

@@ -59,7 +59,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
   }
 
   // ====== Phase 1: Collect from all sources in parallel ======
-  console.log('[Discovery] Starting multi-source collection...');
+  console.log('[Discovery Engine] Starting Zero-Keyword Multi-Source Collection...');
 
   const [trendingResult, hnResult, devtoResult, awesomeResult, searchResult] = await Promise.allSettled([
     fetchGitHubTrending(),
@@ -75,7 +75,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
   const awesome = awesomeResult.status === 'fulfilled' ? awesomeResult.value : [];
   const search = searchResult.status === 'fulfilled' ? searchResult.value : [];
 
-  console.log(`[Discovery] Collected: Trending=${trending.length}, HN=${hn.length}, DevTo=${devto.length}, Awesome=${awesome.length}, Search=${search.length}`);
+  console.log(`[Discovery Engine] Collected: Trending=${trending.length}, HN=${hn.length}, DevTo=${devto.length}, Awesome=${awesome.length}, Search=${search.length}`);
 
   // ====== Phase 2: Merge all discovered repos ======
   const discoveredSources = new Map<string, DiscoveredRepo[]>();
@@ -101,7 +101,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     finalMap.set(key, { ...seed, socialSignals: signals });
   }
 
-  // 2. Direct mapping for all search repos with REAL created_at and updated_at
+  // 2. Direct mapping for search repos (with exact metadata from GitHub API)
   for (const disc of search) {
     const key = disc.fullName.toLowerCase();
     const signals = socialSignalsMap.get(key) || {};
@@ -109,7 +109,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     const owner = parts[0] || 'github';
     const name = parts[1] || disc.fullName;
     const stars = disc.stars || 1000;
-    const createdAt = disc.createdAt || '2023-01-01T00:00:00Z';
+    const createdAt = disc.createdAt || '2024-01-01T00:00:00Z';
     const updatedAt = disc.updatedAt || new Date().toISOString();
     
     const categories = determineCategories(disc.topics || [], disc.description || '', stars);
@@ -140,9 +140,9 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         topics: (disc.topics && disc.topics.length > 0) ? disc.topics.slice(0, 7) : categories,
         updatedAt,
         createdAt,
-        category: categories[0] || 'devops-infra',
+        category: categories[0] || 'agentic-ai',
         categories,
-        isVerified: stars > 5000,
+        isVerified: stars > 3000,
         velocityScore: velocity.score,
         velocityLabel: velocity.label,
         growthDeltaText: velocity.growthText,
@@ -154,14 +154,14 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     }
   }
 
-  // 3. Direct mapping for Trending repos
+  // 3. Direct mapping for Trending repos (High-Signal Global Breakouts)
   for (const disc of trending) {
     const key = disc.fullName.toLowerCase();
     const signals = socialSignalsMap.get(key) || {};
     const parts = disc.fullName.split('/');
     const owner = parts[0] || 'github';
     const name = parts[1] || disc.fullName;
-    const stars = disc.stars || 3500;
+    const stars = disc.stars || (disc.trendingStarsToday ? disc.trendingStarsToday * 12 : 3500);
 
     const categories = determineCategories([], disc.description || name, stars);
     if (!categories.includes('trending')) categories.push('trending');
@@ -173,7 +173,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         name,
         owner,
         ownerAvatar: `https://avatars.githubusercontent.com/${owner}`,
-        description: disc.description || `Trending project on GitHub (${disc.trendingPeriod || 'daily'}).`,
+        description: disc.description || `Trending breakout project on GitHub (${disc.trendingPeriod || 'daily'}).`,
         url: disc.url,
         stars,
         forks: Math.round(stars * 0.1),
@@ -181,13 +181,15 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         language: disc.language || 'Code',
         topics: categories,
         updatedAt: new Date().toISOString(),
-        createdAt: '2024-10-01T00:00:00Z',
+        createdAt: '2025-01-01T00:00:00Z',
         category: categories[0] || 'agentic-ai',
         categories,
         isVerified: true,
         velocityScore: 99,
         velocityLabel: 'EXPLOSIVE',
-        growthDeltaText: disc.trendingPeriod === 'daily' ? 'Trending #1 Today' : 'Weekly Trending',
+        growthDeltaText: disc.trendingStarsToday 
+          ? `+${disc.trendingStarsToday} stars today • Global Trending`
+          : disc.trendingPeriod === 'daily' ? 'Trending #1 Today' : 'Weekly Trending',
         socialSignals: { ...signals, githubTrending: disc.trendingPeriod || 'daily' },
       });
     }
@@ -203,8 +205,11 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
     const name = parts[1];
 
     if (!finalMap.has(key)) {
-      const stars = disc.stars || (disc.hnPoints ? disc.hnPoints * 35 : 2500);
+      const stars = disc.stars || (disc.hnPoints ? disc.hnPoints * 40 : 2500);
       const categories = determineCategories([], disc.description || name, stars);
+      if ((disc.hnPoints && disc.hnPoints >= 30) || (disc.devtoReactions && disc.devtoReactions >= 20)) {
+        if (!categories.includes('trending')) categories.push('trending');
+      }
 
       finalMap.set(key, {
         id: disc.fullName,
@@ -212,7 +217,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         name,
         owner,
         ownerAvatar: `https://avatars.githubusercontent.com/${owner}`,
-        description: disc.description || `Recommended tool mentioned in tech community.`,
+        description: disc.description || `Community-verified tool trending in developer discussions.`,
         url: disc.url,
         stars,
         forks: Math.round(stars * 0.1),
@@ -220,11 +225,11 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         language: disc.language || 'Code',
         topics: categories,
         updatedAt: new Date().toISOString(),
-        createdAt: '2024-06-01T00:00:00Z',
-        category: categories[0] || 'devops-infra',
+        createdAt: '2024-08-01T00:00:00Z',
+        category: categories[0] || 'agentic-ai',
         categories,
         isVerified: true,
-        velocityScore: 92,
+        velocityScore: 93,
         velocityLabel: 'COMMUNITY PICK',
         growthDeltaText: disc.hnPoints ? `${disc.hnPoints} pts on Hacker News` : 'Tech Community Pick',
         socialSignals: signals,
@@ -265,7 +270,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
   }
 
   const allRepos = Array.from(finalMap.values());
-  console.log(`[Discovery] Final output: ${allRepos.length} total repos correctly classified`);
+  console.log(`[Discovery Engine] Output: ${allRepos.length} total repos classified`);
 
   return allRepos.sort((a, b) => (b.velocityScore || 0) - (a.velocityScore || 0));
 }

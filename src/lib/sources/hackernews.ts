@@ -1,13 +1,15 @@
 import { DiscoveredRepo } from '../types';
 
 const RELEVANCE_KEYWORDS = [
-  'ai', 'agent', 'llm', 'devops', 'kubernetes', 'docker', 'terraform',
+  'ai', 'agent', 'agents', 'llm', 'llms', 'devops', 'kubernetes', 'docker', 'terraform',
   'cloud', 'infrastructure', 'deploy', 'container', 'cicd', 'pipeline',
   'monitor', 'observability', 'security', 'automat', 'serverless',
   'microservice', 'model', 'inference', 'vector', 'rag', 'prompt',
   'copilot', 'coding', 'developer', 'tool', 'framework', 'mlops',
   'platform', 'orchestrat', 'gitops', 'sre', 'system-design',
   'open-source', 'self-host', 'cli', 'terminal', 'rust', 'golang',
+  'skill', 'skills', 'harness', 'mcp', 'reverse', 'router', 'pentest',
+  'vulnerab', 'red-team', 'voice', 'speech', 'browser', 'memory',
 ];
 
 function extractGitHubRepos(title: string, url: string): string | null {
@@ -34,6 +36,7 @@ interface HNHit {
   points: number;
   num_comments: number;
   created_at: string;
+  _tags?: string[];
 }
 
 interface HNSearchResponse {
@@ -48,20 +51,22 @@ export async function fetchHackerNewsRepos(): Promise<DiscoveredRepo[]> {
   const thirtyDaysAgo = Math.floor((Date.now() - 30 * 24 * 60 * 60 * 1000) / 1000);
 
   const queries = [
-    // Stories that link directly to GitHub repos
-    `https://hn.algolia.com/api/v1/search?query=github.com&tags=story&numericFilters=points>30,created_at_i>${thirtyDaysAgo}&hitsPerPage=50`,
-    // Stories about AI agents, DevOps tools
-    `https://hn.algolia.com/api/v1/search?query=ai+agent+github&tags=story&numericFilters=points>20,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
-    `https://hn.algolia.com/api/v1/search?query=devops+tool+github&tags=story&numericFilters=points>20,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
-    `https://hn.algolia.com/api/v1/search?query=open+source+llm&tags=story&numericFilters=points>30,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
-    `https://hn.algolia.com/api/v1/search?query=kubernetes+new+tool&tags=story&numericFilters=points>20,created_at_i>${thirtyDaysAgo}&hitsPerPage=20`,
+    // 1. Show HN launches linking to GitHub (Creator Launchpad)
+    `https://hn.algolia.com/api/v1/search?query=github.com&tags=show_hn&numericFilters=created_at_i>${thirtyDaysAgo}&hitsPerPage=50`,
+    // 2. High-scoring stories linking directly to GitHub repos (Any tech subject with community traction)
+    `https://hn.algolia.com/api/v1/search?query=github.com&tags=story&numericFilters=points>25,created_at_i>${thirtyDaysAgo}&hitsPerPage=50`,
+    // 3. Stories about AI agents, DevOps tools, local models
+    `https://hn.algolia.com/api/v1/search?query=ai+agent+github&tags=story&numericFilters=points>15,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
+    `https://hn.algolia.com/api/v1/search?query=devops+tool+github&tags=story&numericFilters=points>15,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
+    `https://hn.algolia.com/api/v1/search?query=open+source+llm&tags=story&numericFilters=points>20,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
+    `https://hn.algolia.com/api/v1/search?query=coding+agent+terminal&tags=story&numericFilters=points>15,created_at_i>${thirtyDaysAgo}&hitsPerPage=30`,
   ];
 
   for (const queryUrl of queries) {
     try {
       const res = await fetch(queryUrl, {
         headers: { 'User-Agent': 'DevOps-FOMO/1.0' },
-        next: { revalidate: 3600 },
+        next: { revalidate: 1800 },
       });
 
       if (!res.ok) {
@@ -70,24 +75,27 @@ export async function fetchHackerNewsRepos(): Promise<DiscoveredRepo[]> {
       }
 
       const data: HNSearchResponse = await res.json();
-      
       if (!data.hits) continue;
 
       for (const hit of data.hits) {
         const repoName = extractGitHubRepos(hit.title, hit.url || '');
         if (!repoName) continue;
 
-        // Check relevance
-        if (!isRelevant(hit.title) && hit.points < 100) continue;
+        // HIGH-SIGNAL BYPASS: If a repo is from Show HN or has >25 points,
+        // community has already validated it -> include it without strict keyword dropping!
+        const isShowHN = hit._tags?.includes('show_hn') || hit.title.toLowerCase().startsWith('show hn');
+        const isHighSignal = (hit.points || 0) >= 25 || isShowHN;
+
+        if (!isHighSignal && !isRelevant(hit.title)) continue;
 
         results.push({
           fullName: repoName,
           url: `https://github.com/${repoName}`,
           description: hit.title,
           source: 'hackernews',
-          socialScore: hit.points,
-          hnPoints: hit.points,
-          hnComments: hit.num_comments,
+          socialScore: hit.points || 15,
+          hnPoints: hit.points || 15,
+          hnComments: hit.num_comments || 0,
         });
       }
     } catch (err) {
@@ -101,7 +109,6 @@ export async function fetchHackerNewsRepos(): Promise<DiscoveredRepo[]> {
     const key = repo.fullName.toLowerCase();
     const existing = repoMap.get(key);
     if (!existing || (repo.hnPoints || 0) > (existing.hnPoints || 0)) {
-      // Aggregate mentions
       if (existing) {
         repo.socialScore = (repo.socialScore || 0) + (existing.socialScore || 0);
       }
