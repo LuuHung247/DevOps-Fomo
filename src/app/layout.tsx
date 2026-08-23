@@ -1,10 +1,49 @@
 import type { Metadata } from 'next';
 import './globals.css';
 
+const SITE_URL = 'https://dev-ops-fomo.vercel.app';
+const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
+
 export const metadata: Metadata = {
-  title: 'DevOps-FOMO | AI & DevOps Tech Radar & Trending Tracker',
-  description: 'Real-time discovery and intelligence hub for community-verified, high-utility, and rapidly rising GitHub repositories in AI, DevOps, MLOps, and Cloud-Native.',
-  keywords: ['DevOps', 'AI', 'MLOps', 'LLMOps', 'GitHub', 'Trending Repos', 'Architecture', 'Kubernetes', 'Tech Radar'],
+  metadataBase: new URL(SITE_URL),
+  title: 'DevOps-FOMO — We track the hype so you don\'t have to',
+  description: 'Real-time radar for the most viral AI agent tools, DevOps repos, and breakthrough projects on GitHub. Stay ahead without the scroll.',
+  keywords: [
+    'GitHub trending', 'AI tools', 'DevOps', 'agent skills', 'Claude Code', 'MLOps',
+    'LLMOps', 'open source', 'tech radar', 'Kubernetes', 'viral repos', 'developer tools',
+  ],
+  openGraph: {
+    type: 'website',
+    url: SITE_URL,
+    siteName: 'DevOps-FOMO',
+    title: 'DevOps-FOMO — We track the hype so you don\'t have to',
+    description: 'Real-time radar for the most viral AI agent tools, DevOps repos, and breakthrough projects on GitHub.',
+    images: [
+      {
+        url: OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'DevOps-FOMO — Real-time GitHub trend radar',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@DevOpsFomo',
+    creator: '@LuuHung247',
+    title: 'DevOps-FOMO — We track the hype so you don\'t have to',
+    description: 'Real-time radar for viral AI agent tools, DevOps repos, and breakout GitHub projects.',
+    images: [OG_IMAGE],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+    },
+  },
 };
 
 export default function RootLayout({

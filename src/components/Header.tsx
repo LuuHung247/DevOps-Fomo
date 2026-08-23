@@ -28,7 +28,14 @@ export const Header: React.FC<HeaderProps> = ({ totalRepos, totalStars }) => {
         {/* Right Info & GitHub Link */}
         <div className="flex items-center space-x-2.5 sm:space-x-3 font-mono text-xs">
           <div className="text-slate-400 text-[11px] sm:text-xs">
-            <span className="text-white font-bold">{totalRepos}</span> repos • <span className="text-amber-300 font-bold">{formatStars(totalStars)}</span> stars
+            <span className="text-white font-bold">
+              {totalRepos === 0 ? '—' : totalRepos}
+            </span>
+            {' '}repos •{' '}
+            <span className="text-amber-300 font-bold">
+              {totalStars === 0 ? '—' : formatStars(totalStars)}
+            </span>
+            {' '}stars
           </div>
 
           <a

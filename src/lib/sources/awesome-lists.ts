@@ -2,6 +2,8 @@ import { DiscoveredRepo } from '../types';
 
 // Curated awesome lists relevant to AI & DevOps
 const AWESOME_LISTS = [
+  { repo: 'Zijian-Ni/awesome-ai-agents-2026', name: 'awesome-ai-agents-2026' },
+  { repo: 'ai-for-developers/awesome-ai-coding-tools', name: 'awesome-ai-coding-tools' },
   { repo: 'VoltAgent/awesome-agent-skills', name: 'awesome-agent-skills' },
   { repo: 'ComposioHQ/awesome-claude-skills', name: 'awesome-claude-skills' },
   { repo: 'e2b-dev/awesome-ai-agents', name: 'awesome-ai-agents' },

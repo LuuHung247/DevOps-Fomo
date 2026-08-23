@@ -41,6 +41,22 @@ const SEARCH_QUERIES = [
   'topic:mcp OR "model context protocol" in:readme stars:>200',
   '"agent skills" OR "claude skills" OR "awesome-agent-skills" in:readme stars:>100',
   '"deepseek-harness" OR "browser-harness" OR "agent harness" in:readme stars:>100',
+
+  // --- Local-first AI & Privacy ---
+  'topic:local-ai OR topic:local-llm OR topic:privacy-ai stars:>500',
+  'topic:ollama OR "local ai" in:readme stars:>1000',
+
+  // --- Self-improving / RLM Agents ---
+  'topic:rlm OR topic:self-improving-agent stars:>100',
+  '"prime-agent" OR "recursive language model" in:readme stars:>100',
+
+  // --- Supply Chain Security & SBOM ---
+  'topic:supply-chain OR topic:sbom OR topic:appsec stars:>200',
+  '"bumblebee" OR "supply chain" AI in:readme stars:>500',
+
+  // --- Voice Agents ---
+  'topic:voice-agent OR topic:speech-ai stars:>300',
+
   'topic:llmops stars:>500',
   'topic:rag stars:>1000',
   'topic:vector-database stars:>500',

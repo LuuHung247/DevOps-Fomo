@@ -23,6 +23,14 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     setTimeout(() => setCopied(false), 1800);
   };
 
+  const handleShareX = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const stars = formatNumber(repo.stars);
+    const label = repo.velocityLabel === 'EXPLOSIVE' ? '🔥 VIRAL BREAKOUT' : repo.velocityLabel === 'HOT RISING' ? '📈 HOT RISING' : '⭐ CLASSIC';
+    const tweet = `${label}: ${repo.fullName} (${stars}★)\n\n"${repo.description?.slice(0, 100)}..."\n\nSpotted on DevOps-FOMO 👇\nhttps://dev-ops-fomo.vercel.app`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`, '_blank', 'noopener');
+  };
+
   // Build social signal hints
   const socialHints: string[] = [];
   if (repo.growthDeltaText) {
@@ -135,6 +143,14 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
             <span className="text-slate-600">•</span>
             <span>{formatNumber(repo.forks)} forks</span>
           </div>
+
+          <button
+            onClick={handleShareX}
+            className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap border bg-slate-950 hover:bg-[#1a8cd8]/20 text-slate-400 hover:text-[#1a8cd8] border-slate-800 hover:border-[#1a8cd8]/50"
+            title="Share on X (Twitter)"
+          >
+            𝕏 Share
+          </button>
 
           <button
             onClick={handleCopyLink}

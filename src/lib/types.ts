@@ -88,3 +88,24 @@ export interface ReposApiResponse {
     categoryCounts: Record<CategoryId, number>;
   };
 }
+
+export type BuzzSource = 'hn' | 'reddit' | 'devto';
+
+export interface BuzzItem {
+  id: string;
+  title: string;
+  url: string;
+  source: BuzzSource;
+  subreddit?: string;
+  score: number;
+  commentCount: number;
+  author: string;
+  createdAt: string;
+  domain?: string;
+  tags?: string[];
+}
+
+export interface BuzzApiResponse {
+  items: BuzzItem[];
+  fetchedAt: string;
+}

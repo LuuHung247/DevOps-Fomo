@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { RepoItem, CategoryId, ReposApiResponse } from '@/lib/types';
+import { RepoItem, CategoryId, ReposApiResponse, BuzzItem, BuzzApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/HeroSection';
 import { Leaderboard } from '@/components/Leaderboard';
@@ -9,12 +9,17 @@ import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
 import { Pagination } from '@/components/Pagination';
+import { BuzzFeed } from '@/components/BuzzFeed';
 
 export default function Home() {
   const [repos, setRepos] = useState<RepoItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;
+
+  const [buzzItems, setBuzzItems] = useState<BuzzItem[]>([]);
+  const [buzzLoading, setBuzzLoading] = useState(false);
+  const [buzzFetched, setBuzzFetched] = useState(false);
 
   const [stats, setStats] = useState<ReposApiResponse['stats']>({
     totalRepos: 0,
@@ -29,23 +34,19 @@ export default function Home() {
     },
   });
 
-  // Default to TRENDING & RISING with VELOCITY sort
-  const [activeCategory, setActiveCategory] = useState<CategoryId | 'all'>('trending');
+  const [activeCategory, setActiveCategory] = useState<CategoryId | 'all' | 'buzz'>('trending');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('velocity');
 
-  // Fetch repositories from API
+  // Fetch repositories
   const fetchRepos = useCallback(async (isBackground = false) => {
     if (!isBackground) setLoading(true);
-
     try {
       const params = new URLSearchParams();
-      if (activeCategory !== 'all') {
+      if (activeCategory !== 'all' && activeCategory !== 'buzz') {
         params.append('category', activeCategory);
       }
-      if (searchQuery.trim()) {
-        params.append('search', searchQuery.trim());
-      }
+      if (searchQuery.trim()) params.append('search', searchQuery.trim());
       params.append('sortBy', sortBy);
 
       const res = await fetch(`/api/repos?${params.toString()}`);
@@ -61,40 +62,64 @@ export default function Home() {
     }
   }, [activeCategory, searchQuery, sortBy]);
 
-  // Reset to page 1 on filter/search changes
+  // Fetch buzz on first visit to that tab
+  const fetchBuzz = useCallback(async () => {
+    if (buzzFetched) return;
+    setBuzzLoading(true);
+    try {
+      const res = await fetch('/api/buzz');
+      if (!res.ok) throw new Error('Buzz fetch failed');
+      const data: BuzzApiResponse = await res.json();
+      setBuzzItems(data.items);
+      setBuzzFetched(true);
+    } catch (err) {
+      console.error('Buzz fetch error:', err);
+    } finally {
+      setBuzzLoading(false);
+    }
+  }, [buzzFetched]);
+
+  // Reset page on filter change
   useEffect(() => {
     setCurrentPage(1);
   }, [activeCategory, searchQuery, sortBy]);
 
+  // Trigger buzz fetch when buzz tab selected
   useEffect(() => {
-    fetchRepos();
-  }, [fetchRepos]);
+    if (activeCategory === 'buzz') {
+      fetchBuzz();
+    }
+  }, [activeCategory, fetchBuzz]);
 
-  // Scheduled background sync every 3 minutes silently
+  useEffect(() => {
+    if (activeCategory !== 'buzz') {
+      fetchRepos();
+    }
+  }, [fetchRepos, activeCategory]);
+
+  // Silent background sync every 3 minutes
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchRepos(true);
+      if (activeCategory !== 'buzz') fetchRepos(true);
     }, 180000);
     return () => clearInterval(interval);
-  }, [fetchRepos]);
+  }, [fetchRepos, activeCategory]);
 
-  // Pagination calculation
+  // Pagination
   const totalPages = Math.ceil(repos.length / itemsPerPage) || 1;
   const paginatedRepos = repos.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
+  const isBuzzMode = activeCategory === 'buzz';
+
   return (
     <div className="min-h-screen flex flex-col justify-between font-sans">
-      {/* Top Navbar */}
-      <Header
-        totalRepos={stats.totalRepos}
-        totalStars={stats.totalStars}
-      />
+      <Header totalRepos={stats.totalRepos} totalStars={stats.totalStars} />
 
       <main className="flex-1 pb-16">
-        {/* Compact Hero Section */}
+        {/* Hero */}
         <HeroSection
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -102,12 +127,12 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
-        {/* Explosive Breakout Leaderboard */}
-        {!searchQuery && (
+        {/* Leaderboard — only on repo tabs, not buzz, not search */}
+        {!searchQuery && !isBuzzMode && (
           <Leaderboard repos={repos} />
         )}
 
-        {/* Category Navigation Tabs */}
+        {/* Category Nav */}
         <CategoryNav
           activeCategory={activeCategory}
           onSelectCategory={setActiveCategory}
@@ -115,91 +140,101 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
-        {/* Filter Controls Bar */}
-        <FilterBar
-          sortBy={sortBy}
-          onSortByChange={setSortBy}
-        />
+        {/* Buzz Mode */}
+        {isBuzzMode ? (
+          <>
+            {/* Buzz header bar */}
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-5 font-mono text-xs">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                <span className="text-amber-400 font-semibold text-[11px]">
+                  📰 COMMUNITY BUZZ — HN · REDDIT · DEV.TO
+                </span>
+                <span className="text-slate-500 text-[10px] hidden sm:inline">
+                  Refreshes every 15 min
+                </span>
+              </div>
+            </div>
+            <BuzzFeed items={buzzItems} loading={buzzLoading} />
+          </>
+        ) : (
+          <>
+            {/* Filter Bar */}
+            <FilterBar sortBy={sortBy} onSortByChange={setSortBy} />
 
-        {/* Repositories Feed List with Target ID for Smooth Scroll */}
-        <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
-          
-          {/* Loading Skeleton */}
-          {loading && (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 animate-pulse">
-                  <div className="flex justify-between items-center mb-3">
-                    <div className="h-5 bg-slate-800 rounded w-1/3" />
-                    <div className="h-4 bg-slate-800 rounded w-24" />
-                  </div>
-                  <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
-                  <div className="space-y-2 mb-4">
-                    <div className="h-3.5 bg-slate-800 rounded w-full" />
-                    <div className="h-3.5 bg-slate-800 rounded w-4/5" />
-                  </div>
-                  <div className="h-5 bg-slate-800 rounded w-1/2" />
+            {/* Repository Feed */}
+            <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
+
+              {/* Loading Skeleton */}
+              {loading && (
+                <div className="space-y-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 animate-pulse">
+                      <div className="flex justify-between items-center mb-3">
+                        <div className="h-5 bg-slate-800 rounded w-1/3" />
+                        <div className="h-4 bg-slate-800 rounded w-24" />
+                      </div>
+                      <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
+                      <div className="space-y-2 mb-4">
+                        <div className="h-3.5 bg-slate-800 rounded w-full" />
+                        <div className="h-3.5 bg-slate-800 rounded w-4/5" />
+                      </div>
+                      <div className="h-5 bg-slate-800 rounded w-1/2" />
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              )}
 
-          {/* Paginated Repositories Feed */}
-          {!loading && paginatedRepos.length > 0 && (
-            <div className="space-y-4">
-              {paginatedRepos.map((repo) => (
-                <RepoCard
-                  key={repo.id}
-                  repo={repo}
+              {/* Repos */}
+              {!loading && paginatedRepos.length > 0 && (
+                <div className="space-y-4">
+                  {paginatedRepos.map((repo) => (
+                    <RepoCard key={repo.id} repo={repo} />
+                  ))}
+                </div>
+              )}
+
+              {/* Pagination */}
+              {!loading && repos.length > itemsPerPage && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={repos.length}
+                  itemsPerPage={itemsPerPage}
+                  onPageChange={setCurrentPage}
                 />
-              ))}
+              )}
+
+              {/* Empty State */}
+              {!loading && repos.length === 0 && (
+                <div className="rounded-2xl p-12 text-center my-12 bg-slate-900 border border-slate-800 font-mono">
+                  <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
+                  <p className="text-xs text-slate-400 mb-6 leading-relaxed">
+                    No repositories matched your active search or category criteria.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setActiveCategory('trending');
+                      setSortBy('velocity');
+                    }}
+                    className="px-4 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-all"
+                  >
+                    Reset to Trending
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-
-          {/* Pagination Controls */}
-          {!loading && repos.length > itemsPerPage && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              totalItems={repos.length}
-              itemsPerPage={itemsPerPage}
-              onPageChange={setCurrentPage}
-            />
-          )}
-
-          {/* Empty State */}
-          {!loading && repos.length === 0 && (
-            <div className="rounded-2xl p-12 text-center my-12 bg-slate-900 border border-slate-800 font-mono">
-              <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
-              <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                No repositories matched your active search or category criteria.
-              </p>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setActiveCategory('trending');
-                  setSortBy('velocity');
-                }}
-                className="px-4 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-all"
-              >
-                Reset to Trending
-              </button>
-            </div>
-          )}
-
-        </div>
+          </>
+        )}
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-slate-800 bg-slate-950 py-8 text-center text-xs text-slate-400 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-slate-200">DevOps-FOMO</span>
             <span> • We track the hype so you don't have to</span>
           </div>
-          <p className="text-slate-400">
-            Powered by Next.js and Multi-Source Intelligence.
-          </p>
+          <p className="text-slate-400">Powered by Next.js and Multi-Source Intelligence.</p>
         </div>
       </footer>
     </div>
