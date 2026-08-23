@@ -41,6 +41,8 @@ const SEARCH_QUERIES = [
   'topic:mcp OR "model context protocol" in:readme stars:>200',
   '"agent skills" OR "claude skills" OR "awesome-agent-skills" in:readme stars:>100',
   '"deepseek-harness" OR "browser-harness" OR "agent harness" in:readme stars:>100',
+  '"reverse-skill" OR "reverse engineering agent" in:readme stars:>50',
+  'topic:reverse-engineering stars:>200',
 
   // --- Local-first AI & Privacy ---
   'topic:local-ai OR topic:local-llm OR topic:privacy-ai stars:>500',
