@@ -34,10 +34,10 @@ async function fetchHN(): Promise<BuzzItem[]> {
     if (!res.ok) return [];
 
     const ids: number[] = await res.json();
-    const top100 = ids.slice(0, 100);
+    const top40 = ids.slice(0, 40);
 
     const stories = await Promise.allSettled(
-      top100.map(id =>
+      top40.map(id =>
         fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`, {
           next: { revalidate: 900 },
         }).then(r => r.json())

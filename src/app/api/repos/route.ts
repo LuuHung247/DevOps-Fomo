@@ -9,10 +9,18 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const category = (searchParams.get('category') || 'all') as CategoryId | 'all';
-    const search = (searchParams.get('search') || '').trim().toLowerCase();
-    const minStars = parseInt(searchParams.get('minStars') || '0', 10);
-    const sortBy = searchParams.get('sortBy') || 'stars';
+    const rawCategory = searchParams.get('category') || 'all';
+    const VALID_CATEGORIES: (CategoryId | 'all')[] = ['all', 'trending', 'agentic-ai', 'devops-infra', 'mlops', 'architecture'];
+    const category: CategoryId | 'all' = VALID_CATEGORIES.includes(rawCategory as any) ? (rawCategory as CategoryId | 'all') : 'all';
+
+    const search = (searchParams.get('search') || '').trim().toLowerCase().slice(0, 100);
+    
+    const parsedMinStars = parseInt(searchParams.get('minStars') || '0', 10);
+    const minStars = isNaN(parsedMinStars) || parsedMinStars < 0 ? 0 : Math.min(parsedMinStars, 5000000);
+    
+    const rawSortBy = searchParams.get('sortBy') || 'stars';
+    const VALID_SORTS = ['stars', 'velocity', 'updated'];
+    const sortBy = VALID_SORTS.includes(rawSortBy) ? rawSortBy : 'stars';
 
     let repos: RepoItem[] | null = null;
     let isCached = false;

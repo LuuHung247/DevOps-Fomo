@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { RepoItem } from './types';
 
 interface CacheEntry {
@@ -10,7 +11,8 @@ interface CacheEntry {
 // In-memory cache
 let memoryCache: { [key: string]: CacheEntry } = {};
 
-const CACHE_DIR = path.join(process.cwd(), '.cache');
+// Use os.tmpdir() for serverless/lambda resilience (writable everywhere)
+const CACHE_DIR = process.env.VERCEL ? os.tmpdir() : path.join(process.cwd(), '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'repos_cache.json');
 const DEFAULT_TTL_MS = 1000 * 60 * 60; // 1 hour
 

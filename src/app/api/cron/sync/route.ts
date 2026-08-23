@@ -1,15 +1,32 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { fetchAllSources } from '@/lib/discovery';
 import { setCachedRepos } from '@/lib/cache';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    // Verify authorization: check Bearer token against CRON_SECRET if configured
+    const cronSecret = process.env.CRON_SECRET;
+    const authHeader = request.headers.get('authorization');
+    const xCronSecret = request.headers.get('x-cron-secret');
+
+    if (cronSecret) {
+      const isBearerValid = authHeader === `Bearer ${cronSecret}`;
+      const isHeaderValid = xCronSecret === cronSecret;
+
+      if (!isBearerValid && !isHeaderValid) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized: Invalid cron authentication credentials' },
+          { status: 401 }
+        );
+      }
+    }
+
     console.log('[Cron Sync] Starting scheduled multi-source synchronization...');
     const startTime = Date.now();
 
-    // Force fresh data collection across all 5 layers
+    // Force fresh data collection across all layers
     const repos = await fetchAllSources();
     
     // Save to persistent file + memory cache

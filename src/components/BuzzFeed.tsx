@@ -35,13 +35,30 @@ const SOURCE_ICON: Record<BuzzSource, string> = {
   devto: '✍',
 };
 
+function safeUrl(url: string): string {
+  if (!url) return '#';
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return url;
+    }
+  } catch {
+    // If not a valid absolute URL, check if safe relative path
+    if (url.startsWith('/') && !url.startsWith('//')) {
+      return url;
+    }
+  }
+  return '#';
+}
+
 function BuzzCard({ item }: { item: BuzzItem }) {
   const cfg = SOURCE_CONFIG[item.source];
   const icon = SOURCE_ICON[item.source];
+  const href = safeUrl(item.url);
 
   return (
     <a
-      href={item.url}
+      href={href}
       target="_blank"
       rel="noreferrer noopener"
       className="group block p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-600 transition-all duration-200 hover:bg-slate-900"
