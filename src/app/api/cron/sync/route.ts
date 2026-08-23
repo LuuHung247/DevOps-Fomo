@@ -6,21 +6,19 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    // Verify authorization: check Bearer token against CRON_SECRET if configured
-    const cronSecret = process.env.CRON_SECRET;
+    // Verify authorization: check Bearer token or x-cron-secret header
+    const cronSecret = process.env.CRON_SECRET || 'devops-fomo-sync-secret-2026';
     const authHeader = request.headers.get('authorization');
     const xCronSecret = request.headers.get('x-cron-secret');
 
-    if (cronSecret) {
-      const isBearerValid = authHeader === `Bearer ${cronSecret}`;
-      const isHeaderValid = xCronSecret === cronSecret;
+    const isBearerValid = authHeader === `Bearer ${cronSecret}`;
+    const isHeaderValid = xCronSecret === cronSecret;
 
-      if (!isBearerValid && !isHeaderValid) {
-        return NextResponse.json(
-          { success: false, error: 'Unauthorized: Invalid cron authentication credentials' },
-          { status: 401 }
-        );
-      }
+    if (!isBearerValid && !isHeaderValid && process.env.NODE_ENV === 'production') {
+      return NextResponse.json(
+        { success: false, error: 'Unauthorized: Missing or invalid cron secret token' },
+        { status: 401 }
+      );
     }
 
     console.log('[Cron Sync] Starting scheduled multi-source synchronization...');
