@@ -35,10 +35,6 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ repos }) => {
       {/* Section Header */}
       <div className="flex items-center justify-between mb-3 border-b border-red-500/30 pb-2">
         <div className="flex items-center space-x-2">
-          <span className="flex h-2.5 w-2.5 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-          </span>
           <h2 className="font-mono text-xs sm:text-sm font-extrabold tracking-wider text-white uppercase">
             🔥 BREAKOUT LEADERBOARD
           </h2>
