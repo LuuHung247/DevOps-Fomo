@@ -5,6 +5,8 @@ const AWESOME_LISTS = [
   { repo: 'VoltAgent/awesome-agent-skills', name: 'awesome-agent-skills' },
   { repo: 'ComposioHQ/awesome-claude-skills', name: 'awesome-claude-skills' },
   { repo: 'e2b-dev/awesome-ai-agents', name: 'awesome-ai-agents' },
+  { repo: 'sbilly/awesome-security', name: 'awesome-security' },
+  { repo: 'enaqx/awesome-pentest', name: 'awesome-pentest' },
   { repo: 'sindresorhus/awesome', name: 'awesome' },
   { repo: 'trimstray/the-book-of-secret-knowledge', name: 'secret-knowledge' },
   { repo: 'bregman-arie/devops-exercises', name: 'devops-exercises' },
@@ -20,7 +22,8 @@ const AWESOME_LISTS = [
 ];
 
 const RELEVANCE_KEYWORDS = [
-  'agent', 'skill', 'skills', 'harness', 'llm', 'ai', 'devops', 'kubernetes', 'docker', 'terraform',
+  'agent', 'skill', 'skills', 'harness', 'pentest', 'penetrat', 'vulnerab', 'red-team',
+  'llm', 'ai', 'devops', 'kubernetes', 'docker', 'terraform',
   'ansible', 'helm', 'gitops', 'ci', 'cd', 'pipeline', 'monitor',
   'observ', 'security', 'cloud', 'serverless', 'container', 'platform',
   'mlops', 'vector', 'embedding', 'inference', 'model', 'deploy',

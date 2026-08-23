@@ -28,9 +28,10 @@ const SEARCH_QUERIES = [
   'created:>2024-09-01 stars:>500 topic:devops',
   'created:>2024-09-01 stars:>300 topic:security',
 
-  // --- AI Security, Guardrails & Red Teaming ---
-  'topic:ai-security OR topic:red-teaming stars:>150',
-  'AI-Infra-Guard OR "AI Red Teaming" OR "LLM Guard" in:readme stars:>100',
+  // --- AI Security, Penetration Testing, Guardrails & Red Teaming ---
+  'topic:ai-security OR topic:red-teaming OR topic:devsecops stars:>150',
+  'topic:penetration-testing OR topic:pentesting OR topic:vulnerability-scanner stars:>300',
+  'strix OR AI-Infra-Guard OR "AI Red Teaming" OR "AI penetration testing" in:readme stars:>100',
   'topic:prompt-injection OR topic:jailbreak stars:>200',
 
   // --- AI Agent Skills, Harnesses & MCP Ecosystem ---
