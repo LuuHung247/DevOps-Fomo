@@ -33,10 +33,13 @@ const SEARCH_QUERIES = [
   'AI-Infra-Guard OR "AI Red Teaming" OR "LLM Guard" in:readme stars:>100',
   'topic:prompt-injection OR topic:jailbreak stars:>200',
 
-  // --- AI Agent & MCP Ecosystem ---
+  // --- AI Agent Skills, Harnesses & MCP Ecosystem ---
+  'topic:agent-skills OR topic:claude-skills OR topic:skills stars:>100',
   'topic:agentic-ai stars:>500',
   'topic:ai-agent stars:>500',
   'topic:mcp OR "model context protocol" in:readme stars:>200',
+  '"agent skills" OR "claude skills" OR "awesome-agent-skills" in:readme stars:>100',
+  '"deepseek-harness" OR "browser-harness" OR "agent harness" in:readme stars:>100',
   'topic:llmops stars:>500',
   'topic:rag stars:>1000',
   'topic:vector-database stars:>500',
