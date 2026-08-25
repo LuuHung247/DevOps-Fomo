@@ -26,7 +26,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
   const handleShareX = (e: React.MouseEvent) => {
     e.stopPropagation();
     const stars = formatNumber(repo.stars);
-    const label = repo.velocityLabel === 'EXPLOSIVE' ? '🔥 VIRAL BREAKOUT' : repo.velocityLabel === 'HOT RISING' ? '📈 HOT RISING' : '⭐ CLASSIC';
+    const label = repo.velocityLabel === 'EXPLOSIVE' ? '🔥 VIRAL BREAKOUT' : repo.velocityLabel === 'HOT RISING' ? '📈 HOT RISING' : repo.velocityLabel === 'EARLY GEM' ? '🌱 EARLY GEM' : repo.velocityLabel === 'COMMUNITY PICK' ? '💬 COMMUNITY PICK' : '⭐ ESTABLISHED';
     const tweet = `${label}: ${repo.fullName} (${stars}★)\n\n"${repo.description?.slice(0, 100)}..."\n\nSpotted on DevOps-FOMO 👇\nhttps://dev-ops-fomo.vercel.app`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`, '_blank', 'noopener');
   };
@@ -53,7 +53,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     if (repo.velocityLabel === 'EXPLOSIVE') {
       return 'fomo-flame-card border border-red-500/70';
     }
-    if (repo.velocityLabel === 'CLASSIC') {
+    if (repo.velocityLabel === 'ESTABLISHED') {
       if (repo.hasBigUpdate) {
         return 'fomo-classic-card border border-emerald-500/50 shadow-emerald-950/40';
       }
@@ -64,6 +64,9 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     }
     if (repo.velocityLabel === 'HOT RISING') {
       return 'fomo-rising-card';
+    }
+    if (repo.velocityLabel === 'EARLY GEM') {
+      return 'border border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-400/60';
     }
     if (repo.velocityLabel === 'COMMUNITY PICK') {
       return 'fomo-community-card';
@@ -78,9 +81,11 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
         return 'fomo-flame-tag px-2 py-0.5 text-[10px] tracking-wide';
       case 'HOT RISING':
         return 'bg-amber-500/20 text-amber-300 border border-amber-500/50 px-1.5 py-0.2 text-[10px] font-bold';
+      case 'EARLY GEM':
+        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 px-1.5 py-0.2 text-[10px] font-bold';
       case 'COMMUNITY PICK':
         return 'bg-violet-500/20 text-violet-300 border border-violet-500/50 px-1.5 py-0.2 text-[10px] font-bold';
-      case 'CLASSIC':
+      case 'ESTABLISHED':
         return 'bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 px-1.5 py-0.2 text-[10px] font-bold';
       default:
         return 'bg-slate-800 text-slate-300 border border-slate-700 px-1.5 py-0.2 text-[10px] font-bold';
@@ -122,7 +127,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
             
             {repo.velocityLabel && (
               <span className={`rounded ${getTagClass(repo.velocityLabel)}`}>
-                [{repo.velocityLabel === 'EXPLOSIVE' ? 'VIRAL BREAKOUT' : repo.velocityLabel}]
+                [{repo.velocityLabel === 'EXPLOSIVE' ? 'VIRAL BREAKOUT' : repo.velocityLabel === 'EARLY GEM' ? '🌱 EARLY GEM' : repo.velocityLabel}]
               </span>
             )}
 

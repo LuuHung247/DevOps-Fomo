@@ -1,0 +1,30 @@
+# DevOps-FOMO
+
+> Real-time intelligence radar tracking the most viral AI agent tools, DevOps repos, and breakthrough open-source projects on GitHub. Multi-signal velocity scoring using GitHub stars, pull requests, issues, Hacker News, Reddit, and Dev.to signals. Updated every hour.
+
+## API Endpoints
+
+- [Trending Repos API](https://dev-ops-fomo.vercel.app/api/repos): GET /api/repos?category={trending|agentic-ai|devops-infra|mlops|architecture}&sortBy={velocity|stars|updated}&minStars={number} — Returns JSON array of trending repositories with velocity scores, badges, and social signals.
+- [Community Buzz API](https://dev-ops-fomo.vercel.app/api/buzz): GET /api/buzz — Returns aggregated tech news articles from Hacker News, Reddit, and Dev.to about trending developer tools.
+- [Full Documentation](https://dev-ops-fomo.vercel.app/llms-full.txt): Complete API reference, data schema, and scoring methodology.
+
+## Categories
+
+- **Trending & Rising**: Repos with highest velocity scores across all domains, sorted by composite multi-signal scoring.
+- **Agentic AI**: AI agent frameworks, MCP servers, autonomous coding tools, LLM orchestration, prompt engineering.
+- **DevOps & Infrastructure**: Kubernetes, Docker, Terraform, CI/CD pipelines, cloud-native tooling, eBPF, GitOps.
+- **MLOps & LLMOps**: Model serving, training pipelines, vector databases, AI observability, experiment tracking.
+- **Architecture**: System design resources, best practices, learning paths, curated awesome lists.
+
+## Velocity Scoring System
+
+- **VIRAL BREAKOUT** (Score 99): 1,500+ stars with 50+ stars/day velocity, under 90 days old. Represents true viral phenomena.
+- **HOT RISING** (Score 92-96): 500+ stars with 15+ stars/day, under 1 year old. Strong sustained upward momentum.
+- **EARLY GEM** (Score 85-91): Under 1,500 stars but 8+ stars/day, under 60 days old. Promising new projects with real traction.
+- **COMMUNITY PICK** (Score 88-92): Validated by developer community — 35+ points on Hacker News or 20+ reactions on Dev.to.
+- **ESTABLISHED** (Score 75-88): 10,000+ stars. Mature, proven industry standard tools.
+
+## Optional
+
+- [Source Code](https://github.com/LuuHung247/DevOps-Fomo): Open-source Next.js application.
+- [Live Site](https://dev-ops-fomo.vercel.app): Interactive web interface with real-time search and category filtering.

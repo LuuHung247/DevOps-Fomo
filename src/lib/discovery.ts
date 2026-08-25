@@ -118,9 +118,10 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
       isTrendingWeekly: signals.githubTrending === 'weekly',
       hnTopScore: signals.hnTopScore,
       devtoReactions: signals.devtoTopReactions,
+      trendingStarsToday: signals.trendingStarsToday,
     });
 
-    if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.hasBigUpdate) {
+    if (velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.label === 'EARLY GEM' || velocity.hasBigUpdate) {
       if (!categories.includes('trending')) categories.push('trending');
     }
 
@@ -251,6 +252,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         isTrendingWeekly: signals.githubTrending === 'weekly',
         hnTopScore: signals.hnTopScore,
         devtoReactions: signals.devtoTopReactions,
+        trendingStarsToday: signals.trendingStarsToday,
       });
 
       repo.velocityScore = velocity.score;
@@ -263,7 +265,7 @@ export async function fetchAllSources(): Promise<RepoItem[]> {
         repo.isVerified = true;
       }
 
-      if ((signals.githubTrending || velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.hasBigUpdate) && !repo.categories.includes('trending')) {
+      if ((signals.githubTrending || velocity.label === 'EXPLOSIVE' || velocity.label === 'HOT RISING' || velocity.label === 'EARLY GEM' || velocity.hasBigUpdate) && !repo.categories.includes('trending')) {
         repo.categories.push('trending');
       }
     }

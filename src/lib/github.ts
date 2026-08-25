@@ -161,7 +161,7 @@ export function determineCategories(topics: string[], desc: string, stars: numbe
   return categories;
 }
 
-// ====== ACCURATE VELOCITY & ATTENTION SCORING ======
+// ====== MULTI-SIGNAL VELOCITY & ATTENTION SCORING (v2 — 5-Tier System) ======
 export function calculateVelocity(
   stars: number,
   createdAt?: string,
@@ -171,76 +171,129 @@ export function calculateVelocity(
     isTrendingWeekly?: boolean;
     hnTopScore?: number;
     devtoReactions?: number;
+    trendingStarsToday?: number;
   }
 ): { score: number; label: RepoItem['velocityLabel']; hasBigUpdate?: boolean; growthText?: string } {
   const now = Date.now();
   const created = createdAt ? new Date(createdAt).getTime() : 0;
   const updated = updatedAt ? new Date(updatedAt).getTime() : now;
   
-  // Calculate exact age in days
   const ageDays = created > 0 ? Math.max(1, (now - created) / (1000 * 60 * 60 * 24)) : 1000;
   const daysSinceUpdate = Math.max(0, (now - updated) / (1000 * 60 * 60 * 24));
   
   const starsPerDay = stars / ageDays;
+  const hnScore = extraSignals?.hnTopScore || 0;
+  const devtoReactions = extraSignals?.devtoReactions || 0;
+  const trendingToday = !!extraSignals?.isTrendingToday;
+  const todayStars = extraSignals?.trendingStarsToday || 0;
 
-  // 1. CLASSIC FIRST: Proven standards in the industry
-  const isClassicStandard = stars >= 25000 || (ageDays >= 730 && stars >= 12000) || (ageDays >= 1095 && stars >= 8000);
+  // Effective daily velocity: use trendingStarsToday if available (more accurate than lifetime average)
+  const effectiveVelocity = todayStars > 0 ? Math.max(starsPerDay, todayStars) : starsPerDay;
 
-  if (isClassicStandard) {
-    const hasBigUpdate = daysSinceUpdate <= 3 && ((extraSignals?.hnTopScore || 0) > 20 || (extraSignals?.devtoReactions || 0) > 10);
+  // Staleness penalty: repos not updated in 30+ days get score reduction
+  const stalenessPenalty = daysSinceUpdate > 90 ? -8 : daysSinceUpdate > 60 ? -5 : daysSinceUpdate > 30 ? -2 : 0;
+
+  // ──────────────────────────────────────────────────────────────
+  // TIER 1: ESTABLISHED — Mature industry standards (10k+ stars)
+  //   Evaluated FIRST to prevent mega-repos from falsely triggering
+  //   viral alerts. They get their own dignified tier.
+  // ──────────────────────────────────────────────────────────────
+  const isEstablished = stars >= 25000 || (ageDays >= 730 && stars >= 12000) || (ageDays >= 1095 && stars >= 8000);
+
+  if (isEstablished) {
+    const hasBigUpdate = daysSinceUpdate <= 3 && (hnScore > 20 || devtoReactions > 10);
     return {
-      score: hasBigUpdate ? 96 : Math.min(95, 75 + Math.round(stars / 10000)),
-      label: 'CLASSIC',
+      score: hasBigUpdate ? 96 : Math.min(88, 75 + Math.round(stars / 10000)),
+      label: 'ESTABLISHED',
       hasBigUpdate,
-      growthText: hasBigUpdate ? 'Active Major Release' : 'Proven Standard',
+      growthText: hasBigUpdate ? 'Active Major Release' : `${Math.round(stars / 1000)}k stars • Proven Standard`,
     };
   }
 
-  // 2. EXPLOSIVE: Strictly for True Viral Phenomena (< 6 months old with massive traction)
-  const isPhenomenon = 
-    (extraSignals?.isTrendingToday && ageDays <= 180 && stars >= 1500) ||
-    (ageDays <= 90 && starsPerDay >= 30 && stars >= 1000) ||
-    (ageDays <= 30 && starsPerDay >= 15 && stars >= 300) ||
-    ((extraSignals?.hnTopScore || 0) >= 200 && ageDays <= 120);
+  // ──────────────────────────────────────────────────────────────
+  // TIER 2: VIRAL BREAKOUT — True viral phenomena ONLY
+  //   Much higher bar than before: 1,500+ stars AND 50+ stars/day
+  // ──────────────────────────────────────────────────────────────
+  const isViralBreakout = 
+    // Young repo with extreme velocity
+    (ageDays <= 90 && effectiveVelocity >= 50 && stars >= 1500) ||
+    // Currently trending on GitHub AND substantial size
+    (trendingToday && ageDays <= 180 && stars >= 2000) ||
+    // Massive HN virality on a young repo
+    (hnScore >= 300 && ageDays <= 60 && stars >= 500) ||
+    // Ultra-fast newborn: created in last 14 days with insane traction
+    (ageDays <= 14 && stars >= 800 && effectiveVelocity >= 80);
 
-  if (isPhenomenon) {
+  if (isViralBreakout) {
+    const velocityText = todayStars > 0 ? `+${todayStars} stars today` : `+${Math.round(effectiveVelocity)} stars/day`;
     return {
       score: 99,
       label: 'EXPLOSIVE',
-      growthText: extraSignals?.isTrendingToday
-        ? 'Trending #1 Today'
-        : `+${Math.round(starsPerDay)} stars/day • Viral Breakout`,
+      growthText: trendingToday
+        ? `${velocityText} • Viral Breakout`
+        : `${velocityText} • Viral Breakout`,
     };
   }
 
-  // 3. COMMUNITY PICK: Viral on Hacker News or Dev.to
-  if (
-    (extraSignals?.hnTopScore && extraSignals.hnTopScore >= 35) ||
-    (extraSignals?.devtoReactions && extraSignals.devtoReactions >= 20)
-  ) {
-    return {
-      score: 92,
-      label: 'COMMUNITY PICK',
-      growthText: extraSignals?.hnTopScore
-        ? `${extraSignals.hnTopScore} pts on Hacker News`
-        : 'Featured on Dev.to',
-    };
-  }
+  // ──────────────────────────────────────────────────────────────
+  // TIER 3: HOT RISING — Strong sustained upward momentum
+  // ──────────────────────────────────────────────────────────────
+  const isHotRising =
+    (ageDays <= 365 && effectiveVelocity >= 15 && stars >= 500) ||
+    (trendingToday && stars >= 800) ||
+    (hnScore >= 100 && stars >= 300) ||
+    (ageDays <= 180 && effectiveVelocity >= 10 && stars >= 300);
 
-  // 4. HOT RISING: Young projects with solid sustained upward growth
-  if (ageDays <= 730 && (starsPerDay >= 6 || (ageDays <= 30 && stars >= 150))) {
+  if (isHotRising) {
+    const rawScore = 92 + Math.min(4, Math.round(effectiveVelocity / 15));
+    const velocityText = todayStars > 0 ? `+${todayStars} stars today` : `+${Math.round(effectiveVelocity)} stars/day`;
     return {
-      score: Math.min(94, 82 + Math.round(starsPerDay * 1.5)),
+      score: Math.max(92, Math.min(96, rawScore + stalenessPenalty)),
       label: 'HOT RISING',
-      growthText: `+${Math.round(starsPerDay)} stars/day`,
+      growthText: velocityText,
     };
   }
 
-  // 5. TOP RATED: Solid high-quality tools
+  // ──────────────────────────────────────────────────────────────
+  // TIER 4: COMMUNITY PICK — Validated by developer discussion
+  // ──────────────────────────────────────────────────────────────
+  if (hnScore >= 35 || devtoReactions >= 20) {
+    return {
+      score: Math.max(85, Math.min(92, 88 + stalenessPenalty)),
+      label: 'COMMUNITY PICK',
+      growthText: hnScore >= 35
+        ? `${hnScore} pts on Hacker News`
+        : `${devtoReactions} reactions on Dev.to`,
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // TIER 5: EARLY GEM — Promising new projects with real traction
+  //   Honest labeling for repos that aren't viral yet but show promise
+  // ──────────────────────────────────────────────────────────────
+  const isEarlyGem =
+    (stars < 1500 && effectiveVelocity >= 8 && ageDays <= 60) ||
+    (ageDays <= 14 && stars >= 100) ||
+    (ageDays <= 30 && stars >= 150 && effectiveVelocity >= 5) ||
+    (trendingToday && stars < 800);
+
+  if (isEarlyGem) {
+    const rawScore = 85 + Math.min(6, Math.round(effectiveVelocity));
+    const velocityText = todayStars > 0 ? `+${todayStars} stars today` : `+${Math.round(effectiveVelocity)} stars/day`;
+    return {
+      score: Math.max(85, Math.min(91, rawScore + stalenessPenalty)),
+      label: 'EARLY GEM',
+      growthText: `${velocityText} • Early Gem`,
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // FALLBACK: ESTABLISHED for anything else with decent stars
+  // ──────────────────────────────────────────────────────────────
   return {
-    score: Math.min(88, 65 + Math.round(stars / 5000)),
-    label: 'TOP RATED',
-    growthText: `${Math.round(stars / 1000)}k stars`,
+    score: Math.max(60, Math.min(84, 65 + Math.round(stars / 5000) + stalenessPenalty)),
+    label: 'ESTABLISHED',
+    growthText: stars >= 1000 ? `${(stars / 1000).toFixed(1)}k stars` : `${stars} stars`,
   };
 }
 

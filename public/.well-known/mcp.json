@@ -1,0 +1,60 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/server-card.json",
+  "name": "devops-fomo",
+  "description": "Real-time intelligence on trending GitHub repos, viral AI agent tools, and DevOps projects. Multi-signal velocity scoring using stars, PRs, Hacker News, Reddit, and Dev.to data.",
+  "version": "1.0.0",
+  "homepage": "https://dev-ops-fomo.vercel.app",
+  "tools": [
+    {
+      "name": "get_trending_repos",
+      "description": "Get trending GitHub repositories sorted by multi-signal velocity score. Returns repos with stars, velocity badges (VIRAL BREAKOUT, HOT RISING, EARLY GEM), social signals from Hacker News and Dev.to, and growth metrics.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["trending", "agentic-ai", "devops-infra", "mlops", "architecture"],
+            "description": "Filter by category. 'trending' returns all categories sorted by velocity.",
+            "default": "trending"
+          },
+          "sortBy": {
+            "type": "string",
+            "enum": ["velocity", "stars", "updated"],
+            "description": "Sort order. 'velocity' uses composite multi-signal scoring.",
+            "default": "velocity"
+          },
+          "search": {
+            "type": "string",
+            "description": "Full-text search across repo names, descriptions, and topics."
+          },
+          "minStars": {
+            "type": "integer",
+            "description": "Minimum star count filter.",
+            "default": 0
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Maximum number of results.",
+            "default": 20,
+            "maximum": 100
+          }
+        }
+      }
+    },
+    {
+      "name": "get_community_buzz",
+      "description": "Get aggregated tech news and discussions from Hacker News, Reddit, and Dev.to about trending developer tools and AI projects.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "enum": ["all", "hn", "reddit", "devto"],
+            "description": "Filter by news source.",
+            "default": "all"
+          }
+        }
+      }
+    }
+  ]
+}

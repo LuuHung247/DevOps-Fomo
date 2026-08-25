@@ -120,7 +120,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 98,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
     hasBigUpdate: true,
     growthDeltaText: '56.4k stars • AI Penetration Testing Agent',
     socialSignals: { hnTopScore: 340, devtoTopReactions: 80 },
@@ -470,7 +470,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['agentic-ai', 'mlops', 'trending'],
     isVerified: true,
     velocityScore: 98,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
     hasBigUpdate: true,
     growthDeltaText: 'DeepSeek-R1 Live Support',
     socialSignals: { hnTopScore: 420 },
@@ -539,7 +539,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra', 'trending'],
     isVerified: true,
     velocityScore: 95,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
     hasBigUpdate: true,
     growthDeltaText: 'v1.9 State Encryption Released',
   },
@@ -588,7 +588,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra'],
     isVerified: true,
     velocityScore: 98,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'kamranahmedse/developer-roadmap',
@@ -609,7 +609,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture'],
     isVerified: true,
     velocityScore: 95,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'bregman-arie/devops-exercises',
@@ -630,7 +630,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture', 'devops-infra'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'trimstray/the-book-of-secret-knowledge',
@@ -651,7 +651,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['architecture'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
 
   // ==========================================
@@ -676,7 +676,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 94,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'ansible/ansible',
@@ -697,7 +697,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 92,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
     growthDeltaText: 'Automation Standard',
   },
   {
@@ -719,7 +719,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
     growthDeltaText: 'API Gateway Standard',
   },
   {
@@ -741,7 +741,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 93,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
     growthDeltaText: 'Observability Standard',
   },
   {
@@ -784,7 +784,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 89,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'cilium/cilium',
@@ -826,7 +826,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['devops-infra'],
     isVerified: true,
     velocityScore: 90,
-    velocityLabel: 'TOP RATED',
+    velocityLabel: 'ESTABLISHED',
   },
 
   // ==========================================
@@ -872,7 +872,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops'],
     isVerified: true,
     velocityScore: 89,
-    velocityLabel: 'TOP RATED',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'mlflow/mlflow',
@@ -893,7 +893,7 @@ export const SEED_REPOSITORIES: RepoItem[] = [
     categories: ['mlops'],
     isVerified: true,
     velocityScore: 91,
-    velocityLabel: 'CLASSIC',
+    velocityLabel: 'ESTABLISHED',
   },
   {
     id: 'aquasecurity/trivy',

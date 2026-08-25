@@ -1,0 +1,136 @@
+# DevOps-FOMO — Complete API Reference & Scoring Methodology
+
+> DevOps-FOMO is a real-time intelligence radar that tracks the most viral AI agent tools, DevOps repositories, and breakthrough open-source projects on GitHub. It uses multi-signal velocity scoring combining GitHub metrics, Hacker News discussions, Reddit mentions, and Dev.to articles to surface genuinely trending projects before they go mainstream.
+
+## API Reference
+
+### GET /api/repos
+
+Returns a JSON object containing trending repositories with velocity scores and social signals.
+
+**Query Parameters:**
+- `category` (string, optional): Filter by category. Values: `trending`, `agentic-ai`, `devops-infra`, `mlops`, `architecture`. Default: `trending`.
+- `sortBy` (string, optional): Sort order. Values: `velocity` (composite score), `stars` (total stars), `updated` (most recently updated). Default: `velocity`.
+- `search` (string, optional): Full-text search across repository names, descriptions, and topics.
+- `minStars` (number, optional): Minimum star count filter.
+
+**Response Schema:**
+```json
+{
+  "repos": [
+    {
+      "id": "string — Unique identifier",
+      "fullName": "string — owner/repo format (e.g. 'browser-use/browser-use')",
+      "name": "string — Repository name",
+      "owner": "string — Repository owner/organization",
+      "description": "string — Repository description",
+      "url": "string — GitHub URL",
+      "stars": "number — Total stargazer count",
+      "forks": "number — Total fork count",
+      "openIssues": "number — Open issue count",
+      "language": "string — Primary programming language",
+      "topics": ["string array — GitHub topics/tags"],
+      "createdAt": "string — ISO 8601 creation date",
+      "updatedAt": "string — ISO 8601 last update date",
+      "category": "string — Primary category",
+      "categories": ["string array — All matching categories"],
+      "velocityScore": "number — Composite velocity score (0-100)",
+      "velocityLabel": "string — Badge tier: EXPLOSIVE, HOT RISING, EARLY GEM, COMMUNITY PICK, ESTABLISHED",
+      "growthDeltaText": "string — Human-readable growth description (e.g. '+52 stars/day')",
+      "socialSignals": {
+        "hnTopScore": "number — Highest Hacker News post score mentioning this repo",
+        "hnMentions": "number — Total Hacker News mention count",
+        "devtoMentions": "number — Dev.to article count",
+        "devtoTopReactions": "number — Highest Dev.to reaction count",
+        "githubTrending": "string — 'daily' or 'weekly' if currently on GitHub Trending",
+        "trendingStarsToday": "number — Stars gained today (from GitHub Trending page)",
+        "awesomeLists": ["string array — Awesome lists that include this repo"]
+      }
+    }
+  ],
+  "total": "number — Total repos matching filters",
+  "cached": "boolean — Whether response is from cache",
+  "cacheTime": "string — ISO 8601 cache timestamp",
+  "stats": {
+    "totalRepos": "number — Total tracked repositories",
+    "totalStars": "number — Sum of all stars",
+    "trendingCount": "number — Repos with velocity score >= 90",
+    "categoryCounts": { "agentic-ai": "number", "devops-infra": "number", "mlops": "number", "architecture": "number" }
+  }
+}
+```
+
+**Example Request:**
+```
+GET https://dev-ops-fomo.vercel.app/api/repos?category=agentic-ai&sortBy=velocity&minStars=100
+```
+
+### GET /api/buzz
+
+Returns aggregated tech news articles from Hacker News, Reddit, and Dev.to.
+
+**Response Schema:**
+```json
+{
+  "items": [
+    {
+      "id": "string",
+      "title": "string — Article/post title",
+      "url": "string — Link to the article",
+      "source": "string — 'hn', 'reddit', or 'devto'",
+      "subreddit": "string — Reddit subreddit (if source is reddit)",
+      "score": "number — Upvotes/points",
+      "commentCount": "number — Comment count",
+      "author": "string — Author username",
+      "createdAt": "string — ISO 8601 timestamp"
+    }
+  ],
+  "fetchedAt": "string — ISO 8601 fetch timestamp"
+}
+```
+
+## Velocity Scoring Methodology
+
+DevOps-FOMO uses a multi-signal composite scoring system rather than raw star counts. The scoring engine evaluates repositories through a 5-tier classification system:
+
+### Tier 1: VIRAL BREAKOUT (Score: 99)
+Requirements (ANY of):
+- 1,500+ stars AND 50+ stars/day AND under 90 days old
+- Currently on GitHub Trending AND 2,000+ stars AND under 180 days old
+- 300+ points on Hacker News AND under 60 days old
+
+### Tier 2: HOT RISING (Score: 92-96)
+Requirements (ANY of):
+- 500+ stars AND 15+ stars/day AND under 365 days old
+- Currently on GitHub Trending AND 800+ stars
+- 100+ points on Hacker News AND 300+ stars
+
+### Tier 3: EARLY GEM (Score: 85-91)
+Requirements (ANY of):
+- Under 1,500 stars AND 8+ stars/day AND under 60 days old
+- Under 14 days old AND 100+ stars
+
+### Tier 4: COMMUNITY PICK (Score: 88-92)
+Requirements (ANY of):
+- 35+ points on Hacker News
+- 20+ reactions on Dev.to
+
+### Tier 5: ESTABLISHED (Score: 75-88)
+- 10,000+ stars (mature, proven industry standard)
+- Bonus score if updated within last 3 days with social signal activity
+
+## Data Sources
+
+DevOps-FOMO aggregates data from 6 independent sources, refreshed every hour:
+1. **GitHub Trending Page**: Daily and language-specific trending repositories with stars-today counts.
+2. **GitHub Search API**: Rolling time-window queries (7d, 14d, 30d, 60d, 90d) to capture newly born breakout projects.
+3. **Hacker News (Algolia API)**: Stories and Show HN posts mentioning GitHub repositories from the last 30 days.
+4. **Dev.to API**: Top articles across 9 tech tags mentioning GitHub repositories.
+5. **Awesome Lists**: 19 curated GitHub awesome lists for ecosystem coverage.
+6. **Seed Repositories**: 35 manually curated industry-defining projects.
+
+## Data Freshness
+
+- Cache TTL: 1 hour (memory + disk)
+- Background sync: Every 3 minutes on the client, hourly on the server
+- Cron endpoint: POST /api/cron/sync (requires CRON_SECRET authorization)

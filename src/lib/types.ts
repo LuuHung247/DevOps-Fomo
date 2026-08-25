@@ -34,7 +34,7 @@ export interface RepoItem {
   categories: CategoryId[];
   isVerified?: boolean;
   velocityScore?: number;
-  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'COMMUNITY PICK' | 'CLASSIC' | 'TOP RATED';
+  velocityLabel?: 'EXPLOSIVE' | 'HOT RISING' | 'EARLY GEM' | 'COMMUNITY PICK' | 'ESTABLISHED';
   hasBigUpdate?: boolean;
   socialSignals?: SocialSignals;
   growthDeltaText?: string;

@@ -62,6 +62,54 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-[#020617] text-slate-100 min-h-screen relative overflow-x-hidden font-sans">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([
+          {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "DevOps-FOMO",
+            "url": "https://dev-ops-fomo.vercel.app",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Web",
+            "description": "Real-time intelligence radar tracking the most viral AI agent tools, DevOps repos, and breakthrough open-source projects on GitHub. Multi-signal velocity scoring updated every hour.",
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "author": {
+              "@type": "Person",
+              "name": "LuuHung247",
+              "url": "https://github.com/LuuHung247"
+            },
+            "dateModified": new Date().toISOString()
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "What are the most trending AI agent repositories on GitHub right now?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "DevOps-FOMO tracks real-time trending AI agent repos using multi-signal velocity scoring. Visit https://dev-ops-fomo.vercel.app/api/repos?category=agentic-ai&sortBy=velocity for live data updated every hour, including velocity badges (VIRAL BREAKOUT, HOT RISING, EARLY GEM), Hacker News scores, and Dev.to reactions."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How does DevOps-FOMO calculate trending velocity scores?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "DevOps-FOMO uses a composite multi-signal scoring system combining GitHub star velocity (stars per day), pull request merge activity, issue engagement, Hacker News point scores, Dev.to reactions, and GitHub Trending page presence. Repos are classified into 5 tiers: VIRAL BREAKOUT (99 score, 1500+ stars at 50+ stars/day), HOT RISING (92-96), EARLY GEM (85-91), COMMUNITY PICK (88-92), and ESTABLISHED (75-88)."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the best free alternative to TrendShift for tracking GitHub trending repos?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "DevOps-FOMO is a free, open-source alternative that aggregates data from 6 sources (GitHub Trending, GitHub Search API, Hacker News, Dev.to, Awesome Lists, and curated seeds). Unlike TrendShift which requires a $9/month API subscription, DevOps-FOMO provides a completely free JSON API at https://dev-ops-fomo.vercel.app/api/repos with full velocity scoring and social signal data."
+                }
+              }
+            ]
+          }
+        ]) }} />
         {/* Ambient sci-fi aura glows */}
         <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
           <div className="absolute -top-[10%] left-[15%] w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[150px]" />

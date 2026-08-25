@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const totalStars = repos.reduce((acc, r) => acc + r.stars, 0);
     
     const categoryCounts: Record<CategoryId, number> = {
-      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK').length,
+      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'EARLY GEM' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK').length,
       'agentic-ai': repos.filter(r => r.categories.includes('agentic-ai')).length,
       'devops-infra': repos.filter(r => r.categories.includes('devops-infra')).length,
       'mlops': repos.filter(r => r.categories.includes('mlops')).length,
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     let filtered = repos;
     if (category !== 'all') {
       if (category === 'trending') {
-        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK');
+        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'EARLY GEM' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK');
       } else {
         filtered = filtered.filter(r => r.categories.includes(category));
       }
