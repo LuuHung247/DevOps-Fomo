@@ -25,27 +25,52 @@ export async function GET(request: NextRequest) {
     const VALID_SORTS = ['stars', 'velocity', 'updated'];
     const sortBy = VALID_SORTS.includes(rawSortBy) ? rawSortBy : 'stars';
 
-    // 1. Instant Retrieval from Cache (Zero Blocking - < 10ms)
+    // 1. Check Cache
     let repos: RepoItem[] = getCachedRepos('all');
-    if (!repos || repos.length === 0) {
-      repos = SEED_REPOSITORIES;
+    
+    // 2. Cold Start or Stale Cache Discovery:
+    // If the cache only has baseline seeds or is stale, fetch full multi-source data
+    const isBaselineOrEmpty = !repos || repos.length <= SEED_REPOSITORIES.length;
+    const stale = isCacheStale('all', 1000 * 60 * 30);
+
+    if (isBaselineOrEmpty || stale) {
+      try {
+        if (!isRevalidating) {
+          isRevalidating = true;
+          // If cold start (only seeds), await fresh fetch so user immediately sees 350+ repos
+          if (isBaselineOrEmpty) {
+            const freshRepos = await fetchAllSources();
+            if (freshRepos && freshRepos.length > 0) {
+              repos = freshRepos;
+              setCachedRepos('all', freshRepos);
+            }
+          } else {
+            // SWR: return cached data immediately, update in background
+            fetchAllSources()
+              .then((freshRepos) => {
+                if (freshRepos && freshRepos.length > 0) {
+                  setCachedRepos('all', freshRepos);
+                }
+              })
+              .catch((err) => {
+                console.error('[Discovery Engine] Background revalidation error:', err);
+              })
+              .finally(() => {
+                isRevalidating = false;
+              });
+          }
+        }
+      } catch (err) {
+        console.error('[Discovery Engine] Discovery error, using available cache:', err);
+      } finally {
+        if (isBaselineOrEmpty) {
+          isRevalidating = false;
+        }
+      }
     }
 
-    // 2. Non-blocking Stale-While-Revalidate trigger in background
-    if (isCacheStale('all') && !isRevalidating) {
-      isRevalidating = true;
-      fetchAllSources()
-        .then((freshRepos) => {
-          if (freshRepos && freshRepos.length > 0) {
-            setCachedRepos('all', freshRepos);
-          }
-        })
-        .catch((err) => {
-          console.error('[Discovery Engine] Background revalidation error:', err);
-        })
-        .finally(() => {
-          isRevalidating = false;
-        });
+    if (!repos || repos.length === 0) {
+      repos = SEED_REPOSITORIES;
     }
 
     // 3. Stats calculations over full pool
@@ -53,20 +78,36 @@ export async function GET(request: NextRequest) {
     const totalStars = repos.reduce((acc, r) => acc + (r.stars || 0), 0);
     
     const categoryCounts: Record<CategoryId, number> = {
-      'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'EARLY GEM' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK').length,
-      'agentic-ai': repos.filter(r => r.categories.includes('agentic-ai')).length,
-      'devops-infra': repos.filter(r => r.categories.includes('devops-infra')).length,
-      'mlops': repos.filter(r => r.categories.includes('mlops')).length,
-      'architecture': repos.filter(r => r.categories.includes('architecture')).length,
+      'trending': repos.filter(r => 
+        r.categories.includes('trending') || 
+        r.velocityLabel === 'EXPLOSIVE' || 
+        r.velocityLabel === 'HOT RISING' || 
+        r.velocityLabel === 'EARLY GEM' || 
+        r.velocityLabel === 'COMMUNITY PICK' || 
+        r.hasBigUpdate ||
+        (r.velocityScore && r.velocityScore >= 80)
+      ).length,
+      'agentic-ai': repos.filter(r => r.categories.includes('agentic-ai') || r.category === 'agentic-ai').length,
+      'devops-infra': repos.filter(r => r.categories.includes('devops-infra') || r.category === 'devops-infra').length,
+      'mlops': repos.filter(r => r.categories.includes('mlops') || r.category === 'mlops').length,
+      'architecture': repos.filter(r => r.categories.includes('architecture') || r.category === 'architecture').length,
     };
 
     // 4. Filter by category
     let filtered = repos;
     if (category !== 'all') {
       if (category === 'trending') {
-        filtered = filtered.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'EARLY GEM' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK');
+        filtered = filtered.filter(r => 
+          r.categories.includes('trending') || 
+          r.velocityLabel === 'EXPLOSIVE' || 
+          r.velocityLabel === 'HOT RISING' || 
+          r.velocityLabel === 'EARLY GEM' || 
+          r.velocityLabel === 'COMMUNITY PICK' || 
+          r.hasBigUpdate ||
+          (r.velocityScore && r.velocityScore >= 80)
+        );
       } else {
-        filtered = filtered.filter(r => r.categories.includes(category));
+        filtered = filtered.filter(r => r.categories.includes(category) || r.category === category);
       }
     }
 
