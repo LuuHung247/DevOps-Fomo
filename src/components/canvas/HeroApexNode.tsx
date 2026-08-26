@@ -5,13 +5,9 @@ import { RepoItem } from '@/lib/types';
 
 interface HeroApexNodeProps {
   repo: RepoItem;
-  onScrollDown?: () => void;
 }
 
-export const HeroApexNode: React.FC<HeroApexNodeProps> = ({
-  repo,
-  onScrollDown,
-}) => {
+export const HeroApexNode: React.FC<HeroApexNodeProps> = ({ repo }) => {
   const [copied, setCopied] = useState(false);
 
   const formatNumber = (num: number) => {
@@ -78,7 +74,7 @@ export const HeroApexNode: React.FC<HeroApexNodeProps> = ({
         {repo.description}
       </p>
 
-      {/* 4. GitHub-Style Metrics Row (Starred & Forks, No Velocity box, No fork emoji) */}
+      {/* 4. GitHub-Style Metrics Row (Starred & Forks) */}
       <div className="grid grid-cols-2 gap-3 mb-4 font-mono text-center">
         <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
           <div className="text-[10px] text-slate-400 uppercase tracking-wider">Starred</div>
@@ -132,21 +128,6 @@ export const HeroApexNode: React.FC<HeroApexNodeProps> = ({
           <span>↗</span>
         </a>
       </div>
-
-      {/* 7. Centered Scroll Down Prompt */}
-      {onScrollDown && (
-        <div className="pt-3 flex justify-center">
-          <button
-            onClick={onScrollDown}
-            className="w-7 h-7 rounded-full bg-slate-950 hover:bg-slate-900 border border-slate-800 text-slate-400 hover:text-cyan-300 flex items-center justify-center transition-all hover:scale-110 shadow"
-            title="Scroll to explore repository feed"
-          >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </button>
-        </div>
-      )}
 
     </div>
   );

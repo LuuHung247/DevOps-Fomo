@@ -126,141 +126,147 @@ export default function Home() {
   const isBuzzMode = activeCategory === 'buzz';
 
   return (
-    <div className="min-h-screen flex flex-col justify-between font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* 1. CINEMATIC SPLASH INTRO (Runs on first visit, then smoothly dissolves) */}
+    <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#030712] font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      {/* 1. CINEMATIC SPLASH INTRO (Runs once on first visit) */}
       <SplashIntro />
 
-      {/* 2. HEADER */}
+      {/* 2. UNIFIED STICKY HEADER */}
       <Header totalRepos={stats.totalRepos} totalStars={stats.totalStars} />
 
-      <main className="flex-1 pb-16">
+      {/* 3. FULLPAGE SNAP CONTAINER (Unified background, 1 frame switch) */}
+      <main className="flex-1 w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-[#030712]">
         
-        {/* 3. SCREEN 1: LARGE SPATIAL INTELLIGENCE RADAR CANVAS (100vh Viewport) */}
+        {/* FRAME 1: TOP BREAKOUTS SPATIAL STAGE (Fits 1 Full Frame) */}
         {!searchQuery && !isBuzzMode && (
-          <TechFomoCanvas repos={repos} />
+          <section className="h-[calc(100vh-4rem)] w-full snap-start snap-always flex flex-col justify-center items-center overflow-hidden bg-[#030712]">
+            <TechFomoCanvas repos={repos} />
+          </section>
         )}
 
-        {/* 4. SCREEN 2: MAIN FEED (Search + Categories + Repository List) */}
-        <div id="main-feed" className="pt-8 scroll-mt-6">
+        {/* FRAME 2: DIRECTORY / ALL REPOSITORIES SUMMARY (Scroll switches into this frame) */}
+        <section id="main-feed" className="min-h-[calc(100vh-4rem)] w-full snap-start snap-always flex flex-col justify-between pt-6 pb-12 bg-[#030712]">
           
-          {/* SEARCH BAR */}
-          <SearchBar
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            filteredCount={repos.length}
-            totalCount={stats.totalRepos}
-          />
+          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 flex-1">
+            
+            {/* SEARCH BAR */}
+            <SearchBar
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              filteredCount={repos.length}
+              totalCount={stats.totalRepos}
+            />
 
-          {/* CATEGORY TABS */}
-          <CategoryNav
-            activeCategory={activeCategory}
-            onSelectCategory={setActiveCategory}
-            categoryCounts={stats.categoryCounts}
-            totalCount={stats.totalRepos}
-          />
+            {/* CATEGORY TABS */}
+            <CategoryNav
+              activeCategory={activeCategory}
+              onSelectCategory={setActiveCategory}
+              categoryCounts={stats.categoryCounts}
+              totalCount={stats.totalRepos}
+            />
 
-          {/* BUZZ MODE OR REPOSITORY FEED */}
-          {isBuzzMode ? (
-            <>
-              <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-5 font-mono text-xs">
-                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
-                  <span className="text-amber-400 font-semibold text-[11px]">
-                    📰 COMMUNITY BUZZ — HN · REDDIT · DEV.TO
-                  </span>
-                  <span className="text-slate-500 text-[10px] hidden sm:inline">
-                    Refreshes every 15 min
-                  </span>
+            {/* BUZZ MODE OR REPOSITORY FEED */}
+            {isBuzzMode ? (
+              <>
+                <div className="max-w-4xl mx-auto mb-5 font-mono text-xs">
+                  <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-amber-400 font-semibold text-[11px]">
+                      📰 COMMUNITY BUZZ — HN · REDDIT · DEV.TO
+                    </span>
+                    <span className="text-slate-500 text-[10px] hidden sm:inline">
+                      Refreshes every 15 min
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <BuzzFeed items={buzzItems} loading={buzzLoading} />
-            </>
-          ) : (
-            <>
-              {/* Filter Bar */}
-              <FilterBar sortBy={sortBy} onSortByChange={setSortBy} />
+                <BuzzFeed items={buzzItems} loading={buzzLoading} />
+              </>
+            ) : (
+              <>
+                {/* Filter Bar */}
+                <FilterBar sortBy={sortBy} onSortByChange={setSortBy} />
 
-              {/* Repository Feed */}
-              <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
+                {/* Repository Feed */}
+                <div id="repository-feed" className="space-y-4">
 
-                {/* Loading Skeleton */}
-                {loading && repos.length === 0 && (
-                  <div className="space-y-4">
-                    {[...Array(5)].map((_, i) => (
-                      <div key={i} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-sm animate-pulse">
-                        <div className="flex justify-between items-center mb-3">
-                          <div className="h-5 bg-slate-800 rounded w-1/3" />
-                          <div className="h-4 bg-slate-800 rounded w-24" />
+                  {/* Loading Skeleton */}
+                  {loading && repos.length === 0 && (
+                    <div className="space-y-4">
+                      {[...Array(5)].map((_, i) => (
+                        <div key={i} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-sm animate-pulse">
+                          <div className="flex justify-between items-center mb-3">
+                            <div className="h-5 bg-slate-800 rounded w-1/3" />
+                            <div className="h-4 bg-slate-800 rounded w-24" />
+                          </div>
+                          <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
+                          <div className="space-y-2 mb-4">
+                            <div className="h-3.5 bg-slate-800 rounded w-full" />
+                            <div className="h-3.5 bg-slate-800 rounded w-4/5" />
+                          </div>
+                          <div className="h-5 bg-slate-800 rounded w-1/2" />
                         </div>
-                        <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
-                        <div className="space-y-2 mb-4">
-                          <div className="h-3.5 bg-slate-800 rounded w-full" />
-                          <div className="h-3.5 bg-slate-800 rounded w-4/5" />
-                        </div>
-                        <div className="h-5 bg-slate-800 rounded w-1/2" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Repos Grid */}
-                {paginatedRepos.length > 0 && (
-                  <div className="space-y-4">
-                    {paginatedRepos.map((repo, idx) => (
-                      <RepoCard key={repo.id} repo={repo} index={idx} />
-                    ))}
-                  </div>
-                )}
-
-                {/* Pagination */}
-                {repos.length > itemsPerPage && (
-                  <Pagination
-                    currentPage={currentPage}
-                    totalPages={totalPages}
-                    totalItems={repos.length}
-                    itemsPerPage={itemsPerPage}
-                    onPageChange={setCurrentPage}
-                  />
-                )}
-
-                {/* Empty State */}
-                {!loading && repos.length === 0 && (
-                  <div className="rounded-2xl p-12 text-center my-12 bg-slate-900/90 border border-slate-800 font-mono shadow-xl">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
-                      🔍
+                      ))}
                     </div>
-                    <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
-                    <p className="text-xs text-slate-400 mb-6 leading-relaxed max-w-sm mx-auto">
-                      No repositories matched your active search or filter criteria.
-                    </p>
-                    <button
-                      onClick={() => {
-                        setSearchQuery('');
-                        setActiveCategory('trending');
-                        setSortBy('velocity');
-                      }}
-                      className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-cyan-500/20"
-                    >
-                      Reset Filters
-                    </button>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+                  )}
 
-        </div>
+                  {/* Repos Grid */}
+                  {paginatedRepos.length > 0 && (
+                    <div className="space-y-4">
+                      {paginatedRepos.map((repo, idx) => (
+                        <RepoCard key={repo.id} repo={repo} index={idx} />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Pagination */}
+                  {repos.length > itemsPerPage && (
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={repos.length}
+                      itemsPerPage={itemsPerPage}
+                      onPageChange={setCurrentPage}
+                    />
+                  )}
+
+                  {/* Empty State */}
+                  {!loading && repos.length === 0 && (
+                    <div className="rounded-2xl p-12 text-center my-12 bg-slate-900/90 border border-slate-800 font-mono shadow-xl">
+                      <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                        🔍
+                      </div>
+                      <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
+                      <p className="text-xs text-slate-400 mb-6 leading-relaxed max-w-sm mx-auto">
+                        No repositories matched your active search or filter criteria.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setActiveCategory('trending');
+                          setSortBy('velocity');
+                        }}
+                        className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-cyan-500/20"
+                      >
+                        Reset Filters
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+          </div>
+
+          <footer className="border-t border-slate-800/80 bg-[#030712] py-8 text-center text-xs text-slate-400 font-mono mt-12">
+            <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <span className="font-bold text-slate-200">TechFOMO<span className="text-cyan-400">.dev</span></span>
+                <span> • We track the hype so you don't have to</span>
+              </div>
+              <p className="text-slate-400">Powered by Next.js and Real-Time Multi-Source Intelligence.</p>
+            </div>
+          </footer>
+        </section>
 
       </main>
-
-      <footer className="border-t border-slate-800/80 bg-slate-950/80 backdrop-blur-md py-8 text-center text-xs text-slate-400 font-mono">
-        <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            <span className="font-bold text-slate-200">TechFOMO<span className="text-cyan-400">.dev</span></span>
-            <span> • We track the hype so you don't have to</span>
-          </div>
-          <p className="text-slate-400">Powered by Next.js and Real-Time Multi-Source Intelligence.</p>
-        </div>
-      </footer>
     </div>
   );
 }

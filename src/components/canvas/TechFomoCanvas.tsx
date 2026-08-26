@@ -19,20 +19,12 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
   const top4 = displayRepos[3] || SEED_REPOSITORIES[3];
   const top5 = displayRepos[4] || SEED_REPOSITORIES[4];
 
-  const handleScrollDown = () => {
-    const feed = document.getElementById('main-feed');
-    if (feed) {
-      feed.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   return (
-    <section className="relative w-full min-h-[calc(100vh-4rem)] flex flex-col justify-center overflow-hidden bg-[#030712] font-sans py-4">
+    <section className="relative w-full h-full flex flex-col justify-center items-center overflow-hidden font-sans p-4">
       
-      {/* Spatial 5-Item Showcase Composition */}
-      <div className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-center my-auto">
-        
-        <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center justify-center max-w-6xl mx-auto">
+      {/* 5-Item Showcase Composition */}
+      <div className="relative w-full max-w-6xl mx-auto flex items-center justify-center my-auto">
+        <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center justify-center">
           
           {/* LEFT SATELLITES (#2 & #4) */}
           <div className="hidden lg:flex lg:col-span-3 flex-col items-end gap-14 pr-2">
@@ -50,10 +42,7 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
 
           {/* CENTER DOMINANT HERO (#1) */}
           <div className="lg:col-span-6 flex justify-center w-full">
-            <HeroApexNode
-              repo={top1}
-              onScrollDown={handleScrollDown}
-            />
+            <HeroApexNode repo={top1} />
           </div>
 
           {/* RIGHT SATELLITES (#3 & #5) */}
@@ -79,7 +68,6 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
           </div>
 
         </div>
-
       </div>
 
     </section>
