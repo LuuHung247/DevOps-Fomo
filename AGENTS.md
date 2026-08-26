@@ -15,6 +15,11 @@ Whenever you are assigned any task in this repository (feature addition, UI reva
 * **Test-Driven Development**: Write test cases or verification assertions before or alongside implementation code (`test-driven-development`).
 * **Evidence Before Completion**: Always run `npm run build` or verification commands and verify output before declaring completion (`verification-before-completion`).
 
+### 2. 🚀 Mandatory Auto-Commit & Push to Prod (`finishing-a-development-branch`)
+* **Never Leave Dirty State**: Immediately after completing a task and verifying that all tests and `npm run build` pass with zero errors, the agent **MUST ALWAYS automatically commit and push** to the remote repository (`origin/main`).
+* **Conventional Commits**: Format commits with clear semantic prefixes (`feat:`, `fix:`, `perf:`, `refactor:`, `style:`, `docs:`).
+* **Automated Production Sync**: Ensure the remote branch is always up-to-date with local progress to trigger Vercel / CI/CD production deployments without requiring manual user intervention.
+
 ---
 
 ## 🎨 UI/UX & Design Standards (`ui-ux-pro-max`, `ui-styling`, `design-system`)
