@@ -7,33 +7,12 @@ const AWESOME_LISTS = [
   { repo: 'VoltAgent/awesome-agent-skills', name: 'awesome-agent-skills' },
   { repo: 'ComposioHQ/awesome-claude-skills', name: 'awesome-claude-skills' },
   { repo: 'e2b-dev/awesome-ai-agents', name: 'awesome-ai-agents' },
-  { repo: 'sbilly/awesome-security', name: 'awesome-security' },
-  { repo: 'enaqx/awesome-pentest', name: 'awesome-pentest' },
-  { repo: 'sindresorhus/awesome', name: 'awesome' },
-  { repo: 'trimstray/the-book-of-secret-knowledge', name: 'secret-knowledge' },
   { repo: 'bregman-arie/devops-exercises', name: 'devops-exercises' },
-  { repo: 'ibraheemdev/modern-unix', name: 'modern-unix' },
-  { repo: 'avelino/awesome-go', name: 'awesome-go' },
-  { repo: 'vinta/awesome-python', name: 'awesome-python' },
-  { repo: 'josephmisiti/awesome-machine-learning', name: 'awesome-ml' },
   { repo: 'awesome-selfhosted/awesome-selfhosted', name: 'awesome-selfhosted' },
-  { repo: 'veggiemonk/awesome-docker', name: 'awesome-docker' },
   { repo: 'ramitsurana/awesome-kubernetes', name: 'awesome-kubernetes' },
-  { repo: 'shuaibiyy/awesome-terraform', name: 'awesome-terraform' },
-  { repo: 'kyrolabs/awesome-langchain', name: 'awesome-langchain' },
-];
-
-const RELEVANCE_KEYWORDS = [
-  'agent', 'skill', 'skills', 'harness', 'pentest', 'penetrat', 'vulnerab', 'red-team',
-  'llm', 'ai', 'devops', 'kubernetes', 'docker', 'terraform',
-  'ansible', 'helm', 'gitops', 'ci', 'cd', 'pipeline', 'monitor',
-  'observ', 'security', 'cloud', 'serverless', 'container', 'platform',
-  'mlops', 'vector', 'embedding', 'inference', 'model', 'deploy',
-  'autom', 'orchestrat', 'terminal', 'cli', 'tool', 'framework',
 ];
 
 function extractGitHubRepos(markdown: string): string[] {
-  // Match GitHub repo links in markdown: [text](https://github.com/owner/repo) or bare URLs
   const pattern = /github\.com\/([a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_.]+)/g;
   const repos: string[] = [];
   let match;
@@ -66,11 +45,6 @@ function extractGitHubRepos(markdown: string): string[] {
   return repos;
 }
 
-function isRelevantRepo(repoName: string): boolean {
-  const lower = repoName.toLowerCase();
-  return RELEVANCE_KEYWORDS.some(kw => lower.includes(kw));
-}
-
 export async function fetchAwesomeListRepos(): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
   const token = process.env.GITHUB_TOKEN;
@@ -82,39 +56,34 @@ export async function fetchAwesomeListRepos(): Promise<DiscoveredRepo[]> {
     headers['Authorization'] = `token ${token}`;
   }
 
-  // Only process a subset without token to avoid rate limiting
-  const listsToProcess = token ? AWESOME_LISTS : AWESOME_LISTS.slice(0, 5);
+  // Process top 5 lists in parallel with 3s timeout
+  const listsToProcess = AWESOME_LISTS.slice(0, token ? 8 : 4);
 
-  for (const list of listsToProcess) {
+  const fetchPromises = listsToProcess.map(async (list) => {
     try {
       const url = `https://api.github.com/repos/${list.repo}/readme`;
       const res = await fetch(url, {
         headers,
-        next: { revalidate: 86400 }, // Cache for 24 hours
+        signal: AbortSignal.timeout(3000),
+        next: { revalidate: 86400 },
       });
 
-      if (!res.ok) {
-        console.warn(`Failed to fetch README for ${list.repo}: ${res.status}`);
-        continue;
-      }
+      if (!res.ok) return [];
 
       const data = await res.json();
-      
-      // README content is base64 encoded
       let content = '';
       if (data.content) {
         content = Buffer.from(data.content, 'base64').toString('utf-8');
       }
 
-      if (!content) continue;
+      if (!content) return [];
 
       const repos = extractGitHubRepos(content);
+      const listResults: DiscoveredRepo[] = [];
 
       for (const repoName of repos) {
-        // Skip self-reference
         if (repoName.toLowerCase() === list.repo.toLowerCase()) continue;
-
-        results.push({
+        listResults.push({
           fullName: repoName,
           url: `https://github.com/${repoName}`,
           source: 'awesome-list',
@@ -122,12 +91,20 @@ export async function fetchAwesomeListRepos(): Promise<DiscoveredRepo[]> {
           description: `Curated in ${list.name}`,
         });
       }
-    } catch (err) {
-      console.error(`Error fetching awesome list ${list.repo}:`, err);
+      return listResults;
+    } catch {
+      return [];
+    }
+  });
+
+  const settled = await Promise.allSettled(fetchPromises);
+  for (const item of settled) {
+    if (item.status === 'fulfilled' && Array.isArray(item.value)) {
+      results.push(...item.value);
     }
   }
 
-  // Deduplicate and track which awesome lists mention each repo
+  // Deduplicate
   const repoMap = new Map<string, DiscoveredRepo & { lists: string[] }>();
   for (const repo of results) {
     const key = repo.fullName.toLowerCase();

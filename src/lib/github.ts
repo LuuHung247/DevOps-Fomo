@@ -302,39 +302,48 @@ export async function fetchGitHubSearchRepos(headers: Record<string, string>): P
   const results: DiscoveredRepo[] = [];
   const token = !!headers['Authorization'];
   const queries = getDynamicSearchQueries();
-  const activeQueries = token ? queries : queries.slice(0, 12);
+  // Limit to high-signal queries to avoid secondary rate limits
+  const activeQueries = token ? queries.slice(0, 10) : queries.slice(0, 5);
 
-  for (const query of activeQueries) {
+  const fetchPromises = activeQueries.map(async (query) => {
     try {
-      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=30`;
-      const res = await fetch(url, { headers, next: { revalidate: 3600 } });
+      const url = `https://api.github.com/search/repositories?q=${encodeURIComponent(query)}&sort=stars&order=desc&per_page=25`;
+      const res = await fetch(url, {
+        headers,
+        signal: AbortSignal.timeout(3000),
+        next: { revalidate: 3600 },
+      });
 
       if (!res.ok) {
-        console.warn(`GitHub Search API for "${query}" returned ${res.status}`);
-        if (res.status === 403 || res.status === 429) break;
-        continue;
+        return [];
       }
 
       const data = await res.json();
       if (data.items && Array.isArray(data.items)) {
-        for (const item of data.items as GitHubApiItem[]) {
-          results.push({
-            fullName: item.full_name,
-            url: item.html_url,
-            description: item.description || '',
-            stars: item.stargazers_count,
-            forks: item.forks_count,
-            openIssues: item.open_issues_count || item.openIssues_count || 0,
-            language: item.language || undefined,
-            topics: item.topics || [],
-            createdAt: item.created_at,
-            updatedAt: item.updated_at,
-            source: 'github-search',
-          });
-        }
+        return (data.items as GitHubApiItem[]).map((item) => ({
+          fullName: item.full_name,
+          url: item.html_url,
+          description: item.description || '',
+          stars: item.stargazers_count,
+          forks: item.forks_count,
+          openIssues: item.open_issues_count || item.openIssues_count || 0,
+          language: item.language || undefined,
+          topics: item.topics || [],
+          createdAt: item.created_at,
+          updatedAt: item.updated_at,
+          source: 'github-search' as const,
+        }));
       }
-    } catch (err) {
-      console.error(`Error in GitHub Search for "${query}":`, err);
+      return [];
+    } catch {
+      return [];
+    }
+  });
+
+  const settled = await Promise.allSettled(fetchPromises);
+  for (const item of settled) {
+    if (item.status === 'fulfilled' && Array.isArray(item.value)) {
+      results.push(...item.value);
     }
   }
 

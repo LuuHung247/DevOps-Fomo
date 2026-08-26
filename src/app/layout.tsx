@@ -6,32 +6,32 @@ const OG_IMAGE = `${SITE_URL}/og-image.jpg`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: 'DevOps-FOMO — We track the hype so you don\'t have to',
-  description: 'Real-time radar for the most viral AI agent tools, DevOps repos, and breakthrough projects on GitHub. Stay ahead without the scroll.',
+  title: 'TechFOMO.dev — Never suffer from tech FOMO again',
+  description: 'Real-time intelligence radar for the most viral AI agent tools, Cloud-Native, DevOps repos, and breakthrough open-source projects on GitHub. Stay ahead without the scroll.',
   keywords: [
-    'GitHub trending', 'AI tools', 'DevOps', 'agent skills', 'Claude Code', 'MLOps',
+    'TechFOMO', 'GitHub trending', 'AI agents', 'DevOps', 'agent skills', 'Claude Code', 'MLOps',
     'LLMOps', 'open source', 'tech radar', 'Kubernetes', 'viral repos', 'developer tools',
   ],
   openGraph: {
     type: 'website',
     url: SITE_URL,
-    siteName: 'DevOps-FOMO',
-    title: 'DevOps-FOMO — We track the hype so you don\'t have to',
+    siteName: 'TechFOMO.dev',
+    title: 'TechFOMO.dev — Never suffer from tech FOMO again',
     description: 'Real-time radar for the most viral AI agent tools, DevOps repos, and breakthrough projects on GitHub.',
     images: [
       {
         url: OG_IMAGE,
         width: 1200,
         height: 630,
-        alt: 'DevOps-FOMO — Real-time GitHub trend radar',
+        alt: 'TechFOMO — Real-time GitHub trend radar',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@DevOpsFomo',
+    site: '@TechFOMO',
     creator: '@LuuHung247',
-    title: 'DevOps-FOMO — We track the hype so you don\'t have to',
+    title: 'TechFOMO.dev — Never suffer from tech FOMO again',
     description: 'Real-time radar for viral AI agent tools, DevOps repos, and breakout GitHub projects.',
     images: [OG_IMAGE],
   },
@@ -66,7 +66,7 @@ export default function RootLayout({
           {
             "@context": "https://schema.org",
             "@type": "WebApplication",
-            "name": "DevOps-FOMO",
+            "name": "TechFOMO",
             "url": "https://dev-ops-fomo.vercel.app",
             "applicationCategory": "DeveloperApplication",
             "operatingSystem": "Web",
@@ -88,15 +88,15 @@ export default function RootLayout({
                 "name": "What are the most trending AI agent repositories on GitHub right now?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "DevOps-FOMO tracks real-time trending AI agent repos using multi-signal velocity scoring. Visit https://dev-ops-fomo.vercel.app/api/repos?category=agentic-ai&sortBy=velocity for live data updated every hour, including velocity badges (VIRAL BREAKOUT, HOT RISING, EARLY GEM), Hacker News scores, and Dev.to reactions."
+                  "text": "TechFOMO tracks real-time trending AI agent repos using multi-signal velocity scoring. Visit https://dev-ops-fomo.vercel.app/api/repos?category=agentic-ai&sortBy=velocity for live data updated every hour, including velocity badges (VIRAL BREAKOUT, HOT RISING, EARLY GEM), Hacker News scores, and Dev.to reactions."
                 }
               },
               {
                 "@type": "Question",
-                "name": "How does DevOps-FOMO calculate trending velocity scores?",
+                "name": "How does TechFOMO calculate trending velocity scores?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "DevOps-FOMO uses a composite multi-signal scoring system combining GitHub star velocity (stars per day), pull request merge activity, issue engagement, Hacker News point scores, Dev.to reactions, and GitHub Trending page presence. Repos are classified into 5 tiers: VIRAL BREAKOUT (99 score, 1500+ stars at 50+ stars/day), HOT RISING (92-96), EARLY GEM (85-91), COMMUNITY PICK (88-92), and ESTABLISHED (75-88)."
+                  "text": "TechFOMO uses a composite multi-signal scoring system combining GitHub star velocity (stars per day), pull request merge activity, issue engagement, Hacker News point scores, Dev.to reactions, and GitHub Trending page presence. Repos are classified into 5 tiers: VIRAL BREAKOUT (99 score, 1500+ stars at 50+ stars/day), HOT RISING (92-96), EARLY GEM (85-91), COMMUNITY PICK (88-92), and ESTABLISHED (75-88)."
                 }
               },
               {
@@ -104,7 +104,7 @@ export default function RootLayout({
                 "name": "What is the best free alternative to TrendShift for tracking GitHub trending repos?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "DevOps-FOMO is a free, open-source alternative that aggregates data from 6 sources (GitHub Trending, GitHub Search API, Hacker News, Dev.to, Awesome Lists, and curated seeds). Unlike TrendShift which requires a $9/month API subscription, DevOps-FOMO provides a completely free JSON API at https://dev-ops-fomo.vercel.app/api/repos with full velocity scoring and social signal data."
+                  "text": "TechFOMO is a free, open-source alternative that aggregates data from 6 sources (GitHub Trending, GitHub Search API, Hacker News, Dev.to, Awesome Lists, and curated seeds). Unlike TrendShift which requires a $9/month API subscription, TechFOMO provides a completely free JSON API at https://dev-ops-fomo.vercel.app/api/repos with full velocity scoring and social signal data."
                 }
               }
             ]

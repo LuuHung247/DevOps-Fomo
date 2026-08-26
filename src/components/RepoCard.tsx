@@ -27,7 +27,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     e.stopPropagation();
     const stars = formatNumber(repo.stars);
     const label = repo.velocityLabel === 'EXPLOSIVE' ? '🔥 VIRAL BREAKOUT' : repo.velocityLabel === 'HOT RISING' ? '📈 HOT RISING' : repo.velocityLabel === 'EARLY GEM' ? '🌱 EARLY GEM' : repo.velocityLabel === 'COMMUNITY PICK' ? '💬 COMMUNITY PICK' : '⭐ ESTABLISHED';
-    const tweet = `${label}: ${repo.fullName} (${stars}★)\n\n"${repo.description?.slice(0, 100)}..."\n\nSpotted on DevOps-FOMO 👇\nhttps://dev-ops-fomo.vercel.app`;
+    const tweet = `${label}: ${repo.fullName} (${stars}★)\n\n"${repo.description?.slice(0, 100)}..."\n\nSpotted on TechFOMO.dev 👇\nhttps://dev-ops-fomo.vercel.app`;
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`, '_blank', 'noopener');
   };
 

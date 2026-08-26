@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RepoItem, CategoryId, ReposApiResponse, BuzzItem, BuzzApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
 import { HeroSection } from '@/components/HeroSection';
@@ -37,10 +37,11 @@ export default function Home() {
   const [activeCategory, setActiveCategory] = useState<CategoryId | 'all' | 'buzz'>('trending');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('velocity');
+  const retryCountRef = useRef(0);
 
-  // Fetch repositories
+  // Fetch repositories with retry resilience
   const fetchRepos = useCallback(async (isBackground = false) => {
-    if (!isBackground) setLoading(true);
+    if (!isBackground && repos.length === 0) setLoading(true);
     try {
       const params = new URLSearchParams();
       if (activeCategory !== 'all' && activeCategory !== 'buzz') {
@@ -53,14 +54,24 @@ export default function Home() {
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
       const data: ReposApiResponse = await res.json();
-      setRepos(data.repos);
-      setStats(data.stats);
+      if (data && Array.isArray(data.repos)) {
+        setRepos(data.repos);
+        if (data.stats) {
+          setStats(data.stats);
+        }
+        retryCountRef.current = 0;
+      }
     } catch (error) {
       console.error('Error fetching repositories:', error);
+      // Auto-retry once if repos is empty
+      if (retryCountRef.current < 2 && repos.length === 0) {
+        retryCountRef.current += 1;
+        setTimeout(() => fetchRepos(isBackground), 1000);
+      }
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [activeCategory, searchQuery, sortBy]);
+  }, [activeCategory, searchQuery, sortBy, repos.length]);
 
   // Fetch buzz on first visit to that tab
   const fetchBuzz = useCallback(async () => {
@@ -97,11 +108,11 @@ export default function Home() {
     }
   }, [fetchRepos, activeCategory]);
 
-  // Silent background sync every 3 minutes
+  // Silent background sync every 2 minutes
   useEffect(() => {
     const interval = setInterval(() => {
       if (activeCategory !== 'buzz') fetchRepos(true);
-    }, 180000);
+    }, 120000);
     return () => clearInterval(interval);
   }, [fetchRepos, activeCategory]);
 
@@ -165,10 +176,10 @@ export default function Home() {
             <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
 
               {/* Loading Skeleton */}
-              {loading && (
+              {loading && repos.length === 0 && (
                 <div className="space-y-4">
                   {[...Array(5)].map((_, i) => (
-                    <div key={i} className="p-5 rounded-2xl bg-slate-900 border border-slate-800 animate-pulse">
+                    <div key={i} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-sm animate-pulse">
                       <div className="flex justify-between items-center mb-3">
                         <div className="h-5 bg-slate-800 rounded w-1/3" />
                         <div className="h-4 bg-slate-800 rounded w-24" />
@@ -185,7 +196,7 @@ export default function Home() {
               )}
 
               {/* Repos */}
-              {!loading && paginatedRepos.length > 0 && (
+              {paginatedRepos.length > 0 && (
                 <div className="space-y-4">
                   {paginatedRepos.map((repo) => (
                     <RepoCard key={repo.id} repo={repo} />
@@ -194,7 +205,7 @@ export default function Home() {
               )}
 
               {/* Pagination */}
-              {!loading && repos.length > itemsPerPage && (
+              {repos.length > itemsPerPage && (
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
@@ -206,10 +217,13 @@ export default function Home() {
 
               {/* Empty State */}
               {!loading && repos.length === 0 && (
-                <div className="rounded-2xl p-12 text-center my-12 bg-slate-900 border border-slate-800 font-mono">
+                <div className="rounded-2xl p-12 text-center my-12 bg-slate-900/90 border border-slate-800 font-mono shadow-xl">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                    🔍
+                  </div>
                   <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
-                  <p className="text-xs text-slate-400 mb-6 leading-relaxed">
-                    No repositories matched your active search or category criteria.
+                  <p className="text-xs text-slate-400 mb-6 leading-relaxed max-w-sm mx-auto">
+                    No repositories matched your active search or filter criteria.
                   </p>
                   <button
                     onClick={() => {
@@ -217,9 +231,9 @@ export default function Home() {
                       setActiveCategory('trending');
                       setSortBy('velocity');
                     }}
-                    className="px-4 py-2 rounded bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs transition-all"
+                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-emerald-500/20"
                   >
-                    Reset to Trending
+                    Reset Filters
                   </button>
                 </div>
               )}
@@ -228,11 +242,11 @@ export default function Home() {
         )}
       </main>
 
-      <footer className="border-t border-slate-800 bg-slate-950 py-8 text-center text-xs text-slate-400 font-mono">
+      <footer className="border-t border-slate-800/80 bg-slate-950/80 backdrop-blur-md py-8 text-center text-xs text-slate-400 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="font-bold text-slate-200">DevOps-FOMO</span>
-            <span> • We track the hype so you don't have to</span>
+            <span className="font-bold text-slate-200">TechFOMO<span className="text-emerald-400">.dev</span></span>
+            <span> • Never suffer from tech FOMO again</span>
           </div>
           <p className="text-slate-400">Powered by Next.js and Multi-Source Intelligence.</p>
         </div>

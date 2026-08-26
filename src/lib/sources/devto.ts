@@ -1,6 +1,6 @@
 import { DiscoveredRepo } from '../types';
 
-const TAGS_TO_SCAN = ['devops', 'ai', 'kubernetes', 'llm', 'mlops', 'docker', 'terraform', 'cloud', 'opensource'];
+const TAGS_TO_SCAN = ['devops', 'ai', 'kubernetes', 'llm', 'mlops', 'opensource'];
 
 function extractGitHubLinks(text: string): string[] {
   if (!text) return [];
@@ -34,56 +34,31 @@ interface DevToArticle {
 export async function fetchDevToRepos(): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
 
-  for (const tag of TAGS_TO_SCAN) {
+  const tagPromises = TAGS_TO_SCAN.map(async (tag) => {
     try {
-      // Fetch top articles from the last 30 days for each tag
-      const url = `https://dev.to/api/articles?tag=${tag}&top=30&per_page=15`;
+      const url = `https://dev.to/api/articles?tag=${tag}&top=30&per_page=12`;
       const res = await fetch(url, {
         headers: {
           'User-Agent': 'DevOps-FOMO/1.0',
           'Accept': 'application/json',
         },
+        signal: AbortSignal.timeout(3000),
         next: { revalidate: 3600 },
       });
 
-      if (!res.ok) {
-        console.warn(`Dev.to API returned ${res.status} for tag: ${tag}`);
-        continue;
-      }
+      if (!res.ok) return [];
 
       const articles: DevToArticle[] = await res.json();
+      if (!Array.isArray(articles)) return [];
+
+      const tagRepos: DiscoveredRepo[] = [];
 
       for (const article of articles) {
-        // Only process articles with decent engagement
         if (article.positive_reactions_count < 15) continue;
 
-        // Extract GitHub links from description
         const descLinks = extractGitHubLinks(article.description || '');
-        
-        // Try to fetch the full article body for more links
-        let bodyLinks: string[] = [];
-        if (article.positive_reactions_count > 30) {
-          try {
-            const articleRes = await fetch(`https://dev.to/api/articles/${article.id}`, {
-              headers: {
-                'User-Agent': 'DevOps-FOMO/1.0',
-                'Accept': 'application/json',
-              },
-              next: { revalidate: 7200 },
-            });
-            if (articleRes.ok) {
-              const fullArticle = await articleRes.json();
-              bodyLinks = extractGitHubLinks(fullArticle.body_markdown || '');
-            }
-          } catch {
-            // Skip body fetch errors silently
-          }
-        }
-
-        const allLinks = Array.from(new Set(descLinks.concat(bodyLinks)));
-
-        for (const repoName of allLinks) {
-          results.push({
+        for (const repoName of descLinks) {
+          tagRepos.push({
             fullName: repoName,
             url: `https://github.com/${repoName}`,
             description: `Mentioned in: "${article.title}"`,
@@ -93,8 +68,16 @@ export async function fetchDevToRepos(): Promise<DiscoveredRepo[]> {
           });
         }
       }
-    } catch (err) {
-      console.error(`Error fetching Dev.to articles for tag ${tag}:`, err);
+      return tagRepos;
+    } catch {
+      return [];
+    }
+  });
+
+  const settled = await Promise.allSettled(tagPromises);
+  for (const item of settled) {
+    if (item.status === 'fulfilled' && Array.isArray(item.value)) {
+      results.push(...item.value);
     }
   }
 
@@ -106,7 +89,6 @@ export async function fetchDevToRepos(): Promise<DiscoveredRepo[]> {
     if (!existing) {
       repoMap.set(key, repo);
     } else {
-      // Aggregate reactions across multiple articles
       existing.devtoReactions = (existing.devtoReactions || 0) + (repo.devtoReactions || 0);
       existing.socialScore = (existing.socialScore || 0) + (repo.socialScore || 0);
     }

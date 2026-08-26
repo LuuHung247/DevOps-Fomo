@@ -19,9 +19,11 @@ export const Header: React.FC<HeaderProps> = ({ totalRepos, totalStars }) => {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
         
         {/* Brand Logo */}
-        <a href="/" className="flex items-center space-x-1.5">
-          <span className="font-extrabold text-base sm:text-xl tracking-tight text-white font-mono">
-            DevOps<span className="text-amber-400">-FOMO</span>
+        <a href="/" className="flex items-center space-x-1.5 group">
+          <span className="font-extrabold text-base sm:text-xl tracking-tight text-white font-mono flex items-center">
+            <span className="bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-300 bg-clip-text text-transparent">Tech</span>
+            <span className="text-amber-400">FOMO</span>
+            <span className="text-[10px] sm:text-xs font-mono font-medium text-slate-400 bg-slate-900 border border-slate-800 rounded px-1.5 py-0.5 ml-1.5">.dev</span>
           </span>
         </a>
 

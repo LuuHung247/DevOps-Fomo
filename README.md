@@ -1,13 +1,13 @@
-# DevOps-FOMO 🚀🔥
+# TechFOMO 🚀🔥
 
-> **Never suffer from tech FOMO again.** Discover, track, and analyze community-verified, high-utility, and rapidly rising GitHub repositories across **AI, DevOps, MLOps, LLMOps, Kubernetes, and System Architecture**.
+> **Never suffer from tech FOMO again.** Discover, track, and analyze community-verified, high-utility, and rapidly rising GitHub repositories across **AI Agents, Cloud-Native, DevOps, MLOps, LLMs, and System Architecture**.
 
 ---
 
 ## 🌟 Highlights
 
-- **🔥 Real-time & Verified Repos**: Aggregates top-tier repositories with thousands of stars and community validation across AI & DevOps.
-- **⚡ Star Growth & Vitality Tracking**: Detects rising repositories gaining explosive traction vs. battle-tested industry foundations.
+- **🔥 Real-time & Verified Repos**: Aggregates top-tier repositories with thousands of stars and community validation across AI, DevOps & Cloud.
+- **⚡ Star Growth & Velocity Tracking**: Multi-signal velocity scoring (Explosive, Hot Rising, Early Gem, Community Pick) detecting breakout tools before they go mainstream.
 - **🤖 AI Repository Insights**: Explains *why* the community uses each repo, target audience, standout features, and where it fits in modern engineering stacks.
 - **📂 Categorized Hub**:
   - 🤖 **Agentic AI & LLMs** (Autonomous agents, Ollama, vLLM, LangChain, OpenHands)
@@ -15,7 +15,7 @@
   - 🧠 **MLOps & LLMOps** (MLflow, Qdrant, Chroma, BentoML, Phoenix AI Tracing)
   - 📐 **Architecture & Best Practices** (System Design Primer, Developer Roadmaps, SRE Exercises)
   - 🏆 **Hall of Fame** (Legendary repos with 30k+ to 300k+ stars)
-- **🔍 Instant Filtering & Search**: Search by name, author, topic, or language; filter by star thresholds (5k+, 10k+, 25k+, 50k+).
+- **🔍 Instant Filtering & Search**: Zero-latency search by name, author, topic, or language; filter by star thresholds (5k+, 10k+, 25k+, 50k+).
 - **💾 Local Bookmarks**: Save favorites locally directly in your browser.
 - **📈 Star History**: Instant one-click links to Star-History graphs and direct Markdown copy.
 

@@ -91,50 +91,39 @@ function parseTrendingHtml(html: string, period: 'daily' | 'weekly'): Discovered
 
 export async function fetchGitHubTrending(): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
-  
-  // 1. Overall Daily Trending (Top breakout stars across all topics)
-  try {
-    const res = await fetch('https://github.com/trending?since=daily', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html',
-      },
-      next: { revalidate: 1800 },
-    });
+  const headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Accept': 'text/html',
+  };
 
-    if (res.ok) {
-      const html = await res.text();
-      results.push(...parseTrendingHtml(html, 'daily'));
-    }
-  } catch (err) {
-    console.error('Error fetching Daily GitHub Trending:', err);
-  }
-
-  // 2. Language-specific Trending (Python, TypeScript, Go, Rust, C++)
-  const langUrls = [
-    'https://github.com/trending/python?since=daily',
-    'https://github.com/trending/typescript?since=daily',
-    'https://github.com/trending/go?since=daily',
-    'https://github.com/trending/rust?since=daily',
-    'https://github.com/trending/c++?since=daily',
+  const urls = [
+    { url: 'https://github.com/trending?since=daily', period: 'daily' as const },
+    { url: 'https://github.com/trending/python?since=daily', period: 'weekly' as const },
+    { url: 'https://github.com/trending/typescript?since=daily', period: 'weekly' as const },
+    { url: 'https://github.com/trending/go?since=daily', period: 'weekly' as const },
+    { url: 'https://github.com/trending/rust?since=daily', period: 'weekly' as const },
   ];
 
-  for (const url of langUrls) {
+  // Fetch all in parallel with strict 3-second timeout
+  const fetchPromises = urls.map(async ({ url, period }) => {
     try {
       const res = await fetch(url, {
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Accept': 'text/html',
-        },
-        next: { revalidate: 3600 },
+        headers,
+        signal: AbortSignal.timeout(3000),
+        next: { revalidate: 1800 },
       });
-
-      if (!res.ok) continue;
-
+      if (!res.ok) return [];
       const html = await res.text();
-      results.push(...parseTrendingHtml(html, 'weekly'));
-    } catch (err) {
-      console.error(`Error fetching language trending (${url}):`, err);
+      return parseTrendingHtml(html, period);
+    } catch {
+      return [];
+    }
+  });
+
+  const settled = await Promise.allSettled(fetchPromises);
+  for (const item of settled) {
+    if (item.status === 'fulfilled' && Array.isArray(item.value)) {
+      results.push(...item.value);
     }
   }
 

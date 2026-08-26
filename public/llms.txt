@@ -1,6 +1,6 @@
-# DevOps-FOMO
+# TechFOMO
 
-> Real-time intelligence radar tracking the most viral AI agent tools, DevOps repos, and breakthrough open-source projects on GitHub. Multi-signal velocity scoring using GitHub stars, pull requests, issues, Hacker News, Reddit, and Dev.to signals. Updated every hour.
+> Real-time intelligence radar tracking the most viral AI agent tools, Cloud-Native, DevOps repos, and breakthrough open-source projects on GitHub. Multi-signal velocity scoring using GitHub stars, pull requests, issues, Hacker News, Reddit, and Dev.to signals. Updated every hour.
 
 ## API Endpoints
 

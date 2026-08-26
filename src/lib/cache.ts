@@ -2,26 +2,47 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { RepoItem } from './types';
+import { SEED_REPOSITORIES } from './seeds';
 
 interface CacheEntry {
   timestamp: number;
   data: RepoItem[];
 }
 
-// In-memory cache
-let memoryCache: { [key: string]: CacheEntry } = {};
+// In-memory cache pre-seeded with verified repositories for instant response
+let memoryCache: { [key: string]: CacheEntry } = {
+  all: {
+    timestamp: Date.now(),
+    data: SEED_REPOSITORIES,
+  },
+};
 
 // Use os.tmpdir() for serverless/lambda resilience (writable everywhere)
 const CACHE_DIR = process.env.VERCEL ? os.tmpdir() : path.join(process.cwd(), '.cache');
 const CACHE_FILE = path.join(CACHE_DIR, 'repos_cache.json');
-const DEFAULT_TTL_MS = 1000 * 60 * 60; // 1 hour
+const DEFAULT_TTL_MS = 1000 * 60 * 30; // 30 minutes freshness
 
-export function getCachedRepos(key: string = 'all', ttlMs: number = DEFAULT_TTL_MS): RepoItem[] | null {
+export function isCacheStale(key: string = 'all', ttlMs: number = DEFAULT_TTL_MS): boolean {
+  const now = Date.now();
+  if (memoryCache[key]) {
+    return (now - memoryCache[key].timestamp) >= ttlMs;
+  }
+  return true;
+}
+
+export function getCachedRepos(
+  key: string = 'all',
+  ttlMs: number = DEFAULT_TTL_MS,
+  allowStale: boolean = true
+): RepoItem[] {
   const now = Date.now();
 
-  // 1. Check memory cache
-  if (memoryCache[key] && (now - memoryCache[key].timestamp < ttlMs)) {
-    return memoryCache[key].data;
+  // 1. Check memory cache (if fresh or if allowStale is true)
+  if (memoryCache[key] && memoryCache[key].data.length > 0) {
+    const isFresh = (now - memoryCache[key].timestamp) < ttlMs;
+    if (isFresh || allowStale) {
+      return memoryCache[key].data;
+    }
   }
 
   // 2. Check disk cache
@@ -29,19 +50,32 @@ export function getCachedRepos(key: string = 'all', ttlMs: number = DEFAULT_TTL_
     if (fs.existsSync(CACHE_FILE)) {
       const raw = fs.readFileSync(CACHE_FILE, 'utf-8');
       const parsed: { [k: string]: CacheEntry } = JSON.parse(raw);
-      if (parsed[key] && (now - parsed[key].timestamp < ttlMs)) {
+      if (parsed[key] && parsed[key].data && parsed[key].data.length > 0) {
         memoryCache[key] = parsed[key];
-        return parsed[key].data;
+        const isFresh = (now - parsed[key].timestamp) < ttlMs;
+        if (isFresh || allowStale) {
+          return parsed[key].data;
+        }
       }
     }
   } catch (err) {
     console.error('Cache read error:', err);
   }
 
-  return null;
+  // 3. Fallback: Always return SEED_REPOSITORIES so UI never experiences empty state
+  if (!memoryCache[key] || memoryCache[key].data.length === 0) {
+    memoryCache[key] = {
+      timestamp: 0, // Mark as stale so background revalidation runs
+      data: SEED_REPOSITORIES,
+    };
+  }
+
+  return memoryCache[key].data;
 }
 
 export function setCachedRepos(key: string, data: RepoItem[]): void {
+  if (!data || data.length === 0) return;
+
   const entry: CacheEntry = {
     timestamp: Date.now(),
     data,

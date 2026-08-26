@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchAllSources } from '@/lib/discovery';
-import { getCachedRepos, setCachedRepos } from '@/lib/cache';
+import { getCachedRepos, setCachedRepos, isCacheStale } from '@/lib/cache';
 import { RepoItem, CategoryId, ReposApiResponse } from '@/lib/types';
 import { SEED_REPOSITORIES } from '@/lib/seeds';
 
 export const dynamic = 'force-dynamic';
+
+// Mutex to prevent duplicate parallel background revalidations
+let isRevalidating = false;
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,30 +25,32 @@ export async function GET(request: NextRequest) {
     const VALID_SORTS = ['stars', 'velocity', 'updated'];
     const sortBy = VALID_SORTS.includes(rawSortBy) ? rawSortBy : 'stars';
 
-    let repos: RepoItem[] | null = null;
-    let isCached = false;
-
-    // Try cache first
-    repos = getCachedRepos('all');
-    if (repos && repos.length > 0) {
-      isCached = true;
-    }
-
+    // 1. Instant Retrieval from Cache (Zero Blocking - < 10ms)
+    let repos: RepoItem[] = getCachedRepos('all');
     if (!repos || repos.length === 0) {
-      try {
-        // Use the new multi-source discovery engine
-        repos = await fetchAllSources();
-        setCachedRepos('all', repos);
-        isCached = false;
-      } catch (err) {
-        console.error('Failed to fetch from discovery engine, falling back to seeds:', err);
-        repos = SEED_REPOSITORIES;
-      }
+      repos = SEED_REPOSITORIES;
     }
 
-    // Stats calculations over full pool
+    // 2. Non-blocking Stale-While-Revalidate trigger in background
+    if (isCacheStale('all') && !isRevalidating) {
+      isRevalidating = true;
+      fetchAllSources()
+        .then((freshRepos) => {
+          if (freshRepos && freshRepos.length > 0) {
+            setCachedRepos('all', freshRepos);
+          }
+        })
+        .catch((err) => {
+          console.error('[Discovery Engine] Background revalidation error:', err);
+        })
+        .finally(() => {
+          isRevalidating = false;
+        });
+    }
+
+    // 3. Stats calculations over full pool
     const totalRepos = repos.length;
-    const totalStars = repos.reduce((acc, r) => acc + r.stars, 0);
+    const totalStars = repos.reduce((acc, r) => acc + (r.stars || 0), 0);
     
     const categoryCounts: Record<CategoryId, number> = {
       'trending': repos.filter(r => r.categories.includes('trending') || r.velocityLabel === 'EXPLOSIVE' || r.velocityLabel === 'HOT RISING' || r.velocityLabel === 'EARLY GEM' || r.hasBigUpdate || r.velocityLabel === 'COMMUNITY PICK').length,
@@ -55,7 +60,7 @@ export async function GET(request: NextRequest) {
       'architecture': repos.filter(r => r.categories.includes('architecture')).length,
     };
 
-    // Filter by category
+    // 4. Filter by category
     let filtered = repos;
     if (category !== 'all') {
       if (category === 'trending') {
@@ -65,12 +70,12 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter by minStars
+    // 5. Filter by minStars
     if (minStars > 0) {
       filtered = filtered.filter(r => r.stars >= minStars);
     }
 
-    // Filter by search query
+    // 6. Filter by search query
     if (search) {
       filtered = filtered.filter(r => 
         r.fullName.toLowerCase().includes(search) ||
@@ -79,7 +84,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Sorting
+    // 7. Sorting
     filtered = [...filtered].sort((a, b) => {
       if (sortBy === 'velocity') {
         return (b.velocityScore || 0) - (a.velocityScore || 0);
@@ -87,13 +92,13 @@ export async function GET(request: NextRequest) {
       if (sortBy === 'updated') {
         return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
       }
-      return b.stars - a.stars;
+      return (b.stars || 0) - (a.stars || 0);
     });
 
     const responseData: ReposApiResponse = {
       repos: filtered,
       total: filtered.length,
-      cached: isCached,
+      cached: true,
       cacheTime: new Date().toISOString(),
       stats: {
         totalRepos,
@@ -103,12 +108,32 @@ export async function GET(request: NextRequest) {
       }
     };
 
-    return NextResponse.json(responseData);
+    return NextResponse.json(responseData, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+      },
+    });
   } catch (error) {
     console.error('Error in /api/repos:', error);
-    return NextResponse.json(
-      { error: 'Failed to retrieve repositories' },
-      { status: 500 }
-    );
+    // Even if an unexpected error occurs, fall back to seeds
+    const fallback = SEED_REPOSITORIES;
+    return NextResponse.json({
+      repos: fallback,
+      total: fallback.length,
+      cached: true,
+      cacheTime: new Date().toISOString(),
+      stats: {
+        totalRepos: fallback.length,
+        totalStars: fallback.reduce((a, b) => a + b.stars, 0),
+        trendingCount: fallback.filter(r => r.categories.includes('trending')).length,
+        categoryCounts: {
+          trending: fallback.filter(r => r.categories.includes('trending')).length,
+          'agentic-ai': fallback.filter(r => r.categories.includes('agentic-ai')).length,
+          'devops-infra': fallback.filter(r => r.categories.includes('devops-infra')).length,
+          mlops: fallback.filter(r => r.categories.includes('mlops')).length,
+          architecture: fallback.filter(r => r.categories.includes('architecture')).length,
+        },
+      }
+    });
   }
 }
