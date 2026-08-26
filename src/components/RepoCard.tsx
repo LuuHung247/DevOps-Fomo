@@ -85,9 +85,9 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo, index = 0 }) => {
   const isExplosive = repo.velocityLabel === 'EXPLOSIVE';
 
   return (
-    <ScrollReveal delay={Math.min(index * 40, 200)} direction="up">
+    <ScrollReveal delay={Math.min(index * 90, 450)} direction="up">
       <div
-        className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 shadow-md font-sans hover:-translate-y-0.5 hover:shadow-xl ${getCardFrameClass()}`}
+        className={`p-4 sm:p-5 rounded-2xl transition-all duration-300 shadow-md font-sans hover:-translate-y-1 hover:shadow-2xl ${getCardFrameClass()}`}
       >
         
         {/* Header Row */}

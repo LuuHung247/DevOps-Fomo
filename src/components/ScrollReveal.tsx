@@ -19,6 +19,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const mainContainer = document.querySelector('main');
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -26,8 +27,9 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
         }
       },
       {
-        threshold: 0.08,
-        rootMargin: '0px 0px -40px 0px',
+        root: mainContainer || null,
+        threshold: 0.15,
+        rootMargin: '0px 0px -60px 0px',
       }
     );
 
@@ -46,17 +48,17 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   const getInitialTransform = () => {
     switch (direction) {
       case 'up':
-        return 'translate-y-8';
+        return 'translate-y-12 scale-[0.97] blur-[3px]';
       case 'down':
-        return '-translate-y-8';
+        return '-translate-y-12 scale-[0.97] blur-[3px]';
       case 'left':
-        return 'translate-x-8';
+        return 'translate-x-12 scale-[0.97] blur-[3px]';
       case 'right':
-        return '-translate-x-8';
+        return '-translate-x-12 scale-[0.97] blur-[3px]';
       case 'scale':
-        return 'scale-95';
+        return 'scale-90 blur-[4px]';
       default:
-        return 'translate-y-8';
+        return 'translate-y-12 scale-[0.97] blur-[3px]';
     }
   };
 
@@ -66,9 +68,9 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
       style={{
         transitionDelay: `${delay}ms`,
       }}
-      className={`transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
+      className={`transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] transform ${
         isVisible
-          ? 'opacity-100 translate-y-0 translate-x-0 scale-100'
+          ? 'opacity-100 translate-y-0 translate-x-0 scale-100 blur-0'
           : `opacity-0 ${getInitialTransform()}`
       } ${className}`}
     >
