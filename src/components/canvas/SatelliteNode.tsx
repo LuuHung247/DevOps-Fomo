@@ -6,79 +6,76 @@ import { RepoItem } from '@/lib/types';
 interface SatelliteNodeProps {
   repo: RepoItem;
   rank: number;
-  isSelected?: boolean;
-  onClick: () => void;
   className?: string;
 }
 
 export const SatelliteNode: React.FC<SatelliteNodeProps> = ({
   repo,
   rank,
-  isSelected = false,
-  onClick,
   className = '',
 }) => {
-  const getRankConfig = (r: number) => {
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}k`;
+    return num.toString();
+  };
+
+  const getRankBadge = (r: number) => {
     switch (r) {
       case 2:
-        return { label: '#2 · MOMENTUM', accent: 'text-cyan-300' };
+        return { label: '⚡ #2 MOMENTUM', color: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40' };
       case 3:
-        return { label: '#3 · BREAKOUT', accent: 'text-cyan-300' };
+        return { label: '🚀 #3 BREAKOUT', color: 'bg-amber-500/20 text-amber-300 border-amber-500/40' };
       case 4:
-        return { label: '#4 · RISING', accent: 'text-cyan-300' };
+        return { label: '💎 #4 RISING', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' };
       case 5:
-        return { label: '#5 · RISING', accent: 'text-cyan-300' };
+        return { label: '🌐 #5 RISING', color: 'bg-violet-500/20 text-violet-300 border-violet-500/40' };
       default:
-        return { label: `#${r} · SIGNAL`, accent: 'text-slate-300' };
+        return { label: `#${r} RISING`, color: 'bg-slate-800 text-slate-300 border-slate-700' };
     }
   };
 
-  const config = getRankConfig(rank);
-
-  // Derive velocity text
-  const velocityText = repo.growthDeltaText
-    ? repo.growthDeltaText.split('•')[0].trim()
-    : `+${Math.max(150, Math.floor(repo.stars * 0.05))}/day`;
-
-  // Derive category/tag subtitle
-  const categoryText = repo.topics && repo.topics.length > 0
-    ? repo.topics.slice(0, 2).map((t) => t.replace(/-/g, ' ')).join(' · ')
-    : repo.language || 'Developer Tool';
+  const badge = getRankBadge(rank);
 
   return (
-    <div
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      aria-label={`Inspect rank ${rank}: ${repo.fullName}`}
-      className={`w-full max-w-[240px] sm:max-w-[260px] rounded-2xl p-4 sm:p-4.5 bg-[#070e1b]/90 border transition-all duration-200 cursor-pointer shadow-xl backdrop-blur-md group ${
-        isSelected
-          ? 'border-cyan-400/80 bg-[#0c1629] shadow-[0_0_25px_-5px_rgba(6,182,212,0.35)] scale-[1.02]'
-          : 'border-slate-800/80 hover:border-slate-700 hover:bg-[#0a1324] hover:-translate-y-1'
-      } ${className}`}
+    <a
+      href={repo.url}
+      target="_blank"
+      rel="noreferrer"
+      className={`w-full max-w-[260px] sm:max-w-[280px] rounded-2xl p-4 bg-[#070e1b]/95 border border-slate-800/90 hover:border-cyan-500/50 hover:bg-[#0b1426] transition-all duration-200 shadow-lg backdrop-blur-md group hover:-translate-y-1 block ${className}`}
     >
-      {/* Rank Header Label */}
-      <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400 mb-1.5 flex items-center justify-between">
-        <span>{config.label}</span>
-        <span className="opacity-0 group-hover:opacity-100 text-cyan-400 text-xs transition-opacity">
+      {/* Header Row: Rank Badge + Stars */}
+      <div className="flex items-center justify-between mb-2">
+        <span className={`px-2 py-0.5 rounded-md text-[10px] font-mono font-bold border ${badge.color}`}>
+          {badge.label}
+        </span>
+        <span className="text-xs font-mono font-bold text-amber-300">
+          {formatNumber(repo.stars)} ⭐
+        </span>
+      </div>
+
+      {/* Repo Title */}
+      <div className="font-bold text-sm text-white tracking-tight truncate group-hover:text-cyan-300 transition-colors flex items-center justify-between">
+        <span className="truncate">{repo.fullName}</span>
+        <span className="opacity-0 group-hover:opacity-100 text-cyan-400 text-xs transition-opacity ml-1 flex-shrink-0">
           ↗
         </span>
       </div>
 
-      {/* Repository Full Name */}
-      <div className="font-bold text-sm sm:text-base text-white tracking-tight truncate group-hover:text-cyan-200 transition-colors">
-        {repo.fullName}
-      </div>
+      {/* Description */}
+      <p className="text-[11px] text-slate-400 line-clamp-2 mt-1 leading-snug font-normal">
+        {repo.description}
+      </p>
 
-      {/* Category / Subtitle */}
-      <div className="text-[11px] font-mono text-slate-400 capitalize truncate mt-0.5 mb-2.5">
-        {categoryText}
+      {/* Footer Info: Growth Delta & Language */}
+      <div className="mt-2.5 pt-2 border-t border-slate-800/80 flex items-center justify-between text-[10px] font-mono">
+        <span className="text-cyan-300 font-bold truncate">
+          ⚡ {repo.growthDeltaText ? repo.growthDeltaText.split('•')[0].trim() : `+${Math.max(100, Math.floor(repo.stars * 0.04))}/day`}
+        </span>
+        <span className="text-slate-400 font-semibold">
+          {repo.language || 'Code'}
+        </span>
       </div>
-
-      {/* Star Velocity Tag */}
-      <div className="font-mono font-bold text-xs sm:text-sm text-cyan-300">
-        {velocityText}
-      </div>
-    </div>
+    </a>
   );
 };
