@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchAllSources } from '@/lib/discovery';
-import { getCachedRepos, setCachedRepos, isCacheStale } from '@/lib/cache';
+import { getCachedRepos, setCachedRepos } from '@/lib/cache';
 import { RepoItem, CategoryId, ReposApiResponse } from '@/lib/types';
 import { SEED_REPOSITORIES } from '@/lib/seeds';
 
 export const dynamic = 'force-dynamic';
-
-// Fast timeout wrapper
-async function fetchWithTimeout(timeoutMs: number): Promise<RepoItem[] | null> {
-  try {
-    const timeoutPromise = new Promise<null>((resolve) => 
-      setTimeout(() => resolve(null), timeoutMs)
-    );
-    const discoveryPromise = fetchAllSources();
-    return await Promise.race([discoveryPromise, timeoutPromise]);
-  } catch (err) {
-    console.error('[Discovery Engine] Race error:', err);
-    return null;
-  }
-}
+export const revalidate = 60; // 60s Edge CDN revalidation
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,22 +23,33 @@ export async function GET(request: NextRequest) {
     const VALID_SORTS = ['stars', 'velocity', 'updated'];
     const sortBy = VALID_SORTS.includes(rawSortBy) ? rawSortBy : 'stars';
 
-    // 1. Check Cache
-    let repos: RepoItem[] = getCachedRepos('all');
+    let repos: RepoItem[] | null = null;
+    let isCached = false;
 
-    // 2. If cache is not available or empty, try quick discovery (up to 2.5s) then fallback to SEED_REPOSITORIES
-    if (!repos || repos.length === 0) {
-      const discovered = await fetchWithTimeout(2500);
-      if (discovered && discovered.length > 0) {
-        repos = discovered;
-        setCachedRepos('all', discovered);
-      } else {
+    // 1. Try 5-minute Cache first
+    repos = getCachedRepos('all', 1000 * 60 * 5);
+    if (repos && repos.length > 0) {
+      isCached = true;
+    } else {
+      // 2. Cache Miss or Expired: Fetch 100% Real-Time Data from Live Sources
+      try {
+        console.log('[API /api/repos] Fetching live multi-source repositories...');
+        repos = await fetchAllSources();
+        if (repos && repos.length > 0) {
+          setCachedRepos('all', repos);
+          isCached = false;
+        }
+      } catch (discoveryErr) {
+        console.error('[API /api/repos] Error in live discovery, falling back to seeds:', discoveryErr);
         repos = SEED_REPOSITORIES;
-        setCachedRepos('all', SEED_REPOSITORIES);
       }
     }
 
-    // 3. Stats calculations over full pool
+    if (!repos || repos.length === 0) {
+      repos = SEED_REPOSITORIES;
+    }
+
+    // 3. Stats calculations over full live pool
     const totalRepos = repos.length;
     const totalStars = repos.reduce((acc, r) => acc + (r.stars || 0), 0);
     
@@ -117,7 +115,7 @@ export async function GET(request: NextRequest) {
     const responseData: ReposApiResponse = {
       repos: filtered,
       total: filtered.length,
-      cached: true,
+      cached: isCached,
       cacheTime: new Date().toISOString(),
       stats: {
         totalRepos,
