@@ -20,6 +20,10 @@ Whenever you are assigned any task in this repository (feature addition, UI reva
 * **Conventional Commits**: Format commits with clear semantic prefixes (`feat:`, `fix:`, `perf:`, `refactor:`, `style:`, `docs:`).
 * **Automated Production Sync**: Ensure the remote branch is always up-to-date with local progress to trigger Vercel / CI/CD production deployments without requiring manual user intervention.
 
+### 3. ⚡ Zero-Confirmation Autonomous Execution
+* **Pre-Approved Operations**: The agent has full, unrestricted pre-approval for terminal commands, file reads/writes, web queries, and plan execution within this workspace.
+* **Non-Blocking Flow**: Never pause, interrupt, or wait for manual user confirmation or approval prompts during implementation. Proceed end-to-end autonomously from planning through verification and commit.
+
 ---
 
 ## 🎨 UI/UX & Design Standards (`ui-ux-pro-max`, `ui-styling`, `design-system`)

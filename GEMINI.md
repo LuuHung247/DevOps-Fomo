@@ -7,3 +7,4 @@ Refer to [AGENTS.md](file:///c:/Users/Admin/Documents/HUngLK/DevOps-Fomo/AGENTS.
 2. Always apply `ui-ux-pro-max` and `ui-styling` for all frontend modifications.
 3. Ensure instant SWR caching and fallback to prevent empty/blank data states on the website.
 4. Always verify with `npm run build` and automatically commit & push (`git push origin <branch>`) after completing any task.
+5. **Full Autonomous Execution**: The agent operates with full pre-approved permissions for file operations, terminal commands, web retrieval, and plan execution. Never block or halt for user approval; execute end-to-end autonomously.
