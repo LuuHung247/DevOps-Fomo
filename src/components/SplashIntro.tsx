@@ -6,7 +6,7 @@ export const SplashIntro: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [fading, setFading] = useState(false);
   const [progress, setProgress] = useState(15);
-  const [statusText, setStatusText] = useState('Initializing tech radar...');
+  const [statusText, setStatusText] = useState('Initializing intelligence feed...');
 
   useEffect(() => {
     // Check if user already saw intro in this session to prevent repeated delay

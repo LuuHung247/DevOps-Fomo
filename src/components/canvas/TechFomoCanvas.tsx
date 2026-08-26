@@ -3,7 +3,6 @@
 import React from 'react';
 import { RepoItem } from '@/lib/types';
 import { SEED_REPOSITORIES } from '@/lib/seeds';
-import { SpatialOrbitGuides } from './SpatialOrbitGuides';
 import { HeroApexNode } from './HeroApexNode';
 import { SatelliteNode } from './SatelliteNode';
 
@@ -28,34 +27,30 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
   };
 
   return (
-    <section className="relative w-full min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden bg-[#030712] font-sans pt-2 pb-4">
+    <section className="relative w-full min-h-[calc(100vh-4rem)] flex flex-col justify-between overflow-hidden bg-[#030712] font-sans pt-3 pb-6">
       
-      {/* 1. Minimal Sleek Radar Ticker Pill */}
-      <div className="relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-mono text-slate-400 pb-2">
+      {/* 1. Sleek Minimal Status Bar (No radar text) */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between text-xs font-mono text-slate-400 pb-2">
         <div className="flex items-center space-x-2">
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
           </span>
-          <span className="font-bold text-cyan-300 uppercase tracking-widest text-[11px]">
-            REAL-TIME ECOSYSTEM RADAR
+          <span className="font-bold text-slate-300 uppercase tracking-widest text-[11px]">
+            TOP ECOSYSTEM BREAKOUTS
           </span>
         </div>
 
         <div className="flex items-center space-x-3 text-[11px]">
-          <span><strong className="text-white">{displayRepos.length}</strong> repos tracked</span>
+          <span><strong className="text-white">{displayRepos.length}</strong> repositories tracked</span>
           <span>•</span>
-          <span className="text-emerald-400 font-bold">100% Real-Time</span>
+          <span className="text-emerald-400 font-semibold">Live Signals</span>
         </div>
       </div>
 
-      {/* 2. Spatial Intelligence Orbit Landscape */}
+      {/* 2. Clean 5-Item Showcase Composition */}
       <div className="relative flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-center my-auto py-2">
         
-        {/* Background Orbit Guides */}
-        <SpatialOrbitGuides />
-
-        {/* Spatial 3-Column Composition */}
         <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center justify-center max-w-6xl mx-auto">
           
           {/* LEFT SATELLITES (#2 & #4) */}
