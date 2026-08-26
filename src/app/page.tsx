@@ -3,8 +3,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RepoItem, CategoryId, ReposApiResponse, BuzzItem, BuzzApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
-import { TrendingRadarDashboard } from '@/components/TrendingRadarDashboard';
+import { SplashIntro } from '@/components/SplashIntro';
 import { SearchBar } from '@/components/SearchBar';
+import { TopBreakoutsStrip } from '@/components/TopBreakoutsStrip';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
@@ -63,7 +64,6 @@ export default function Home() {
       }
     } catch (error) {
       console.error('Error fetching repositories:', error);
-      // Auto-retry once if repos is empty
       if (retryCountRef.current < 2 && repos.length === 0) {
         retryCountRef.current += 1;
         setTimeout(() => fetchRepos(isBackground), 1000);
@@ -127,16 +127,20 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col justify-between font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      {/* 1. CINEMATIC SPLASH INTRO (Runs on first visit, then smoothly dissolves) */}
+      <SplashIntro />
+
+      {/* 2. HEADER */}
       <Header totalRepos={stats.totalRepos} totalStars={stats.totalStars} />
 
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pt-6 pb-16">
         
-        {/* 1. TOP HERO: Cinematic Intro Slogan & Live Trending Radar Dashboard */}
+        {/* 3. TOP 3 BREAKOUT SPOTLIGHT STRIP (Instant 1-Glance Value) */}
         {!searchQuery && !isBuzzMode && (
-          <TrendingRadarDashboard repos={repos} />
+          <TopBreakoutsStrip repos={repos} />
         )}
 
-        {/* 2. SEARCH BAR: Positioned cleanly below the Dashboard */}
+        {/* 4. SEARCH BAR */}
         <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
@@ -144,7 +148,7 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
-        {/* 3. CATEGORY NAV */}
+        {/* 5. CATEGORY TABS */}
         <CategoryNav
           activeCategory={activeCategory}
           onSelectCategory={setActiveCategory}
@@ -152,10 +156,9 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
-        {/* 4. BUZZ MODE OR REPOSITORY FEED */}
+        {/* 6. BUZZ MODE OR REPOSITORY FEED */}
         {isBuzzMode ? (
           <>
-            {/* Buzz header bar */}
             <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-5 font-mono text-xs">
               <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
                 <span className="text-amber-400 font-semibold text-[11px]">
