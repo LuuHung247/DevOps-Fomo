@@ -30,10 +30,10 @@ export const HeroApexNode: React.FC<HeroApexNodeProps> = ({
   return (
     <div className="relative w-full max-w-[460px] rounded-3xl p-6 sm:p-7 bg-[#070e1b]/95 border border-cyan-500/50 shadow-[0_0_50px_-10px_rgba(6,182,212,0.25)] backdrop-blur-2xl transition-all duration-300 font-sans">
       
-      {/* 1. Header Rank & Status */}
+      {/* 1. Header Rank & Verification */}
       <div className="flex items-center justify-between gap-3 mb-3.5">
         <span className="px-3.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-sm">
-          👑 #1 APEX BREAKOUT
+          #1 APEX BREAKOUT
         </span>
 
         {repo.isVerified && (
@@ -78,26 +78,19 @@ export const HeroApexNode: React.FC<HeroApexNodeProps> = ({
         {repo.description}
       </p>
 
-      {/* 4. Real Metrics HUD 3-Grid */}
-      <div className="grid grid-cols-3 gap-2.5 mb-4 font-mono text-center">
-        <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800">
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider">STARGAZERS</div>
-          <div className="text-sm sm:text-base font-bold text-amber-300 mt-0.5">
+      {/* 4. GitHub-Style Metrics Row (Starred & Forks, No Velocity box, No fork emoji) */}
+      <div className="grid grid-cols-2 gap-3 mb-4 font-mono text-center">
+        <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+          <div className="text-[10px] text-slate-400 uppercase tracking-wider">Starred</div>
+          <div className="text-base sm:text-lg font-bold text-amber-300 mt-0.5">
             {formatNumber(repo.stars)} ⭐
           </div>
         </div>
 
-        <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800">
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider">FORKS</div>
-          <div className="text-sm sm:text-base font-bold text-slate-200 mt-0.5">
-            {formatNumber(repo.forks)} 🍴
-          </div>
-        </div>
-
-        <div className="p-2.5 rounded-xl bg-slate-950/80 border border-slate-800">
-          <div className="text-[10px] text-slate-400 uppercase tracking-wider">VELOCITY</div>
-          <div className="text-sm sm:text-base font-bold text-cyan-300 mt-0.5 truncate">
-            {repo.growthDeltaText ? repo.growthDeltaText.split('•')[0].trim() : '+850/day'}
+        <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800">
+          <div className="text-[10px] text-slate-400 uppercase tracking-wider">Forks</div>
+          <div className="text-base sm:text-lg font-bold text-slate-200 mt-0.5">
+            {formatNumber(repo.forks)}
           </div>
         </div>
       </div>
