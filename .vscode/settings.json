@@ -1,0 +1,16 @@
+﻿{
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "chat.editing.alwaysAcceptWithTimer": true,
+  "chat.editing.autoAcceptDelay": 0,
+  "chat.editing.confirmEditRequestRemoval": false,
+  "antigravity.agent.autoAccept": true,
+  "antigravity.agent.autoAcceptEdits": true,
+  "antigravity.agent.autoAcceptChanges": true,
+  "antigravity.agent.autoApplyChanges": true,
+  "antigravity.agent.reviewChanges": false,
+  "antigravity.autoAccept": true,
+  "antigravity.autoAcceptEdits": true,
+  "antigravity.autoAcceptChanges": true,
+  "antigravity.turboMode": true
+}
