@@ -4,8 +4,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RepoItem, CategoryId, ReposApiResponse, BuzzItem, BuzzApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
 import { SplashIntro } from '@/components/SplashIntro';
+import { FullScreenLeaderboard } from '@/components/FullScreenLeaderboard';
 import { SearchBar } from '@/components/SearchBar';
-import { TopBreakoutsStrip } from '@/components/TopBreakoutsStrip';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
@@ -133,117 +133,123 @@ export default function Home() {
       {/* 2. HEADER */}
       <Header totalRepos={stats.totalRepos} totalStars={stats.totalStars} />
 
-      <main className="flex-1 pt-6 pb-16">
+      <main className="flex-1 pb-16">
         
-        {/* 3. TOP 3 BREAKOUT SPOTLIGHT STRIP (Instant 1-Glance Value) */}
+        {/* 3. SCREEN 1: FULL-SCREEN LEADERBOARD HERO STAGE (Dominates 100vh Viewport) */}
         {!searchQuery && !isBuzzMode && (
-          <TopBreakoutsStrip repos={repos} />
+          <FullScreenLeaderboard repos={repos} />
         )}
 
-        {/* 4. SEARCH BAR */}
-        <SearchBar
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          filteredCount={repos.length}
-          totalCount={stats.totalRepos}
-        />
+        {/* 4. SCREEN 2: MAIN FEED (Search + Categories + Repository List) */}
+        <div id="main-feed" className="pt-8 scroll-mt-6">
+          
+          {/* SEARCH BAR */}
+          <SearchBar
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            filteredCount={repos.length}
+            totalCount={stats.totalRepos}
+          />
 
-        {/* 5. CATEGORY TABS */}
-        <CategoryNav
-          activeCategory={activeCategory}
-          onSelectCategory={setActiveCategory}
-          categoryCounts={stats.categoryCounts}
-          totalCount={stats.totalRepos}
-        />
+          {/* CATEGORY TABS */}
+          <CategoryNav
+            activeCategory={activeCategory}
+            onSelectCategory={setActiveCategory}
+            categoryCounts={stats.categoryCounts}
+            totalCount={stats.totalRepos}
+          />
 
-        {/* 6. BUZZ MODE OR REPOSITORY FEED */}
-        {isBuzzMode ? (
-          <>
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-5 font-mono text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
-                <span className="text-amber-400 font-semibold text-[11px]">
-                  📰 COMMUNITY BUZZ — HN · REDDIT · DEV.TO
-                </span>
-                <span className="text-slate-500 text-[10px] hidden sm:inline">
-                  Refreshes every 15 min
-                </span>
+          {/* BUZZ MODE OR REPOSITORY FEED */}
+          {isBuzzMode ? (
+            <>
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 mb-5 font-mono text-xs">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                  <span className="text-amber-400 font-semibold text-[11px]">
+                    📰 COMMUNITY BUZZ — HN · REDDIT · DEV.TO
+                  </span>
+                  <span className="text-slate-500 text-[10px] hidden sm:inline">
+                    Refreshes every 15 min
+                  </span>
+                </div>
               </div>
-            </div>
-            <BuzzFeed items={buzzItems} loading={buzzLoading} />
-          </>
-        ) : (
-          <>
-            {/* Filter Bar */}
-            <FilterBar sortBy={sortBy} onSortByChange={setSortBy} />
+              <BuzzFeed items={buzzItems} loading={buzzLoading} />
+            </>
+          ) : (
+            <>
+              {/* Filter Bar */}
+              <FilterBar sortBy={sortBy} onSortByChange={setSortBy} />
 
-            {/* Repository Feed */}
-            <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
+              {/* Repository Feed */}
+              <div id="repository-feed" className="max-w-4xl mx-auto px-4 sm:px-6">
 
-              {/* Loading Skeleton */}
-              {loading && repos.length === 0 && (
-                <div className="space-y-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-sm animate-pulse">
-                      <div className="flex justify-between items-center mb-3">
-                        <div className="h-5 bg-slate-800 rounded w-1/3" />
-                        <div className="h-4 bg-slate-800 rounded w-24" />
+                {/* Loading Skeleton */}
+                {loading && repos.length === 0 && (
+                  <div className="space-y-4">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 backdrop-blur-sm animate-pulse">
+                        <div className="flex justify-between items-center mb-3">
+                          <div className="h-5 bg-slate-800 rounded w-1/3" />
+                          <div className="h-4 bg-slate-800 rounded w-24" />
+                        </div>
+                        <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
+                        <div className="space-y-2 mb-4">
+                          <div className="h-3.5 bg-slate-800 rounded w-full" />
+                          <div className="h-3.5 bg-slate-800 rounded w-4/5" />
+                        </div>
+                        <div className="h-5 bg-slate-800 rounded w-1/2" />
                       </div>
-                      <div className="h-3 bg-slate-800 rounded w-1/4 mb-3" />
-                      <div className="space-y-2 mb-4">
-                        <div className="h-3.5 bg-slate-800 rounded w-full" />
-                        <div className="h-3.5 bg-slate-800 rounded w-4/5" />
-                      </div>
-                      <div className="h-5 bg-slate-800 rounded w-1/2" />
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Repos Grid */}
-              {paginatedRepos.length > 0 && (
-                <div className="space-y-4">
-                  {paginatedRepos.map((repo) => (
-                    <RepoCard key={repo.id} repo={repo} />
-                  ))}
-                </div>
-              )}
-
-              {/* Pagination */}
-              {repos.length > itemsPerPage && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={repos.length}
-                  itemsPerPage={itemsPerPage}
-                  onPageChange={setCurrentPage}
-                />
-              )}
-
-              {/* Empty State */}
-              {!loading && repos.length === 0 && (
-                <div className="rounded-2xl p-12 text-center my-12 bg-slate-900/90 border border-slate-800 font-mono shadow-xl">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
-                    🔍
+                    ))}
                   </div>
-                  <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
-                  <p className="text-xs text-slate-400 mb-6 leading-relaxed max-w-sm mx-auto">
-                    No repositories matched your active search or filter criteria.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setActiveCategory('trending');
-                      setSortBy('velocity');
-                    }}
-                    className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-cyan-500/20"
-                  >
-                    Reset Filters
-                  </button>
-                </div>
-              )}
-            </div>
-          </>
-        )}
+                )}
+
+                {/* Repos Grid */}
+                {paginatedRepos.length > 0 && (
+                  <div className="space-y-4">
+                    {paginatedRepos.map((repo) => (
+                      <RepoCard key={repo.id} repo={repo} />
+                    ))}
+                  </div>
+                )}
+
+                {/* Pagination */}
+                {repos.length > itemsPerPage && (
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    totalItems={repos.length}
+                    itemsPerPage={itemsPerPage}
+                    onPageChange={setCurrentPage}
+                  />
+                )}
+
+                {/* Empty State */}
+                {!loading && repos.length === 0 && (
+                  <div className="rounded-2xl p-12 text-center my-12 bg-slate-900/90 border border-slate-800 font-mono shadow-xl">
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-400">
+                      🔍
+                    </div>
+                    <h3 className="text-base font-bold text-white mb-2">NO REPOSITORIES FOUND</h3>
+                    <p className="text-xs text-slate-400 mb-6 leading-relaxed max-w-sm mx-auto">
+                      No repositories matched your active search or filter criteria.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setActiveCategory('trending');
+                        setSortBy('velocity');
+                      }}
+                      className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-cyan-500/20"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
+        </div>
+
       </main>
 
       <footer className="border-t border-slate-800/80 bg-slate-950/80 backdrop-blur-md py-8 text-center text-xs text-slate-400 font-mono">
