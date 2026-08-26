@@ -22,7 +22,7 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
   return (
     <section className="relative w-full h-full flex flex-col justify-center items-center overflow-hidden font-sans p-4">
       
-      {/* 5-Item Showcase Composition */}
+      {/* 5-Item Spatial Stage with Staggered Materialization */}
       <div className="relative w-full max-w-6xl mx-auto flex items-center justify-center my-auto">
         <div className="relative z-10 w-full grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-center justify-center">
           
@@ -31,17 +31,17 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
             <SatelliteNode
               repo={top2}
               rank={2}
-              className="transform hover:-translate-x-1"
+              className="animate-sat-left-1"
             />
             <SatelliteNode
               repo={top4}
               rank={4}
-              className="transform hover:-translate-x-1 opacity-90 hover:opacity-100"
+              className="animate-sat-left-2 opacity-90 hover:opacity-100"
             />
           </div>
 
           {/* CENTER DOMINANT HERO (#1) */}
-          <div className="lg:col-span-6 flex justify-center w-full">
+          <div className="lg:col-span-6 flex justify-center w-full animate-hero-entrance">
             <HeroApexNode repo={top1} />
           </div>
 
@@ -50,17 +50,17 @@ export const TechFomoCanvas: React.FC<TechFomoCanvasProps> = ({ repos }) => {
             <SatelliteNode
               repo={top3}
               rank={3}
-              className="transform hover:translate-x-1"
+              className="animate-sat-right-1"
             />
             <SatelliteNode
               repo={top5}
               rank={5}
-              className="transform hover:translate-x-1 opacity-90 hover:opacity-100"
+              className="animate-sat-right-2 opacity-90 hover:opacity-100"
             />
           </div>
 
           {/* MOBILE/TABLET RESPONSIVE SATELLITES */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden w-full max-w-[460px] mx-auto pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 lg:hidden w-full max-w-[460px] mx-auto pt-2 animate-reveal">
             <SatelliteNode repo={top2} rank={2} />
             <SatelliteNode repo={top3} rank={3} />
             <SatelliteNode repo={top4} rank={4} />
