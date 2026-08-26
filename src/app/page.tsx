@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RepoItem, CategoryId, ReposApiResponse, BuzzItem, BuzzApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
-import { HeroSection } from '@/components/HeroSection';
-import { Leaderboard } from '@/components/Leaderboard';
+import { TrendingRadarDashboard } from '@/components/TrendingRadarDashboard';
+import { SearchBar } from '@/components/SearchBar';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
 import { RepoCard } from '@/components/RepoCard';
@@ -126,24 +126,25 @@ export default function Home() {
   const isBuzzMode = activeCategory === 'buzz';
 
   return (
-    <div className="min-h-screen flex flex-col justify-between font-sans">
+    <div className="min-h-screen flex flex-col justify-between font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
       <Header totalRepos={stats.totalRepos} totalStars={stats.totalStars} />
 
       <main className="flex-1 pb-16">
-        {/* Hero */}
-        <HeroSection
+        
+        {/* 1. TOP HERO: Cinematic Intro Slogan & Live Trending Radar Dashboard */}
+        {!searchQuery && !isBuzzMode && (
+          <TrendingRadarDashboard repos={repos} />
+        )}
+
+        {/* 2. SEARCH BAR: Positioned cleanly below the Dashboard */}
+        <SearchBar
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
           filteredCount={repos.length}
           totalCount={stats.totalRepos}
         />
 
-        {/* Leaderboard — only on repo tabs, not buzz, not search */}
-        {!searchQuery && !isBuzzMode && (
-          <Leaderboard repos={repos} />
-        )}
-
-        {/* Category Nav */}
+        {/* 3. CATEGORY NAV */}
         <CategoryNav
           activeCategory={activeCategory}
           onSelectCategory={setActiveCategory}
@@ -151,7 +152,7 @@ export default function Home() {
           totalCount={stats.totalRepos}
         />
 
-        {/* Buzz Mode */}
+        {/* 4. BUZZ MODE OR REPOSITORY FEED */}
         {isBuzzMode ? (
           <>
             {/* Buzz header bar */}
@@ -195,7 +196,7 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Repos */}
+              {/* Repos Grid */}
               {paginatedRepos.length > 0 && (
                 <div className="space-y-4">
                   {paginatedRepos.map((repo) => (
@@ -231,7 +232,7 @@ export default function Home() {
                       setActiveCategory('trending');
                       setSortBy('velocity');
                     }}
-                    className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-emerald-500/20"
+                    className="px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-cyan-500/20"
                   >
                     Reset Filters
                   </button>
@@ -245,10 +246,10 @@ export default function Home() {
       <footer className="border-t border-slate-800/80 bg-slate-950/80 backdrop-blur-md py-8 text-center text-xs text-slate-400 font-mono">
         <div className="max-w-4xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="font-bold text-slate-200">TechFOMO<span className="text-emerald-400">.dev</span></span>
-            <span> • Never suffer from tech FOMO again</span>
+            <span className="font-bold text-slate-200">TechFOMO<span className="text-cyan-400">.dev</span></span>
+            <span> • We track the hype so you don't have to</span>
           </div>
-          <p className="text-slate-400">Powered by Next.js and Multi-Source Intelligence.</p>
+          <p className="text-slate-400">Powered by Next.js and Real-Time Multi-Source Intelligence.</p>
         </div>
       </footer>
     </div>
