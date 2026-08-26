@@ -5,9 +5,10 @@ import { RepoItem } from '@/lib/types';
 
 interface RepoCardProps {
   repo: RepoItem;
+  index?: number;
 }
 
-export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
+export const RepoCard: React.FC<RepoCardProps> = ({ repo, index = 0 }) => {
   const [copied, setCopied] = useState(false);
 
   const formatNumber = (num: number) => {
@@ -31,7 +32,6 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}`, '_blank', 'noopener');
   };
 
-  // Build social signal hints
   const socialHints: string[] = [];
   if (repo.growthDeltaText) {
     socialHints.push(repo.growthDeltaText);
@@ -48,33 +48,22 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
     socialHints.push('Featured on Dev.to');
   }
 
-  // Frame card class based on velocity and big updates
   const getCardFrameClass = () => {
     if (repo.velocityLabel === 'EXPLOSIVE') {
       return 'fomo-flame-card border border-red-500/70';
     }
     if (repo.velocityLabel === 'ESTABLISHED') {
-      if (repo.hasBigUpdate) {
-        return 'fomo-classic-card border border-emerald-500/50 shadow-emerald-950/40';
-      }
-      return 'fomo-classic-card';
-    }
-    if (repo.hasBigUpdate) {
-      return 'fomo-update-card border border-emerald-500/60';
+      return 'bg-slate-950/70 border border-slate-800/80 hover:border-cyan-500/50 hover:bg-slate-900/90';
     }
     if (repo.velocityLabel === 'HOT RISING') {
-      return 'fomo-rising-card';
+      return 'bg-slate-950/70 border border-amber-500/40 hover:border-amber-400 hover:bg-slate-900/90';
     }
     if (repo.velocityLabel === 'EARLY GEM') {
-      return 'border border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-400/60';
+      return 'border border-emerald-500/40 bg-emerald-950/20 hover:border-emerald-400/70 hover:bg-slate-900/90';
     }
-    if (repo.velocityLabel === 'COMMUNITY PICK') {
-      return 'fomo-community-card';
-    }
-    return 'bg-slate-900/90 border border-slate-800 hover:border-slate-700';
+    return 'bg-slate-950/70 border border-slate-800/80 hover:border-cyan-500/50 hover:bg-slate-900/90';
   };
 
-  // Tag styling based on velocity
   const getTagClass = (label?: RepoItem['velocityLabel']) => {
     switch (label) {
       case 'EXPLOSIVE':
@@ -93,9 +82,12 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
   };
 
   const isExplosive = repo.velocityLabel === 'EXPLOSIVE';
+  const staggerClass = index < 5 ? `reveal-stagger-${(index % 5) + 1}` : '';
 
   return (
-    <div className={`p-4 sm:p-5 rounded-2xl transition-all duration-300 shadow-md font-sans ${getCardFrameClass()}`}>
+    <div
+      className={`p-4 sm:p-5 rounded-2xl transition-all duration-200 shadow-md font-sans animate-reveal ${staggerClass} hover:-translate-y-0.5 hover:shadow-xl ${getCardFrameClass()}`}
+    >
       
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-2.5">
@@ -107,12 +99,13 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
               href={repo.url}
               target="_blank"
               rel="noreferrer"
-              className={`font-bold transition-colors text-base sm:text-lg font-mono break-words leading-tight inline-block ${
-                isExplosive ? 'text-white hover:text-red-400' : 'text-white hover:text-emerald-400'
+              className={`font-bold transition-colors text-base sm:text-lg font-mono break-words leading-tight inline-block group ${
+                isExplosive ? 'text-white hover:text-red-400' : 'text-white hover:text-cyan-300'
               }`}
               title="Click to open GitHub repository"
             >
               {repo.fullName}
+              <span className="inline-block ml-1.5 opacity-0 group-hover:opacity-100 text-cyan-400 transition-opacity">↗</span>
             </a>
           </div>
 
@@ -141,7 +134,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
 
         {/* Right: Metrics & Copy Link Button */}
         <div className="flex items-center justify-between sm:justify-end space-x-2.5 flex-shrink-0 font-mono text-xs pt-1 sm:pt-0">
-          <div className="flex items-center space-x-2 bg-slate-950/80 px-2.5 py-1.5 rounded-lg border border-slate-800 text-slate-400">
+          <div className="flex items-center space-x-2 bg-slate-950/90 px-2.5 py-1.5 rounded-xl border border-slate-800 text-slate-400">
             <span className={isExplosive ? 'text-amber-300 font-extrabold' : 'text-amber-300 font-bold'}>
               {formatNumber(repo.stars)} stars
             </span>
@@ -151,7 +144,7 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
 
           <button
             onClick={handleShareX}
-            className="px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap border bg-slate-950 hover:bg-[#1a8cd8]/20 text-slate-400 hover:text-[#1a8cd8] border-slate-800 hover:border-[#1a8cd8]/50"
+            className="px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all whitespace-nowrap border bg-slate-950 hover:bg-[#1a8cd8]/20 text-slate-400 hover:text-[#1a8cd8] border-slate-800 hover:border-[#1a8cd8]/50"
             title="Share on X (Twitter)"
           >
             𝕏 Share
@@ -159,14 +152,14 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
 
           <button
             onClick={handleCopyLink}
-            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-semibold transition-all whitespace-nowrap border ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-mono font-semibold transition-all whitespace-nowrap border ${
               copied
                 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-                : 'bg-slate-800/90 hover:bg-slate-700 text-slate-200 border-slate-700 hover:border-slate-600'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-200 border-slate-700'
             }`}
             title="Copy repository link"
           >
-            {copied ? 'Copied!' : 'Copy Link'}
+            {copied ? '✓ Copied' : '📋 Copy Link'}
           </button>
         </div>
 
@@ -202,13 +195,13 @@ export const RepoCard: React.FC<RepoCardProps> = ({ repo }) => {
         {repo.topics.slice(0, 5).map((topic) => (
           <span
             key={topic}
-            className="px-2 py-0.5 rounded bg-slate-950 text-slate-400 border border-slate-800"
+            className="px-2 py-0.5 rounded-md bg-slate-950 text-slate-400 border border-slate-800 hover:border-slate-700 hover:text-slate-200 transition-colors"
           >
             #{topic}
           </span>
         ))}
         {repo.topics.length > 5 && (
-          <span className="px-1.5 py-0.5 rounded bg-slate-950 text-slate-500">
+          <span className="px-1.5 py-0.5 rounded-md bg-slate-950 text-slate-500">
             +{repo.topics.length - 5}
           </span>
         )}

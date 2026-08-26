@@ -47,23 +47,23 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
   };
 
   const rankBadges = [
-    { label: '👑 #1 APEX BREAKOUT', color: 'from-amber-400 to-orange-500', text: 'text-slate-950', ring: 'ring-amber-400/50' },
-    { label: '⚡ #2 VIRAL SURGE', color: 'from-cyan-400 to-blue-500', text: 'text-slate-950', ring: 'ring-cyan-400/50' },
-    { label: '🚀 #3 HYPER RISING', color: 'from-orange-400 to-amber-500', text: 'text-slate-950', ring: 'ring-orange-400/50' },
-    { label: '💎 #4 COMMUNITY GEM', color: 'from-emerald-400 to-teal-500', text: 'text-slate-950', ring: 'ring-emerald-400/50' },
-    { label: '🌐 #5 VELOCITY MATRIX', color: 'from-violet-400 to-purple-500', text: 'text-white', ring: 'ring-violet-400/50' },
+    { label: '👑 #1 APEX BREAKOUT', color: 'from-amber-400 to-orange-500', text: 'text-slate-950', ring: 'ring-amber-400/60' },
+    { label: '⚡ #2 VIRAL SURGE', color: 'from-cyan-400 to-blue-500', text: 'text-slate-950', ring: 'ring-cyan-400/60' },
+    { label: '🚀 #3 HYPER RISING', color: 'from-orange-400 to-amber-500', text: 'text-slate-950', ring: 'ring-orange-400/60' },
+    { label: '💎 #4 COMMUNITY GEM', color: 'from-emerald-400 to-teal-500', text: 'text-slate-950', ring: 'ring-emerald-400/60' },
+    { label: '🌐 #5 VELOCITY MATRIX', color: 'from-violet-400 to-purple-500', text: 'text-white', ring: 'ring-violet-400/60' },
   ];
 
   const currentBadge = rankBadges[selectedIndex] || rankBadges[0];
 
   return (
-    <section className="relative w-full min-h-[calc(100vh-4.5rem)] flex flex-col justify-between max-w-6xl mx-auto px-4 sm:px-6 py-4 font-sans">
+    <section className="relative w-full min-h-[calc(100vh-4.5rem)] flex flex-col justify-between max-w-6xl mx-auto px-4 sm:px-6 py-3 font-sans">
       
       {/* Background Canvas */}
-      <ThreeCanvas className="opacity-50" />
+      <ThreeCanvas className="opacity-55" />
 
       {/* 1. TOP HUD RADAR BAR */}
-      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-slate-800/80 pb-4 mb-4">
+      <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-slate-800/80 pb-3 mb-3">
         <div className="flex items-center space-x-3">
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
@@ -79,10 +79,10 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
 
         <div className="flex items-center space-x-4 font-mono text-xs text-slate-400">
           <div>
-            <span className="text-emerald-400 font-bold">●</span> LIVE FEED
+            <span className="text-emerald-400 font-bold">●</span> LIVE RADAR
           </div>
           <div>
-            <span className="text-white font-bold">{repos.length}</span> Tracked
+            <span className="text-white font-bold">{repos.length}</span> Repos Tracked
           </div>
           <div className="text-amber-300 font-bold">
             Spotlight #{selectedIndex + 1} of {topBreakouts.length}
@@ -98,7 +98,7 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
       >
         
         {/* LEFT / HERO SPOTLIGHT CARD (7 cols) */}
-        <div className="lg:col-span-7 rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-slate-900/95 via-[#080e1e]/95 to-black/95 border border-cyan-500/40 shadow-[0_20px_60px_-15px_rgba(6,182,212,0.2)] backdrop-blur-2xl flex flex-col justify-between relative">
+        <div className="lg:col-span-7 rounded-3xl p-6 sm:p-8 bg-gradient-to-b from-slate-900/95 via-[#080e1e]/95 to-black/95 border border-cyan-500/40 fomo-active-spotlight backdrop-blur-2xl flex flex-col justify-between relative transition-all duration-300">
           
           <div>
             {/* Top Badge & Velocity Score */}
@@ -131,10 +131,10 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
                   href={activeRepo.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-xl sm:text-2xl lg:text-3xl font-mono font-black text-white hover:text-cyan-300 transition-colors block truncate"
+                  className="text-xl sm:text-2xl lg:text-3xl font-mono font-black text-white hover:text-cyan-300 transition-colors block truncate group"
                 >
                   {activeRepo.fullName}
-                  <span className="inline-block ml-2 text-cyan-400">↗</span>
+                  <span className="inline-block ml-2 text-cyan-400 group-hover:translate-x-1 transition-transform">↗</span>
                 </a>
                 <div className="flex items-center space-x-2.5 text-xs font-mono text-slate-400 mt-1">
                   <span className="text-cyan-400 font-semibold">{activeRepo.language || 'Code'}</span>
@@ -160,7 +160,7 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
           </div>
 
           {/* Bottom Tags & Direct Action Buttons */}
-          <div className="mt-6 pt-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="mt-6 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 flex-wrap">
               {activeRepo.topics && activeRepo.topics.slice(0, 4).map((topic) => (
                 <span
@@ -187,7 +187,7 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
                 href={activeRepo.url}
                 target="_blank"
                 rel="noreferrer"
-                className="px-5 py-2 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 transition-all shadow-lg shadow-cyan-500/25 flex items-center gap-1.5"
+                className="px-5 py-2 rounded-xl font-mono font-bold text-xs bg-gradient-to-r from-cyan-500 via-teal-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-slate-950 transition-all shadow-lg shadow-cyan-500/25 hover:shadow-cyan-400/40 flex items-center gap-1.5 transform hover:-translate-y-0.5"
               >
                 <span>⭐ Explore on GitHub</span>
                 <span>↗</span>
@@ -218,7 +218,7 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
                 className={`w-full p-3.5 rounded-2xl text-left transition-all duration-200 flex items-center justify-between gap-3 border relative ${
                   isSelected
                     ? 'bg-slate-900/95 border-cyan-400 shadow-[0_0_25px_-5px_rgba(6,182,212,0.35)] scale-[1.02]'
-                    : 'bg-slate-950/70 hover:bg-slate-900/80 border-slate-800/80 hover:border-slate-700'
+                    : 'bg-slate-950/70 hover:bg-slate-900/90 border-slate-800/80 hover:border-cyan-500/50 hover:-translate-x-1'
                 }`}
               >
                 {/* Active Indicator Bar */}
@@ -264,7 +264,7 @@ export const FullScreenLeaderboard: React.FC<FullScreenLeaderboardProps> = ({ re
       </div>
 
       {/* 3. BOTTOM SCROLL INDICATOR PROMPT */}
-      <div className="relative z-10 text-center pt-4">
+      <div className="relative z-10 text-center pt-3">
         <button
           onClick={handleScrollDown}
           className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/50 text-slate-400 hover:text-cyan-300 font-mono text-xs transition-all animate-bounce cursor-pointer shadow-lg"

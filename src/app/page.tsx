@@ -205,8 +205,8 @@ export default function Home() {
                 {/* Repos Grid */}
                 {paginatedRepos.length > 0 && (
                   <div className="space-y-4">
-                    {paginatedRepos.map((repo) => (
-                      <RepoCard key={repo.id} repo={repo} />
+                    {paginatedRepos.map((repo, idx) => (
+                      <RepoCard key={repo.id} repo={repo} index={idx} />
                     ))}
                   </div>
                 )}
