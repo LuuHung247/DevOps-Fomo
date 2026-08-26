@@ -9,10 +9,10 @@ interface CacheEntry {
   data: RepoItem[];
 }
 
-// In-memory cache pre-seeded with verified repositories for instant response
+// In-memory cache initialized with 0 timestamp so it immediately triggers full multi-source discovery on first visit
 let memoryCache: { [key: string]: CacheEntry } = {
   all: {
-    timestamp: Date.now(),
+    timestamp: 0,
     data: SEED_REPOSITORIES,
   },
 };
@@ -25,6 +25,10 @@ const DEFAULT_TTL_MS = 1000 * 60 * 30; // 30 minutes freshness
 export function isCacheStale(key: string = 'all', ttlMs: number = DEFAULT_TTL_MS): boolean {
   const now = Date.now();
   if (memoryCache[key]) {
+    // If the cache only contains the baseline seeds (<= 40), treat it as stale so it immediately discovers more
+    if (memoryCache[key].data.length <= SEED_REPOSITORIES.length) {
+      return true;
+    }
     return (now - memoryCache[key].timestamp) >= ttlMs;
   }
   return true;
@@ -65,7 +69,7 @@ export function getCachedRepos(
   // 3. Fallback: Always return SEED_REPOSITORIES so UI never experiences empty state
   if (!memoryCache[key] || memoryCache[key].data.length === 0) {
     memoryCache[key] = {
-      timestamp: 0, // Mark as stale so background revalidation runs
+      timestamp: 0,
       data: SEED_REPOSITORIES,
     };
   }

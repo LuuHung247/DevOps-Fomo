@@ -302,8 +302,8 @@ export async function fetchGitHubSearchRepos(headers: Record<string, string>): P
   const results: DiscoveredRepo[] = [];
   const token = !!headers['Authorization'];
   const queries = getDynamicSearchQueries();
-  // Limit to high-signal queries to avoid secondary rate limits
-  const activeQueries = token ? queries.slice(0, 10) : queries.slice(0, 5);
+  // High-signal queries for maximum discovery
+  const activeQueries = token ? queries : queries.slice(0, 8);
 
   const fetchPromises = activeQueries.map(async (query) => {
     try {

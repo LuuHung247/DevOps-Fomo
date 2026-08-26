@@ -10,7 +10,29 @@ const AWESOME_LISTS = [
   { repo: 'bregman-arie/devops-exercises', name: 'devops-exercises' },
   { repo: 'awesome-selfhosted/awesome-selfhosted', name: 'awesome-selfhosted' },
   { repo: 'ramitsurana/awesome-kubernetes', name: 'awesome-kubernetes' },
+  { repo: 'trimstray/the-book-of-secret-knowledge', name: 'secret-knowledge' },
+  { repo: 'ibraheemdev/modern-unix', name: 'modern-unix' },
+  { repo: 'avelino/awesome-go', name: 'awesome-go' },
+  { repo: 'vinta/awesome-python', name: 'awesome-python' },
+  { repo: 'josephmisiti/awesome-machine-learning', name: 'awesome-ml' },
+  { repo: 'veggiemonk/awesome-docker', name: 'awesome-docker' },
+  { repo: 'shuaibiyy/awesome-terraform', name: 'awesome-terraform' },
+  { repo: 'kyrolabs/awesome-langchain', name: 'awesome-langchain' },
 ];
+
+const RELEVANCE_KEYWORDS = [
+  'agent', 'skill', 'skills', 'harness', 'pentest', 'vulnerab', 'red-team',
+  'llm', 'ai', 'devops', 'kubernetes', 'docker', 'terraform',
+  'ansible', 'helm', 'gitops', 'ci', 'cd', 'pipeline', 'monitor',
+  'observ', 'security', 'cloud', 'serverless', 'container', 'platform',
+  'mlops', 'vector', 'embedding', 'inference', 'model', 'deploy',
+  'autom', 'orchestrat', 'terminal', 'cli', 'tool', 'framework',
+];
+
+function isRelevantRepo(repoName: string): boolean {
+  const lower = repoName.toLowerCase();
+  return RELEVANCE_KEYWORDS.some(kw => lower.includes(kw));
+}
 
 function extractGitHubRepos(markdown: string): string[] {
   const pattern = /github\.com\/([a-zA-Z0-9\-_]+\/[a-zA-Z0-9\-_.]+)/g;
@@ -47,33 +69,30 @@ function extractGitHubRepos(markdown: string): string[] {
 
 export async function fetchAwesomeListRepos(): Promise<DiscoveredRepo[]> {
   const results: DiscoveredRepo[] = [];
-  const token = process.env.GITHUB_TOKEN;
-  const headers: Record<string, string> = {
-    'Accept': 'application/vnd.github.v3.raw',
-    'User-Agent': 'DevOps-FOMO/1.0',
-  };
-  if (token) {
-    headers['Authorization'] = `token ${token}`;
-  }
 
-  // Process top 5 lists in parallel with 3s timeout
-  const listsToProcess = AWESOME_LISTS.slice(0, token ? 8 : 4);
-
-  const fetchPromises = listsToProcess.map(async (list) => {
+  // Fetch raw Markdown without API rate limits in parallel with 3s timeout
+  const fetchPromises = AWESOME_LISTS.map(async (list) => {
     try {
-      const url = `https://api.github.com/repos/${list.repo}/readme`;
-      const res = await fetch(url, {
-        headers,
-        signal: AbortSignal.timeout(3000),
-        next: { revalidate: 86400 },
-      });
-
-      if (!res.ok) return [];
-
-      const data = await res.json();
+      // Try main branch first, then master
       let content = '';
-      if (data.content) {
-        content = Buffer.from(data.content, 'base64').toString('utf-8');
+      const rawUrls = [
+        `https://raw.githubusercontent.com/${list.repo}/main/README.md`,
+        `https://raw.githubusercontent.com/${list.repo}/master/README.md`,
+      ];
+
+      for (const url of rawUrls) {
+        try {
+          const res = await fetch(url, {
+            signal: AbortSignal.timeout(3000),
+            next: { revalidate: 86400 },
+          });
+          if (res.ok) {
+            content = await res.text();
+            break;
+          }
+        } catch {
+          // Try next branch
+        }
       }
 
       if (!content) return [];

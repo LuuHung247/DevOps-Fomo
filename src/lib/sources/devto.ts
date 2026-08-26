@@ -1,6 +1,6 @@
 import { DiscoveredRepo } from '../types';
 
-const TAGS_TO_SCAN = ['devops', 'ai', 'kubernetes', 'llm', 'mlops', 'opensource'];
+const TAGS_TO_SCAN = ['devops', 'ai', 'kubernetes', 'llm', 'mlops', 'docker', 'terraform', 'cloud', 'opensource'];
 
 function extractGitHubLinks(text: string): string[] {
   if (!text) return [];
@@ -36,7 +36,7 @@ export async function fetchDevToRepos(): Promise<DiscoveredRepo[]> {
 
   const tagPromises = TAGS_TO_SCAN.map(async (tag) => {
     try {
-      const url = `https://dev.to/api/articles?tag=${tag}&top=30&per_page=12`;
+      const url = `https://dev.to/api/articles?tag=${tag}&top=30&per_page=15`;
       const res = await fetch(url, {
         headers: {
           'User-Agent': 'DevOps-FOMO/1.0',
@@ -54,7 +54,7 @@ export async function fetchDevToRepos(): Promise<DiscoveredRepo[]> {
       const tagRepos: DiscoveredRepo[] = [];
 
       for (const article of articles) {
-        if (article.positive_reactions_count < 15) continue;
+        if (article.positive_reactions_count < 10) continue;
 
         const descLinks = extractGitHubLinks(article.description || '');
         for (const repoName of descLinks) {
