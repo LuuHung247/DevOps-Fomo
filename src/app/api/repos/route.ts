@@ -6,8 +6,19 @@ import { SEED_REPOSITORIES } from '@/lib/seeds';
 
 export const dynamic = 'force-dynamic';
 
-// Mutex to prevent duplicate parallel background revalidations
-let isRevalidating = false;
+// Fast timeout wrapper
+async function fetchWithTimeout(timeoutMs: number): Promise<RepoItem[] | null> {
+  try {
+    const timeoutPromise = new Promise<null>((resolve) => 
+      setTimeout(() => resolve(null), timeoutMs)
+    );
+    const discoveryPromise = fetchAllSources();
+    return await Promise.race([discoveryPromise, timeoutPromise]);
+  } catch (err) {
+    console.error('[Discovery Engine] Race error:', err);
+    return null;
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,50 +38,17 @@ export async function GET(request: NextRequest) {
 
     // 1. Check Cache
     let repos: RepoItem[] = getCachedRepos('all');
-    
-    // 2. Cold Start or Stale Cache Discovery:
-    // If the cache only has baseline seeds or is stale, fetch full multi-source data
-    const isBaselineOrEmpty = !repos || repos.length <= SEED_REPOSITORIES.length;
-    const stale = isCacheStale('all', 1000 * 60 * 30);
 
-    if (isBaselineOrEmpty || stale) {
-      try {
-        if (!isRevalidating) {
-          isRevalidating = true;
-          // If cold start (only seeds), await fresh fetch so user immediately sees 350+ repos
-          if (isBaselineOrEmpty) {
-            const freshRepos = await fetchAllSources();
-            if (freshRepos && freshRepos.length > 0) {
-              repos = freshRepos;
-              setCachedRepos('all', freshRepos);
-            }
-          } else {
-            // SWR: return cached data immediately, update in background
-            fetchAllSources()
-              .then((freshRepos) => {
-                if (freshRepos && freshRepos.length > 0) {
-                  setCachedRepos('all', freshRepos);
-                }
-              })
-              .catch((err) => {
-                console.error('[Discovery Engine] Background revalidation error:', err);
-              })
-              .finally(() => {
-                isRevalidating = false;
-              });
-          }
-        }
-      } catch (err) {
-        console.error('[Discovery Engine] Discovery error, using available cache:', err);
-      } finally {
-        if (isBaselineOrEmpty) {
-          isRevalidating = false;
-        }
-      }
-    }
-
+    // 2. If cache is not available or empty, try quick discovery (up to 2.5s) then fallback to SEED_REPOSITORIES
     if (!repos || repos.length === 0) {
-      repos = SEED_REPOSITORIES;
+      const discovered = await fetchWithTimeout(2500);
+      if (discovered && discovered.length > 0) {
+        repos = discovered;
+        setCachedRepos('all', discovered);
+      } else {
+        repos = SEED_REPOSITORIES;
+        setCachedRepos('all', SEED_REPOSITORIES);
+      }
     }
 
     // 3. Stats calculations over full pool
@@ -156,7 +134,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error in /api/repos:', error);
-    // Even if an unexpected error occurs, fall back to seeds
     const fallback = SEED_REPOSITORIES;
     return NextResponse.json({
       repos: fallback,
