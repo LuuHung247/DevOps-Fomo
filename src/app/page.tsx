@@ -22,6 +22,9 @@ export default function Home() {
   const [buzzLoading, setBuzzLoading] = useState(false);
   const [buzzFetched, setBuzzFetched] = useState(false);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  const mainScrollRef = useRef<HTMLElement>(null);
+
   const [stats, setStats] = useState<ReposApiResponse['stats']>({
     totalRepos: 0,
     totalStars: 0,
@@ -39,6 +42,14 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'stars' | 'velocity' | 'updated'>('velocity');
   const retryCountRef = useRef(0);
+
+  // Handle scroll to trigger exit/enter animations between Frame 1 and Frame 2
+  const handleContainerScroll = () => {
+    if (mainScrollRef.current) {
+      const top = mainScrollRef.current.scrollTop;
+      setIsScrolled(top > 120);
+    }
+  };
 
   // Fetch repositories with retry resilience
   const fetchRepos = useCallback(async (isBackground = false) => {
@@ -127,26 +138,37 @@ export default function Home() {
 
   return (
     <div className="h-screen w-screen overflow-hidden flex flex-col bg-[#030712] font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
-      {/* 1. CINEMATIC SPLASH INTRO (Runs once on first visit) */}
+      {/* 1. CINEMATIC SPLASH INTRO (Always runs smoothly on load) */}
       <SplashIntro />
 
       {/* 2. UNIFIED STICKY HEADER */}
       <Header totalRepos={stats.totalRepos} totalStars={stats.totalStars} />
 
-      {/* 3. FULLPAGE SNAP CONTAINER (Unified background, 1 frame switch) */}
-      <main className="flex-1 w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-[#030712]">
+      {/* 3. FULLPAGE SNAP CONTAINER WITH SCROLL ANIMATIONS */}
+      <main
+        ref={mainScrollRef}
+        onScroll={handleContainerScroll}
+        className="flex-1 w-full overflow-y-auto snap-y snap-mandatory scroll-smooth bg-[#030712]"
+      >
         
-        {/* FRAME 1: TOP BREAKOUTS SPATIAL STAGE (Fits 1 Full Frame) */}
+        {/* FRAME 1: TOP BREAKOUTS SPATIAL STAGE (Fits 1 Full Frame, Disperses on Scroll) */}
         {!searchQuery && !isBuzzMode && (
           <section className="h-[calc(100vh-4rem)] w-full snap-start snap-always flex flex-col justify-center items-center overflow-hidden bg-[#030712]">
-            <TechFomoCanvas repos={repos} />
+            <TechFomoCanvas repos={repos} isScrolledOut={isScrolled} />
           </section>
         )}
 
-        {/* FRAME 2: DIRECTORY / ALL REPOSITORIES SUMMARY (Scroll switches into this frame) */}
-        <section id="main-feed" className="min-h-[calc(100vh-4rem)] w-full snap-start snap-always flex flex-col justify-between pt-6 pb-12 bg-[#030712]">
+        {/* FRAME 2: DIRECTORY / ALL REPOSITORIES SUMMARY (Cascades in as you scroll) */}
+        <section
+          id="main-feed"
+          className="min-h-[calc(100vh-4rem)] w-full snap-start snap-always flex flex-col justify-between pt-6 pb-12 bg-[#030712]"
+        >
           
-          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 flex-1">
+          <div
+            className={`w-full max-w-4xl mx-auto px-4 sm:px-6 flex-1 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              isScrolled ? 'opacity-100 translate-y-0' : 'opacity-90 translate-y-4'
+            }`}
+          >
             
             {/* SEARCH BAR */}
             <SearchBar
@@ -207,7 +229,7 @@ export default function Home() {
                     </div>
                   )}
 
-                  {/* Repos Grid */}
+                  {/* Repos Grid with ScrollReveal */}
                   {paginatedRepos.length > 0 && (
                     <div className="space-y-4">
                       {paginatedRepos.map((repo, idx) => (

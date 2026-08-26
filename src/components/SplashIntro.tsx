@@ -5,35 +5,27 @@ import React, { useState, useEffect } from 'react';
 export const SplashIntro: React.FC = () => {
   const [visible, setVisible] = useState(true);
   const [fading, setFading] = useState(false);
-  const [progress, setProgress] = useState(15);
+  const [progress, setProgress] = useState(20);
   const [statusText, setStatusText] = useState('Initializing intelligence feed...');
 
   useEffect(() => {
-    // Check if user already saw intro in this session to prevent repeated delay
-    const hasSeen = sessionStorage.getItem('techfomo_intro_seen');
-    if (hasSeen) {
-      setVisible(false);
-      return;
-    }
-
     const t1 = setTimeout(() => {
-      setProgress(60);
+      setProgress(65);
       setStatusText('Scanning 7,100+ repositories & live signals...');
-    }, 300);
+    }, 200);
 
     const t2 = setTimeout(() => {
       setProgress(100);
-      setStatusText('Intelligence feed synchronized.');
-    }, 750);
+      setStatusText('Ecosystem intelligence synchronized.');
+    }, 600);
 
     const t3 = setTimeout(() => {
       setFading(true);
-    }, 1100);
+    }, 950);
 
     const t4 = setTimeout(() => {
       setVisible(false);
-      sessionStorage.setItem('techfomo_intro_seen', 'true');
-    }, 1400);
+    }, 1300);
 
     return () => {
       clearTimeout(t1);
