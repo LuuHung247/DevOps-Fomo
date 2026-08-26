@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { RepoItem, CategoryId, ReposApiResponse, BuzzItem, BuzzApiResponse } from '@/lib/types';
 import { Header } from '@/components/Header';
 import { SplashIntro } from '@/components/SplashIntro';
-import { FullScreenLeaderboard } from '@/components/FullScreenLeaderboard';
+import { TechFomoCanvas } from '@/components/canvas/TechFomoCanvas';
 import { SearchBar } from '@/components/SearchBar';
 import { CategoryNav } from '@/components/CategoryNav';
 import { FilterBar } from '@/components/FilterBar';
@@ -135,9 +135,9 @@ export default function Home() {
 
       <main className="flex-1 pb-16">
         
-        {/* 3. SCREEN 1: FULL-SCREEN LEADERBOARD HERO STAGE (Dominates 100vh Viewport) */}
+        {/* 3. SCREEN 1: LARGE SPATIAL INTELLIGENCE RADAR CANVAS (100vh Viewport) */}
         {!searchQuery && !isBuzzMode && (
-          <FullScreenLeaderboard repos={repos} />
+          <TechFomoCanvas repos={repos} />
         )}
 
         {/* 4. SCREEN 2: MAIN FEED (Search + Categories + Repository List) */}
